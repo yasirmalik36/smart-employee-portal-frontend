@@ -1,0 +1,68 @@
+<header>
+    <div class="top-bar">
+      <div class="top-bar-logo">
+        <!-- <img src="assets/images/portallogo.png" alt="Logo" class="logo-image"> -->
+        <button (click)="toggleSidebar()" class="menu-btn">
+          <span class="material-icons">menu</span>
+        </button>
+        <h2 style="color: #61dafb;">Smart Employee Portal</h2>
+
+      </div>
+     
+   
+      <div class="user-section">
+        <span class="material-icons">notifications</span>
+        <div class="user-profile" (click)="toggleProfilePopup()">
+          <img src="assets/images/man.png" alt="User Avatar" class="avatar">
+          <span>Yasir Mehmood</span>
+        </div>
+      </div>
+    </div>
+
+     <!-- Profile Popup Modal -->
+  <div class="profile-popup" *ngIf="profilePopupVisible">
+    <div class="popup-content">
+      <div class="popup-header">
+        <img src="assets/images/man.png" alt="User Avatar" class="avatar">
+        <div class="user-info">
+          <span class="username">Yasir Mehmood</span>
+          <span class="role">Admin</span>
+        </div>
+      </div>
+      
+      <div class="popup-actions">
+        <button class="popup-btn">
+          <span class="material-icons">person</span> My Profile
+        </button>
+        <button class="popup-btn">
+          <span class="material-icons">settings</span> Settings
+        </button>
+        <button class="popup-btn">
+          <span class="material-icons">logout</span> Logout
+        </button>
+      </div>
+    </div>
+  </div>
+  </header>
+  
+  <nav [ngClass]="{'collapsed': isCollapsed}" class="vertical-navbar">
+    <ul>
+      <li><a routerLink="/home/dashboard" mat-button><span class="material-icons">dashboard</span> <span *ngIf="!isCollapsed">Dashboard</span></a></li>
+      <li><a routerLink="/home/attendance" mat-button><span class="material-icons">check_circle</span> <span *ngIf="!isCollapsed">Attendance</span></a></li>
+      <li><a routerLink="/home/leave-management" mat-button><span class="material-icons">event_available</span> <span *ngIf="!isCollapsed">Leave Management</span></a></li>
+      <li><a routerLink="/home/compensation-benefits" mat-button><span class="material-icons">monetization_on</span> <span *ngIf="!isCollapsed">Compen & Benefits</span></a></li>
+      <li><a routerLink="/home/user-management" mat-button><span class="material-icons">group</span> <span *ngIf="!isCollapsed">User Management</span></a></li>
+      <li><a routerLink="/home/task-management" mat-button><span class="material-icons">assignment</span> <span *ngIf="!isCollapsed">Task Management</span></a></li>
+      <li><a routerLink="/home/reports" mat-button><span class="material-icons">assessment</span> <span *ngIf="!isCollapsed">Reports</span></a></li>
+      <li><a routerLink="/home/ai-analytics" mat-button><span class="material-icons">analytics</span> <span *ngIf="!isCollapsed">AI-Driven Analytics</span></a></li>
+            <!-- <li><a routerLink="/home/notifications" mat-button><span class="material-icons">notifications</span> Notifications</a></li> -->
+      <li><a routerLink="/home/settings" mat-button><span class="material-icons">settings</span> <span *ngIf="!isCollapsed">Settings</span></a></li>
+      <li><a routerLink="/home/document-repository" mat-button><span class="material-icons">folder</span> <span *ngIf="!isCollapsed">Document Repository</span></a></li>
+      <li><a (click)="signOut()" mat-button><span class="material-icons">logout</span> <span *ngIf="!isCollapsed">Sign Out</span></a></li>
+    </ul>
+  </nav>
+  
+  <div [ngClass]="{'content-collapsed': isCollapsed}" class="main-content">
+    <router-outlet></router-outlet>
+  </div>
+  

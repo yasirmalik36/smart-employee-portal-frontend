@@ -1,0 +1,21 @@
+<p>attendance works!</p>
+<div *ngIf="!isCapturing">
+    <button (click)="startCaptureSequence()">Start Capture</button>
+</div>
+
+<div *ngIf="isCapturing" class="capture-ring" [style.width]="captureProgress + '%'">
+    Capturing: {{ captureProgress | number: '1.0-0'}}%
+</div>
+
+<webcam
+    [trigger]="triggerObservable"
+    (imageCapture)="handleImage($event)">
+</webcam>
+
+<div *ngIf="capturedImages.length > 0">
+    <h3>Captured Images</h3>
+    <div *ngFor="let image of capturedImages">
+        <img [src]="image.imageAsDataUrl" class="captured-image" />
+    </div>
+    <button (click)="saveImages()">Save Images</button>
+</div> 

@@ -1,0 +1,111 @@
+.login-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    position: relative;
+    overflow: hidden;
+    background-image: url('/assets/images/loginimage.jpg'); 
+  }
+  
+  .login-box {
+    width: 400px;
+    padding: 2rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 10; /* Ensure it appears above the illustration */
+  }
+  
+  h2 {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    text-align: center; /* Center the app name */
+    color: #1171ef; /* Change color if needed */
+  }
+  
+  p {
+    margin-bottom: 1.5rem;
+    color: #555;
+    text-align: center; /* Center the paragraph */
+  }
+  
+  .input-field {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+  
+  .remember-me {
+    display: flex;
+    align-items: center;
+    margin-top: 1rem;
+  }
+  
+  .login-button {
+    width: 100%;
+    margin-top: 1.5rem;
+  }
+  
+  .signup-link {
+    text-align: center;
+    margin-top: 1rem;
+    color: #555;
+  }
+  
+  .signup-link a {
+    color: #1976d2;
+  }
+  
+  .illustration {
+    display: flex; /* Ensure it is flex to center content */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 500px;
+    background: linear-gradient(310deg, #1171ef, #11cdef); /* Gradient background */
+    color: white;
+    text-align: center;
+    padding: 2rem;
+    position: relative; /* Ensure overlay is relative to this container */
+  }
+  
+  .illustration .overlay {
+    background: rgba(0, 0, 0, 0.5);
+    padding: 2rem;
+    border-radius: 8px;
+    position: absolute; /* Positioning for overlay */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0; /* Cover entire illustration */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Center text vertically */
+    align-items: center; /* Center text horizontally */
+  }
+  
+  .illustration h3 {
+    font-size: 24px;
+    margin-bottom: 1rem;
+  }
+  
+  .illustration p {
+    font-size: 16px;
+  }
+  
+  /* Responsive design */
+  @media (max-width: 960px) {
+    .login-page {
+      flex-direction: column; /* Stack login box and illustration on small screens */
+    }
+  
+    .illustration {
+      width: 100%; /* Make illustration full width on smaller screens */
+    }
+  }
+  
