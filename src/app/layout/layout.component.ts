@@ -11,7 +11,8 @@ import { Router, RouterLink, RouterOutlet } from '@angular/router';
   styleUrls: ['./layout.component.css']
 })
 export class LayoutComponent implements OnInit, OnDestroy {
-  
+  isUserMenuOpen = false;
+
   isCollapsed = false;
   profilePopupVisible: boolean = false;
   private clickListener!: (() => void);
@@ -33,7 +34,9 @@ export class LayoutComponent implements OnInit, OnDestroy {
       this.clickListener();
     }
   }
-
+  toggleUserMenu(): void {
+    this.isUserMenuOpen = !this.isUserMenuOpen;
+  }
   // Toggle the profile popup visibility
   toggleProfilePopup() {
     this.profilePopupVisible = !this.profilePopupVisible;

@@ -1,246 +1,76 @@
-
-
-/* Top Bar Styles */
-.top-bar {
-  display: flex;
-   justify-content: space-between; 
-  align-items: center;
-  margin-left: 0px;
-  padding: 0px 20px;
-  background-color: #282c34;
-  color: white;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  position: fixed; /* 🔴 Ensure the top bar is fixed */
-  width: 100%; /* 🔴 Full width to cover the entire top */
-  top: 0; /* 🔴 Align to the top */
-  left: 0;
-  z-index: 1; /* 🔴 Higher z-index to stay above the sidebar */
+.collapsed {
+  width: 64px;
 }
 
-
-
-
-.menu-btn {
-  background: none;
-  border: none;
-  color: white;
-  font-size: 24px;
-  cursor: pointer;
-}
-.top-bar-logo {
-  display: flex;
-  align-items: center;
-
-}
-
-
-.logo-image {
-  height: 10vh;
-  width: 254px;
-  margin-right: -34px;
-  margin-left: -44px;
-}
-
-
-
-.user-section {
-  display: flex;
-  align-items: center;
-}
-
-.user-profile {
-  display: flex;
-  align-items: center;
-  margin-left: 15px;
-  margin-right: 33px;
-  cursor: pointer;
-
-}
-
-.avatar {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  margin-right: 8px;
-}
-
-/* Vertical Navbar Styles */
-.vertical-navbar {
-  width: 250px;
-  height: 100vh;
-  background-color: #3a3f47;
-  color: white;
-  position: fixed;
-  top: 0;
-  left: 0;
-  display: flex;
-  flex-direction: column;
-  padding: 20px 0;
-  margin-top: 44px;
-}
-
-.vertical-navbar.collapsed {
-  width: 66px;
-}
-.vertical-navbar ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-.vertical-navbar li {
-  margin: 10px 0;
-}
-
-.vertical-navbar a {
-  color: white;
-  text-decoration: none;
-  padding: 10px 20px;
-  display: flex;
-  align-items: center;
-  border-radius: 4px;
-  transition: background 0.3s;
-}
-
-.vertical-navbar a:hover {
-  background-color: #61dafb;
-  color: #282c34;
-}
-
-.material-icons {
-  margin-right: 10px;
-}
-
-/* Main Content Styles */
-.main-content {
-  margin: 71px 250PX;
-  margin-right: 2px;
-  background-color: #fafafb;
-  min-height: 100vh;
-}
-
-
-/* 🔴 New class to adjust content margin when sidebar is collapsed */
 .content-collapsed {
-  margin-left: 80px;
+  margin-left: 64px;
 }
 
-/* 🔴 New style for menu button to toggle collapse */
-.menu-btn {
-  background: none;
-  border: none;
-  color: white;
-  font-size: 24px;
-  cursor: pointer;
-}
-
-
-/* 🔴 New style for collapsed icon adjustment */
-.vertical-navbar.collapsed .material-icons {
-  margin-right: 0; /* 🔴 Remove margin for icons */
-}
-
-/* 🔴 Hide text labels when sidebar is collapsed */
-.vertical-navbar.collapsed a span:not(:first-child) {
-  display: none;
-}
-@media (max-width: 768px) {
-  .vertical-navbar {
-    width: 200px;
-  }
-
-  .main-content {
-    margin-left: 200px;
-  }
-}
-
-@media (max-width: 600px) {
-  .vertical-navbar {
-    display: none;
-  }
-
-  .main-content {
-    margin-left: 0;
-    padding: 10px;
-
-  }
-
-}
-
-
-
-
-.user-profile img.avatar {
-  width: 40px;
-  height: 40px;
+/* Avatar Styles */
+.avatar {
+  width: 2rem;
+  height: 2rem;
   border-radius: 50%;
-  margin-right: 10px;
 }
 
+/* Profile Popup */
 .profile-popup {
-  position: fixed;
-  top: 60px;
-  right: 20px;
-  background-color: white;
-  border: 1px solid #ddd;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-  width: 250px;
-  padding: 20px;
-  border-radius: 8px;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
+  position: absolute;
+  top: 4rem;
+  right: 1rem;
+  background: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 0.5rem;
+  width: 16rem;
 }
 
-.popup-content {
-  display: flex;
-  flex-direction: column;
+/* Vertical Navbar Transition */
+.vertical-navbar {
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.popup-header {
+/* Popup Button Hover Effect */
+.popup-btn {
   display: flex;
   align-items: center;
-  margin-bottom: 20px;
-}
-
-.popup-header img.avatar {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  margin-right: 10px;
-}
-
-.user-info {
-  display: flex;
-  flex-direction: column;
-}
-
-.username {
-  font-weight: bold;
-}
-
-.role {
-  color: gray;
-}
-
-.popup-actions .popup-btn {
-  background: none;
-  border: none;
-  padding: 10px;
-  margin: 5px 0;
-  width: 100%;
-  text-align: left;
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-}
-
-.popup-btn .material-icons {
-  margin-right: 10px;
+  padding: 0.75rem;
+  cursor: pointer;
+  border-radius: 0.5rem;
 }
 
 .popup-btn:hover {
-  background-color: #f0f0f0;
-  cursor: pointer;
+  background: #f3f4f6;
 }
 
+/* Top Bar Design */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
 
+/* Logo & Menu Design */
+.top-bar-logo {
+  display: flex;
+  align-items: center;
+}
+
+/* User Section Styling */
+.user-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.menu-btn {
+  display: flex;
+  align-items: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}

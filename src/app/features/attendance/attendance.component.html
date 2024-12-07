@@ -1,4 +1,4 @@
-<p>attendance works!</p>
+<!-- <p>attendance works!</p>
 <div *ngIf="!isCapturing">
     <button (click)="startCaptureSequence()">Start Capture</button>
 </div>
@@ -18,4 +18,61 @@
         <img [src]="image.imageAsDataUrl" class="captured-image" />
     </div>
     <button (click)="saveImages()">Save Images</button>
-</div> 
+</div>  -->
+
+
+    <main class="p-6 bg-gray-100 flex-1">
+        <h3 class="text-2xl font-semibold text-gray-800 mb-6">Attendance</h3>
+
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4 mb-6">
+          <div class="bg-white shadow-md p-6 rounded-lg">
+            <h2 class="text-xl font-semibold">Mark Attendance</h2>
+            <div class="mt-4 space-y-4">
+              <div class="flex items-center space-x-2">
+                <input type="radio" id="present" name="attendance" value="present" (change)="logAttendance(1, 'Present')" />
+                <label for="present" class="text-gray-700">Present</label>
+              </div>
+              <div class="flex items-center space-x-2">
+                <input type="radio" id="absent" name="attendance" value="absent" (change)="logAttendance(1, 'Absent')" />
+                <label for="absent" class="text-gray-700">Absent</label>
+              </div>
+              <div class="flex items-center space-x-2">
+                <input type="radio" id="late" name="attendance" value="late" (change)="logAttendance(1, 'Late')" />
+                <label for="late" class="text-gray-700">Late</label>
+              </div>
+            </div>
+          </div>
+      
+          <div class="bg-white shadow-md p-6 rounded-lg">
+            <h2 class="text-xl font-semibold">Employee Attendance</h2>
+            <table class="w-full mt-4">
+              <thead>
+                <tr>
+                  <th class="text-left p-2">Employee</th>
+                  <th class="text-left p-2">Status</th>
+                  <th class="text-left p-2">Check-in</th>
+                  <th class="text-left p-2">Check-out</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let employee of employees">
+                  <td class="p-2">{{ employee.name }}</td>
+                  <td class="p-2">{{ employee.status }}</td>
+                  <td class="p-2">{{ employee.checkIn }}</td>
+                  <td class="p-2">{{ employee.checkOut }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      
+        <!-- Leave Request Section -->
+        <div class="bg-white shadow-md p-6 rounded-lg mt-6">
+          <h2 class="text-xl font-semibold">Request Leave</h2>
+          <div class="mt-4">
+            <input type="date" class="p-2 border rounded" (change)="leaveRequest(1, $event)" />
+            <button class="ml-4 px-4 py-2 bg-blue-600 text-white rounded">Submit Leave Request</button>
+          </div>
+        </div>
+      </main>
+      

@@ -80,5 +80,88 @@ code[class*='language-'] {
   border-radius: 50%;
 }
 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 
+
+/* Custom global styles */
+
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+  height: 100%; /* Ensure it fits the viewport */
+}
+Ensure 
+/* Sidebar styles */
+.collapsed {
+  width: 64px;
+}
+
+.content-collapsed {
+  margin-left: 64px;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #7f8185;
+  border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3b3a3b;
+}
+
+/* Active Link Background */
+.active-link {
+ background-color:#5944b6; /* Your global blue */
+  color: white; /* White text for contrast */
+  font-weight: bold;
+  text-decoration: none; /* Ensure no underline */
+}
+
+/* Ensure icons inside active links are also white */
+.active-link .material-icons {
+  color: white;
+}
+
+/* Hover State for Non-Active Links */
+a:hover {
+  background-color:#6453b2; /* Lighter blue hover effect */
+  color: #ffffff; /* Blue text for hover */
+  text-decoration: none; /* Ensure no underline on hover */
+  transition: background-color 0.3s, color 0.3s; /* Smooth hover transition */
+}
+
+/* Sidebar Link Style */
+nav ul li a {
+  border-radius: 4px; /* Optional: Rounded corners for links */
+  transition: background-color 0.3s, color 0.3s; /* Smooth active/hover transitions */
+  text-decoration: none; /* Remove underline by default */
+}
+
+/* You can customize the styling or keep it simple with Tailwind CSS classes */
+table {
+  width: 100%;
+}
+
+th {
+  background-color: #6453b2;
+}
+
+td {
+  background-color: #ffffff;
+}
+
+.bg-primary{
+  background-color: #6453b2;
+}
+.text-primary {
+  color: #6453b2;
+}

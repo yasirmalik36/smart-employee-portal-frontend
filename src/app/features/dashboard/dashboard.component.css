@@ -1,6 +1,9 @@
 .dashboard-container {
-  padding: 2px;
+  height: 100vh; /* Full viewport height */
+  display: flex;
+  flex-direction: column;
 }
+
 
 h2 {
   text-align: center;

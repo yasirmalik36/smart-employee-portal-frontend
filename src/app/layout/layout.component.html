@@ -1,68 +1,144 @@
-<header>
-    <div class="top-bar">
-      <div class="top-bar-logo">
-        <!-- <img src="assets/images/portallogo.png" alt="Logo" class="logo-image"> -->
-        <button (click)="toggleSidebar()" class="menu-btn">
-          <span class="material-icons">menu</span>
-        </button>
-        <h2 style="color: #61dafb;">Smart Employee Portal</h2>
 
-      </div>
+<body class="flex h-screen bg-gray-100 font-sans ">
+  <!-- Sidebar -->
+  <aside class="sticky top-0 w-64 bg-white shadow-lg"  [ngClass]="{'collapsed': isCollapsed}">
+    <div class="flex items-center justify-center h-16 p-4">
+      <img src="assets/images/Vectorlogo.png" alt="Logo" [ngClass]="{'w-10': isCollapsed, 'w-2/4 mt-5': !isCollapsed}"
+      >
+
+      <h2 *ngIf="!isCollapsed" class="text-2xl font-semibold text-primary mb-1 mt-5 ml-0">Smart Employee</h2>
+
+    </div>
+    <nav class="mt-10 ">
+      <ul>
+        <li>
+          <a  routerLink="/home/dashboard" class="flex items-center px-4 py-3 text-gray-700  hover:text-primary hover:text-white">
+            <span class="material-icons">dashboard</span>
+            <span *ngIf="!isCollapsed" class="ml-3">Dashboard</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/home/attendance" class="flex items-center px-4 py-3 text-gray-700 hover:text-primary hover:text-white">
+            <span class="material-icons">check_circle</span>
+            <span *ngIf="!isCollapsed" class="ml-3">Attendance</span>
+          </a>
+        </li>
+        <li>
+          <a  routerLink="/home/leave-management"  class="flex items-center px-4 py-3 text-gray-700 hover:text-primary hover:text-white">
+            <span class="material-icons">event_available</span>
+            <span *ngIf="!isCollapsed" class="ml-3">Leave Management</span>
+          </a>
+        </li>
+        <li>
+          <a a routerLink="/home/user-management" class="flex items-center px-4 py-3 text-gray-700 hover:text-primary hover:text-white">
+            <span class="material-icons">group</span>
+            <span *ngIf="!isCollapsed" class="ml-3">User Management</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/home/reports" class="flex items-center px-4 py-3 text-gray-700 hover:text-primary hover:text-white">
+            <span class="material-icons">assessment</span>
+            <span *ngIf="!isCollapsed" class="ml-3">Reports</span>
+          </a>
+        </li>
      
-   
-      <div class="user-section">
-        <span class="material-icons">notifications</span>
-        <div class="user-profile" (click)="toggleProfilePopup()">
-          <img src="assets/images/man.png" alt="User Avatar" class="avatar">
-          <span>Yasir Mehmood</span>
-        </div>
-      </div>
-    </div>
+        <li>
+          <a routerLink="/home/document-repository"  class="flex items-center px-4 py-3 text-gray-700 hover:text-primary hover:text-white">
+            <span class="material-icons">folder</span>
+            <span *ngIf="!isCollapsed" class="ml-3">Documents repository</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/home/settings" class="flex items-center px-4 py-3 text-gray-700 hover:text-primary hover:text-white">
+            <span class="material-icons">settings</span>
+            <span *ngIf="!isCollapsed" class="ml-3">Settings</span>
+          </a>
+        </li>
+        <li>
+          <a href="#" class="flex items-center px-4 py-3 text-gray-700 hover:text-primary hover:text-white">
+            <span class="material-icons">logout</span>
+            <span *ngIf="!isCollapsed" class="ml-3">Logout</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+ 
+  </aside>
 
-     <!-- Profile Popup Modal -->
-  <div class="profile-popup" *ngIf="profilePopupVisible">
-    <div class="popup-content">
-      <div class="popup-header">
-        <img src="assets/images/man.png" alt="User Avatar" class="avatar">
-        <div class="user-info">
-          <span class="username">Yasir Mehmood</span>
-          <span class="role">Admin</span>
+  <!-- Main Content -->
+  <div class="flex-1 flex flex-col">
+    <!-- Header -->
+    <header class="sticky top-0 z-50 flex items-center justify-between h-20 px-6 bg-white shadow-md p-2.5">
+      <!-- Left Section: Sidebar Toggle Button + Search Bar -->
+      <div class="flex items-center space-x-4">
+        <!-- Sidebar Toggle Button -->
+        <button class="material-icons cursor-pointer text-primary" (click)="toggleSidebar()">menu</button>
+    
+        <!-- Search Bar -->
+        <div class="relative">
+          <input
+            type="text"
+            placeholder="Search..."
+            class="w-72 py-2 pl-10 pr-4 bg-gray-50 rounded-lg shadow-inner focus:ring-2 focus:ring-yellow-500 focus:outline-none"
+          />
+          <span class="material-icons absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400">search</span>
         </div>
       </div>
-      
-      <div class="popup-actions">
-        <button class="popup-btn">
-          <span class="material-icons">person</span> My Profile
-        </button>
-        <button class="popup-btn">
-          <span class="material-icons">settings</span> Settings
-        </button>
-        <button class="popup-btn">
-          <span class="material-icons">logout</span> Logout
-        </button>
+    
+      <!-- Right Section: Notification and User Profile -->
+      <div class="flex items-center space-x-6">
+        <!-- Notifications -->
+        <div class="relative cursor-pointer">
+          <span class="material-icons text-gray-700">notifications</span>
+          <span
+            class="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.1">
+            15
+          </span>
+        </div>
+    
+        <!-- User Profile Dropdown -->
+        <div class="relative">
+          <!-- Profile Summary -->
+          <div class="flex items-center cursor-pointer" (click)="toggleUserMenu()">
+            <img src="assets/images/man.png" alt="User" class="w-10 h-10 rounded-full">
+            <div class="ml-2 text-gray-700 font-medium">
+              <div>Yasir Mehmood</div>
+              <div class="text-sm text-gray-500">Admin</div>
+            </div>
+            <span class="material-icons text-gray-700 ml-1">arrow_drop_down</span>
+          </div>
+    
+          <!-- Dropdown Menu -->
+          <div
+            *ngIf="isUserMenuOpen"
+            class="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg z-10">
+            <!-- Profile Section -->
+            <div class="flex items-center  px-4 py-3 border-b">
+              <img src="assets/images/man.png" alt="User" class="w-10 h-10 rounded-full">
+              <div class="ml-3 text-gray-700">
+                <p class="font-medium">Yasir Mehmood</p>
+                <p class="text-sm text-gray-500">Admin</p>
+              </div>
+            </div>
+    
+            <!-- Dropdown Items -->
+            <a href="#" class="block px-4 py-2 text-gray-700 hover:text-primary hover:text-white">
+              <span class="material-icons align-middle mr-2">person</span> Profile
+            </a>
+            <a href="#" class="block px-4 py-2 text-gray-700 hover:text-primary hover:text-white">
+              <span class="material-icons align-middle mr-2">settings</span> Settings
+            </a>
+            <a href="#" class="block px-4 py-2 text-gray-700 hover:text-primary hover:text-white">
+              <span class="material-icons align-middle mr-2">logout</span> Logout
+            </a>
+          </div>
+        </div>
       </div>
+    </header>
+    
+
+    <div [ngClass]="{'content-collapsed': isCollapsed}" class="main-content">
+      <router-outlet ></router-outlet>
     </div>
   </div>
-  </header>
-  
-  <nav [ngClass]="{'collapsed': isCollapsed}" class="vertical-navbar">
-    <ul>
-      <li><a routerLink="/home/dashboard" mat-button><span class="material-icons">dashboard</span> <span *ngIf="!isCollapsed">Dashboard</span></a></li>
-      <li><a routerLink="/home/attendance" mat-button><span class="material-icons">check_circle</span> <span *ngIf="!isCollapsed">Attendance</span></a></li>
-      <li><a routerLink="/home/leave-management" mat-button><span class="material-icons">event_available</span> <span *ngIf="!isCollapsed">Leave Management</span></a></li>
-      <li><a routerLink="/home/compensation-benefits" mat-button><span class="material-icons">monetization_on</span> <span *ngIf="!isCollapsed">Compen & Benefits</span></a></li>
-      <li><a routerLink="/home/user-management" mat-button><span class="material-icons">group</span> <span *ngIf="!isCollapsed">User Management</span></a></li>
-      <li><a routerLink="/home/task-management" mat-button><span class="material-icons">assignment</span> <span *ngIf="!isCollapsed">Task Management</span></a></li>
-      <li><a routerLink="/home/reports" mat-button><span class="material-icons">assessment</span> <span *ngIf="!isCollapsed">Reports</span></a></li>
-      <li><a routerLink="/home/ai-analytics" mat-button><span class="material-icons">analytics</span> <span *ngIf="!isCollapsed">AI-Driven Analytics</span></a></li>
-            <!-- <li><a routerLink="/home/notifications" mat-button><span class="material-icons">notifications</span> Notifications</a></li> -->
-      <li><a routerLink="/home/settings" mat-button><span class="material-icons">settings</span> <span *ngIf="!isCollapsed">Settings</span></a></li>
-      <li><a routerLink="/home/document-repository" mat-button><span class="material-icons">folder</span> <span *ngIf="!isCollapsed">Document Repository</span></a></li>
-      <li><a (click)="signOut()" mat-button><span class="material-icons">logout</span> <span *ngIf="!isCollapsed">Sign Out</span></a></li>
-    </ul>
-  </nav>
-  
-  <div [ngClass]="{'content-collapsed': isCollapsed}" class="main-content">
-    <router-outlet></router-outlet>
-  </div>
-  
+</body>
