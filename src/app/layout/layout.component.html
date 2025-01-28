@@ -2,54 +2,52 @@
 <body class="flex h-screen bg-gray-100 font-sans ">
   <!-- Sidebar -->
   <aside class="sticky top-0 w-64 bg-white shadow-lg"  [ngClass]="{'collapsed': isCollapsed}">
-    <div class="flex items-center justify-center h-16 p-4">
-      <img src="assets/images/Vectorlogo.png" alt="Logo" [ngClass]="{'w-10': isCollapsed, 'w-2/4 mt-5': !isCollapsed}"
-      >
+    <div class="flex items-center justify-center h-16 p-4 ">
+      <img src="assets/images/Vectorlogo.png" alt="Logo" [ngClass]="{'w-10': isCollapsed, 'w-2/4 mt-5': !isCollapsed}">
 
       <h2 *ngIf="!isCollapsed" class="text-2xl font-semibold text-primary mb-1 mt-5 ml-0">Smart Employee</h2>
 
     </div>
-    <nav class="mt-10 ">
+    <nav class="mt-12 " [ngClass]="{'': isCollapsed, 'ml-3': !isCollapsed}">
       <ul>
         <li>
-          <a  routerLink="/home/dashboard" class="flex items-center px-4 py-3 text-gray-700  hover:text-primary hover:text-white">
+          <a routerLink="/home/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="flex items-center px-4 py-3 text-gray-700 hover:text-primary hover:text-white">
             <span class="material-icons">dashboard</span>
             <span *ngIf="!isCollapsed" class="ml-3">Dashboard</span>
           </a>
         </li>
         <li>
-          <a routerLink="/home/attendance" class="flex items-center px-4 py-3 text-gray-700 hover:text-primary hover:text-white">
+          <a routerLink="/home/attendance" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="flex items-center px-4 py-3 text-gray-700 hover:text-primary hover:text-white">
             <span class="material-icons">check_circle</span>
             <span *ngIf="!isCollapsed" class="ml-3">Attendance</span>
           </a>
         </li>
         <li>
-          <a  routerLink="/home/leave-management"  class="flex items-center px-4 py-3 text-gray-700 hover:text-primary hover:text-white">
+          <a routerLink="/home/leave-management" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="flex items-center px-4 py-3 text-gray-700 hover:text-primary hover:text-white">
             <span class="material-icons">event_available</span>
             <span *ngIf="!isCollapsed" class="ml-3">Leave Management</span>
           </a>
         </li>
         <li>
-          <a a routerLink="/home/user-management" class="flex items-center px-4 py-3 text-gray-700 hover:text-primary hover:text-white">
+          <a routerLink="/home/user-management" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="flex items-center px-4 py-3 text-gray-700 hover:text-primary hover:text-white">
             <span class="material-icons">group</span>
             <span *ngIf="!isCollapsed" class="ml-3">User Management</span>
           </a>
         </li>
         <li>
-          <a routerLink="/home/reports" class="flex items-center px-4 py-3 text-gray-700 hover:text-primary hover:text-white">
+          <a routerLink="/home/reports" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="flex items-center px-4 py-3 text-gray-700 hover:text-primary hover:text-white">
             <span class="material-icons">assessment</span>
             <span *ngIf="!isCollapsed" class="ml-3">Reports</span>
           </a>
         </li>
-     
         <li>
-          <a routerLink="/home/document-repository"  class="flex items-center px-4 py-3 text-gray-700 hover:text-primary hover:text-white">
+          <a routerLink="/home/document-repository" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="flex items-center px-4 py-3 text-gray-700 hover:text-primary hover:text-white">
             <span class="material-icons">folder</span>
             <span *ngIf="!isCollapsed" class="ml-3">Documents repository</span>
           </a>
         </li>
         <li>
-          <a routerLink="/home/settings" class="flex items-center px-4 py-3 text-gray-700 hover:text-primary hover:text-white">
+          <a routerLink="/home/settings" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="flex items-center px-4 py-3 text-gray-700 hover:text-primary hover:text-white">
             <span class="material-icons">settings</span>
             <span *ngIf="!isCollapsed" class="ml-3">Settings</span>
           </a>
@@ -62,6 +60,8 @@
         </li>
       </ul>
     </nav>
+    
+    
  
   </aside>
 
@@ -102,7 +102,7 @@
           <div class="flex items-center cursor-pointer" (click)="toggleUserMenu()">
             <img src="assets/images/man.png" alt="User" class="w-10 h-10 rounded-full">
             <div class="ml-2 text-gray-700 font-medium">
-              <div>Yasir Mehmood</div>
+              <div>John Doe</div>
               <div class="text-sm text-gray-500">Admin</div>
             </div>
             <span class="material-icons text-gray-700 ml-1">arrow_drop_down</span>
@@ -116,7 +116,7 @@
             <div class="flex items-center  px-4 py-3 border-b">
               <img src="assets/images/man.png" alt="User" class="w-10 h-10 rounded-full">
               <div class="ml-3 text-gray-700">
-                <p class="font-medium">Yasir Mehmood</p>
+                <p class="font-medium">John Doe</p>
                 <p class="text-sm text-gray-500">Admin</p>
               </div>
             </div>

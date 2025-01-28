@@ -1,12 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, Renderer2, OnInit, OnDestroy } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
+import { Router, RouterLink, RouterModule, RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-layout',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, ReactiveFormsModule, CommonModule],
+  imports: [RouterOutlet, RouterLink,RouterModule, ReactiveFormsModule, CommonModule],
   templateUrl: './layout.component.html',
   styleUrls: ['./layout.component.css']
 })
