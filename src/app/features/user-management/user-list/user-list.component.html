@@ -30,7 +30,7 @@
         <mat-icon>person_add</mat-icon> Add Employee
       </button>
       
-      <button mat-raised-button color="warn" (click)="exportData()" class="equal-width">
+      <button *ngIf="Userrole?.toLowerCase() === 'admin'" mat-raised-button color="warn" (click)="exportData()" class="equal-width">
         <mat-icon>import_export</mat-icon> Export
       </button>
       
@@ -57,7 +57,7 @@
             <span style="cursor: pointer;" (click)="editUser(row.user_ID)" matTooltip="Edit" class="mr-2">
               <mat-icon color="primary">edit</mat-icon>
             </span>
-            <span (click)="deleteUser(row)" matTooltip="Delete">
+            <span *ngIf="Userrole?.toLowerCase() === 'admin'" (click)="deleteUser(row)" matTooltip="Delete">
               <mat-icon style="cursor: pointer;" color="warn">delete</mat-icon>
             </span>
           </div>

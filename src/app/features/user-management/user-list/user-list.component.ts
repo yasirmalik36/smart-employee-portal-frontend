@@ -12,6 +12,7 @@ import { Column } from '../../../models/coulmn';
 import { CommonService } from '../../../common/services/common.service';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../../../account/auth.service';
 
 @Component({
   selector: 'app-user-list',
@@ -30,15 +31,18 @@ export class UserListComponent implements OnInit {
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | any;
   @ViewChild(MatSort, { static: false }) sort: MatSort | any;
   isFormVisible: boolean= false;
+  Userrole!: string;
 
   constructor(
     private userService: UserService,
+    private authservice: AuthService,
     public common:CommonService,
     private dialog: MatDialog,
     private router: Router,
   ) {}
 
   ngOnInit() {
+    this.Userrole =this.authservice.getRoleFromToken();
     this.loadUsers();
   }
 
