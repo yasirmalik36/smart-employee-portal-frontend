@@ -2,6 +2,8 @@ import { CommonModule } from '@angular/common';
 import { Component, ElementRef, Renderer2, OnInit, OnDestroy } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink, RouterModule, RouterOutlet } from '@angular/router';
+import { AuthService } from '../account/auth.service';
+import { Activity } from '../models/Activity';
 
 @Component({
   selector: 'app-layout',
@@ -12,14 +14,24 @@ import { Router, RouterLink, RouterModule, RouterOutlet } from '@angular/router'
 })
 export class LayoutComponent implements OnInit, OnDestroy {
   isUserMenuOpen = false;
-
+  activities: Activity[] = []; 
   isCollapsed = false;
   profilePopupVisible: boolean = false;
   private clickListener!: (() => void);
-
-  constructor(private router: Router, private renderer: Renderer2, private elRef: ElementRef) {}
+  fullName: string = '';
+  role: string = '';
+  gender: string = '';  
+  constructor(private router: Router, private renderer: Renderer2, private elRef: ElementRef,private authservice:AuthService) {}
 
   ngOnInit() {
+    debugger
+    const storedActivities = localStorage.getItem('activites');
+    if (storedActivities) {
+      this.activities = JSON.parse(storedActivities) as Activity[];
+    }
+    this.fullName = this.authservice.getFullNameFromToken();
+    this.role = this.authservice.getRoleFromToken();
+    this.gender = this.authservice.getGenderFromToken();
     this.clickListener = this.renderer.listen('document', 'click', (event: Event) => {
       const clickedInside = this.elRef.nativeElement.contains(event.target);
       if (!clickedInside) {
@@ -51,10 +63,27 @@ export class LayoutComponent implements OnInit, OnDestroy {
   closeProfilePopup() {
     this.profilePopupVisible = false;
   }
+  getIconForActivity(activityName: string): string {
+    const icons: { [key: string]: string } = {
+      'Dashboard': 'dashboard',
+      'Attendance (Face Recognition)': 'face',
+      'Leave Management': 'event_available',
+      'Compensation & Benefits': 'monetization_on',
+      'Employee Management': 'manage_accounts',
+      'Task Management': 'task',
+      'Reports': 'assessment',
+      'AI-Driven Analytics': 'bar_chart',
+      'Notification System': 'notifications',
+      'Settings & Configuration': 'settings',
+      'Document Repository': 'folder',
+      'Account/Authentication': 'lock'
+    };
+    return icons[activityName] || 'help_outline'; // Default icon
+  }
+  
 
   // Method to handle sign out
   signOut() {
-    // Implement your sign-out logic here (e.g., clearing tokens, etc.)
-    this.router.navigate(['/account/login']); // Redirect to login
+this.authservice.logout();
   }
 }

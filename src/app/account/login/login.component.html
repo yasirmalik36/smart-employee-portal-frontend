@@ -22,14 +22,14 @@
         <p class="text-sm text-gray-500 mb-5">Powering employee excellence</p>
   
         <!-- Login Form -->
-        <form>
+        <form [formGroup]="loginForm"  (ngSubmit)="onLogin()">
           <div class="mb-4">
             <label class="block text-sm font-medium text-gray-700" for="email">Username</label>
-            <input id="email" type="email" class="w-full border border-gray-300 rounded-md p-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter your Username" />
+            <input id="email"  formControlName="identifier"  type="email" class="w-full border border-gray-300 rounded-md p-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter your Username" />
           </div>
           <div class="mb-4">
             <label class="block text-sm font-medium text-gray-700" for="password">Password</label>
-            <input id="password" type="password" class="w-full border border-gray-300 rounded-md p-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter your password" />
+            <input id="password"  type="password" formControlName="password" class="w-full border border-gray-300 rounded-md p-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter your password" />
           </div>
   
           <div class="flex items-center justify-between mb-4">
@@ -40,7 +40,10 @@
             <a href="#" class="text-sm text-blue-500">Forgot Password?</a>
           </div>
   
-          <button class="w-full bg-primary hover:bg-blue-600 text-white font-semibold py-2 rounded-md" (click)="onLogin();">Login</button>
+          <button class="w-full bg-primary hover:bg-blue-600 text-white font-semibold py-2 rounded-md" type="submit" [disabled]="loginForm.invalid">Login</button>
+          <div *ngIf="errorMessage" class="error-message">
+            {{ errorMessage }}
+          </div>
         </form>
   
         <p class="mt-4 text-center text-sm text-gray-500">

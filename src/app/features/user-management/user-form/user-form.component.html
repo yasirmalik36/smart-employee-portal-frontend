@@ -1,0 +1,162 @@
+<div class="container mx-auto p-6 max-w-screen-xl">
+  <div class="flex justify-between items-center mb-6">
+    <h2 class="text-2xl font-semibold text-gray-800">
+      {{ isEditMode ? 'Edit' : 'Add' }} Employee
+    </h2>
+    <button (click)="closeDialog()" class="text-gray-500 hover:text-gray-800">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>  
+  <form [formGroup]="userForm" (ngSubmit)="onSubmit()" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="profile-banner-img" style="background-image: url('../assets/images/Backroundimage.jpg'); background-size: cover; background-position: center;border-radius: 8px;">
+      <!-- Employee Picture -->
+      <div class="col-span-full flex flex-col items-center">
+          <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-gray-200  mt-4">
+              <img [src]="employeeImage || 'assets/images/profiledp.jpg'" alt="Employee Picture" class="w-full h-full object-cover">
+          </div>
+          <button type="button" mat-raised-button color="warn" class="mt-4 mb-1" (click)="uploadImage()">
+              Upload Picture
+          </button>
+      </div>
+  </div>
+  
+
+    <!-- Basic Information -->
+    <div class="form-row">
+      <mat-form-field class="w-half">
+        <mat-label>Employee ID</mat-label>
+        <input matInput formControlName="employeeId" required>
+        <mat-error *ngIf="userForm.get('employeeId')?.invalid">Employee ID is required</mat-error>
+      </mat-form-field>
+    
+      <mat-form-field class="w-half">
+        <mat-label>First Name</mat-label>
+        <input matInput formControlName="firstName" required>
+        <mat-error *ngIf="userForm.get('firstName')?.invalid">First name is required</mat-error>
+      </mat-form-field>
+      <mat-form-field class="w-half">
+        <mat-label>Last Name</mat-label>
+        <input matInput formControlName="lastName" required>
+        <mat-error *ngIf="userForm.get('lastName')?.invalid">Last name is required</mat-error>
+      </mat-form-field>
+    </div>
+    
+    <div class="form-row">
+      <mat-form-field class="w-half">
+        <mat-label>Designation</mat-label>
+        <input matInput formControlName="designation" required>
+        <mat-error *ngIf="userForm.get('designation')?.invalid">Designation is required</mat-error>
+      </mat-form-field>
+  
+      <mat-form-field class="w-half">
+        <mat-label>Gender</mat-label>
+        <mat-select formControlName="gender" required>
+          <mat-option value="Male">Male</mat-option>
+          <mat-option value="Female">Female</mat-option>
+          <mat-option value="Other">Other</mat-option>
+        </mat-select>
+        <mat-error *ngIf="userForm.get('gender')?.invalid">Gender is required</mat-error>
+      </mat-form-field>
+  
+      <mat-form-field class="w-half">
+        <mat-label>Date of Birth</mat-label>
+        <input matInput [matDatepicker]="picker" formControlName="dateOfBirth" required>
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+        <mat-error *ngIf="userForm.get('dateOfBirth')?.invalid">Date of Birth is required</mat-error>
+      </mat-form-field>
+    </div>
+    <div class="form-row">
+<!-- Contact Information -->
+<mat-form-field class="w-full">
+  <mat-label>Email</mat-label>
+  <input matInput formControlName="email" required email>
+  <mat-error *ngIf="userForm.get('email')?.invalid">Enter a valid email</mat-error>
+</mat-form-field>
+
+<mat-form-field class="w-full">
+  <mat-label>Phone Number</mat-label>
+  <input matInput formControlName="phoneNumber" required>
+  <mat-error *ngIf="userForm.get('phoneNumber')?.invalid">Phone number is required</mat-error>
+</mat-form-field>
+
+<!-- Address Information -->
+<mat-form-field class="w-full">
+  <mat-label>Address</mat-label>
+  <input matInput formControlName="address" required>
+  <mat-error *ngIf="userForm.get('address')?.invalid">Address is required</mat-error>
+</mat-form-field>
+
+
+
+    </div>
+    
+    <div class="form-row">
+      <mat-form-field class="w-full">
+        <mat-label>City</mat-label>
+        <input matInput formControlName="city" required>
+        <mat-error *ngIf="userForm.get('city')?.invalid">City is required</mat-error>
+      </mat-form-field>
+  
+      <mat-form-field class="w-full">
+        <mat-label>State</mat-label>
+        <input matInput formControlName="state" required>
+        <mat-error *ngIf="userForm.get('state')?.invalid">State is required</mat-error>
+      </mat-form-field>
+  
+      <mat-form-field class="w-full">
+        <mat-label>Postal Code</mat-label>
+        <input matInput formControlName="postalCode" required>
+        <mat-error *ngIf="userForm.get('postalCode')?.invalid">Postal code is required</mat-error>
+      </mat-form-field>
+    </div>
+   
+    <div class="form-row">
+      <mat-form-field class="w-full">
+        <mat-label>Country</mat-label>
+        <input matInput formControlName="country" required>
+        <mat-error *ngIf="userForm.get('country')?.invalid">Country is required</mat-error>
+      </mat-form-field>
+    </div>
+    <mat-form-field class="w-full">
+      <mat-label>Team Name</mat-label>
+      <input matInput formControlName="teamName" required>
+      <mat-error *ngIf="userForm.get('teamName')?.invalid">Team name is required</mat-error>
+    </mat-form-field>
+    <div class="form-row">
+      
+    <!-- Employment Information -->
+    <mat-form-field class="w-full">
+      <mat-label>Employment Status</mat-label>
+      <mat-select formControlName="employmentStatus" required>
+        <mat-option value="Active">Active</mat-option>
+        <mat-option value="Inactive">Inactive</mat-option>
+      </mat-select>
+      <mat-error *ngIf="userForm.get('employmentStatus')?.invalid">Employment status is required</mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="w-full">
+      <mat-label>Job Title</mat-label>
+      <input matInput formControlName="jobTitle" required>
+      <mat-error *ngIf="userForm.get('jobTitle')?.invalid">Job title is required</mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="w-full">
+      <mat-label>Department</mat-label>
+      <input matInput formControlName="department" required>
+      <mat-error *ngIf="userForm.get('department')?.invalid">Department is required</mat-error>
+    </mat-form-field>
+
+    </div>
+   
+
+   
+
+    <!-- Submit Button -->
+    <div class="col-span-full flex justify-center mt-6">
+      <button mat-raised-button color="primary" type="submit" [disabled]="userForm.invalid" class="px-6 py-3 text-white font-semibold rounded-lg shadow-lg">
+        {{ isEditMode ? 'Update Employee' : 'Add Employee' }}
+      </button>
+    </div>
+  </form>
+</div>

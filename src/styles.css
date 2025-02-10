@@ -1,13 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap');
 
-html, body { height: 100%; }
 body { margin: 0; font-family: 'Roboto', 'Lato', "Helvetica Neue", sans-serif; }
 
-html, body {
-    height: 100%;
+
+  html, body {
+    font-size: 16px;
+    line-height: 1.5;
+    height: 100%; 
   }
-  
   body {
     margin: 0;
     font-family: 'Roboto', 'Helvetica Neue', sans-serif; /* Use Roboto as the primary font */
@@ -133,11 +134,15 @@ Ensure
 
 /* Hover State for Non-Active Links */
 a:hover {
-  background-color:#6453b2; /* Lighter blue hover effect */
+  background-color: #6453b2; /* Lighter blue hover effect */
   color: #ffffff; /* Blue text for hover */
   text-decoration: none; /* Ensure no underline on hover */
   transition: background-color 0.3s, color 0.3s; /* Smooth hover transition */
+  border-radius: 11px;
+  margin-left: 2px;
+  width: 228px;
 }
+
 
 /* Sidebar Link Style */
 nav ul li a {
@@ -165,3 +170,31 @@ td {
 .text-primary {
   color: #6453b2;
 }
+/* Example custom styles for ngx-toastr */
+::ng-deep .toast-success {
+  background-color: #4caf50 !important;
+  color: white !important;
+}
+
+::ng-deep .toast-error {
+  background-color: #f44336 !important;
+  color: white !important;
+}
+
+::ng-deep .toast-warning {
+  background-color: #ff9800 !important;
+  color: white !important;
+}
+
+.mat-mdc-header-cell, 
+.mdc-data-table__header-cell {
+  background-color: #6453b2 !important;
+  color: white !important;
+}
+.green-button {
+  background-color: green;
+  color: white;
+}
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

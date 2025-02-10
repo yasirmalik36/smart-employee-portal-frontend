@@ -6,6 +6,7 @@ import { ForgotPasswordComponent } from './account/forgot-password/forgot-passwo
 import { ResetPasswordComponent } from './account/reset-password/reset-password.component';
 import { LayoutComponent } from './layout/layout.component';
 import { NotFoundComponent } from './features/not-found/not-found.component';
+import { AuthGuard } from './common/guards/auth.guard';
 
 export const routes: Routes = [
   { path: 'account/login', component: LoginComponent },
@@ -17,7 +18,7 @@ export const routes: Routes = [
   { path: '', redirectTo: '/account/login', pathMatch: 'full' },
   {
     path: 'home',
-   // canActivate: [AuthGuard],
+    canActivate: [AuthGuard],
     component: LayoutComponent,
     children: [
       // Dashboard Module
@@ -44,10 +45,14 @@ export const routes: Routes = [
         loadComponent: () => import('./features/compensation-benefits/compensation-benefits.component').then(m => m.CompensationBenefitsComponent),
       },
 
-      // User Management Module
+      // employee Management Module
       {
-        path: 'user-management',
-        loadComponent: () => import('./features/user-management/user-management.component').then(m => m.UserManagementComponent),
+        path: 'employee-management',
+        loadComponent: () => import('./features/user-management/user-list/user-list.component').then(m => m.UserListComponent),
+      },
+      {
+        path: 'user-form/:id',
+        loadComponent: () => import('./features/user-management/user-form/user-form.component').then(m => m.UserFormComponent),
       },
 
       // Task Management Module

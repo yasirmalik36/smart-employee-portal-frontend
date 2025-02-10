@@ -8,52 +8,126 @@
       <h2 *ngIf="!isCollapsed" class="text-2xl font-semibold text-primary mb-1 mt-5 ml-0">Smart Employee</h2>
 
     </div>
-    <nav class="mt-12 " [ngClass]="{'': isCollapsed, 'ml-3': !isCollapsed}">
+    <!-- <nav class="mt-12" [ngClass]="{ 'ml-3': !isCollapsed }">
       <ul>
         <li>
-          <a routerLink="/home/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="flex items-center px-4 py-3 text-gray-700 hover:text-primary hover:text-white">
+          <a
+            routerLink="/home/dashboard"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            [ngClass]="{ 'collapsed': isCollapsed }"
+            class="flex items-center px-4 py-3 text-gray-700 hover:text-primary hover:text-white"
+          >
             <span class="material-icons">dashboard</span>
             <span *ngIf="!isCollapsed" class="ml-3">Dashboard</span>
           </a>
         </li>
         <li>
-          <a routerLink="/home/attendance" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="flex items-center px-4 py-3 text-gray-700 hover:text-primary hover:text-white">
+          <a
+            routerLink="/home/attendance"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            [ngClass]="{ 'collapsed': isCollapsed }"
+            class="flex items-center px-4 py-3 text-gray-700 hover:text-primary hover:text-white"
+          >
             <span class="material-icons">check_circle</span>
             <span *ngIf="!isCollapsed" class="ml-3">Attendance</span>
           </a>
         </li>
         <li>
-          <a routerLink="/home/leave-management" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="flex items-center px-4 py-3 text-gray-700 hover:text-primary hover:text-white">
+          <a
+            routerLink="/home/leave-management"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            [ngClass]="{ 'collapsed': isCollapsed }"
+            class="flex items-center px-4 py-3 text-gray-700 hover:text-primary hover:text-white"
+          >
             <span class="material-icons">event_available</span>
             <span *ngIf="!isCollapsed" class="ml-3">Leave Management</span>
           </a>
         </li>
         <li>
-          <a routerLink="/home/user-management" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="flex items-center px-4 py-3 text-gray-700 hover:text-primary hover:text-white">
+          <a
+            routerLink="/home/employee-management"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            [ngClass]="{ 'collapsed': isCollapsed }"
+            class="flex items-center px-4 py-3 text-gray-700 hover:text-primary hover:text-white"
+          >
             <span class="material-icons">group</span>
-            <span *ngIf="!isCollapsed" class="ml-3">User Management</span>
+            <span *ngIf="!isCollapsed" class="ml-3">Employee Management</span>
           </a>
         </li>
         <li>
-          <a routerLink="/home/reports" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="flex items-center px-4 py-3 text-gray-700 hover:text-primary hover:text-white">
+          <a
+            routerLink="/home/reports"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            [ngClass]="{ 'collapsed': isCollapsed }"
+            class="flex items-center px-4 py-3 text-gray-700 hover:text-primary hover:text-white"
+          >
             <span class="material-icons">assessment</span>
             <span *ngIf="!isCollapsed" class="ml-3">Reports</span>
           </a>
         </li>
         <li>
-          <a routerLink="/home/document-repository" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="flex items-center px-4 py-3 text-gray-700 hover:text-primary hover:text-white">
+          <a
+            routerLink="/home/document-repository"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            [ngClass]="{ 'collapsed': isCollapsed }"
+            class="flex items-center px-4 py-3 text-gray-700 hover:text-primary hover:text-white"
+          >
             <span class="material-icons">folder</span>
             <span *ngIf="!isCollapsed" class="ml-3">Documents repository</span>
           </a>
         </li>
         <li>
-          <a routerLink="/home/settings" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="flex items-center px-4 py-3 text-gray-700 hover:text-primary hover:text-white">
+          <a
+            routerLink="/home/settings"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            [ngClass]="{ 'collapsed': isCollapsed }"
+            class="flex items-center px-4 py-3 text-gray-700 hover:text-primary hover:text-white"
+          >
             <span class="material-icons">settings</span>
             <span *ngIf="!isCollapsed" class="ml-3">Settings</span>
           </a>
         </li>
         <li>
-          <a href="#" class="flex items-center px-4 py-3 text-gray-700 hover:text-primary hover:text-white">
+          <a
+            href="#"
+            class="flex items-center px-4 py-3 text-gray-700 hover:text-primary hover:text-white"
+            (click)="signOut()"
+            [ngClass]="{ 'collapsed': isCollapsed }"
+          >
+            <span class="material-icons">logout</span>
+            <span *ngIf="!isCollapsed" class="ml-3">Logout</span>
+          </a>
+        </li>
+      </ul>
+    </nav> -->
+    <nav class="mt-12" [ngClass]="{ 'ml-3': !isCollapsed }">
+      <ul>
+        <li *ngFor="let activity of activities" class="nav-item">
+          <a
+            [routerLink]="activity.activityURL"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            [ngClass]="{ 'collapsed': isCollapsed }"
+            class="flex items-center px-4 py-3 text-gray-700 hover:text-primary hover:text-white"
+          >
+            <span class="material-icons">{{ getIconForActivity(activity.activityName) }}</span>
+            <span *ngIf="!isCollapsed" class="ml-3">{{ activity.activityName }}</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a
+            href="#"
+            class="flex items-center px-4 py-3 text-gray-700 hover:text-primary hover:text-white"
+            (click)="signOut()"
+            [ngClass]="{ 'collapsed': isCollapsed }"
+          >
             <span class="material-icons">logout</span>
             <span *ngIf="!isCollapsed" class="ml-3">Logout</span>
           </a>
@@ -62,13 +136,15 @@
     </nav>
     
     
+    
+    
  
   </aside>
 
   <!-- Main Content -->
   <div class="flex-1 flex flex-col">
     <!-- Header -->
-    <header class="sticky top-0 z-50 flex items-center justify-between h-20 px-6 bg-white shadow-md p-2.5">
+    <header class="sticky top-0 z-50 flex items-center justify-between h- px-6 bg-white shadow-md p-2.5">
       <!-- Left Section: Sidebar Toggle Button + Search Bar -->
       <div class="flex items-center space-x-4">
         <!-- Sidebar Toggle Button -->
@@ -100,10 +176,11 @@
         <div class="relative">
           <!-- Profile Summary -->
           <div class="flex items-center cursor-pointer" (click)="toggleUserMenu()">
-            <img src="assets/images/man.png" alt="User" class="w-10 h-10 rounded-full">
+            <img *ngIf="gender?.toLowerCase() === 'male'" src="assets/images/man.png" alt="User" class="w-10 h-10 rounded-full">
+            <img *ngIf="gender?.toLowerCase() === 'female'" src="assets/images/woman.png" alt="User" class="w-10 h-10 rounded-full">
             <div class="ml-2 text-gray-700 font-medium">
-              <div>John Doe</div>
-              <div class="text-sm text-gray-500">Admin</div>
+              <div>{{ fullName }}</div>
+              <div class="text-sm text-gray-500">{{ role }}</div>
             </div>
             <span class="material-icons text-gray-700 ml-1">arrow_drop_down</span>
           </div>
@@ -114,10 +191,13 @@
             class="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg z-10">
             <!-- Profile Section -->
             <div class="flex items-center  px-4 py-3 border-b">
-              <img src="assets/images/man.png" alt="User" class="w-10 h-10 rounded-full">
+              <img *ngIf="gender?.toLowerCase() === 'male'" src="assets/images/man.png" alt="User" class="w-10 h-10 rounded-full">
+              <img *ngIf="gender?.toLowerCase() === 'female'" src="assets/images/woman.png" alt="User" class="w-10 h-10 rounded-full">
+
               <div class="ml-3 text-gray-700">
-                <p class="font-medium">John Doe</p>
-                <p class="text-sm text-gray-500">Admin</p>
+                <p class="font-medium">{{ fullName }}</p>
+
+                <p class="text-sm text-gray-500">{{ role }}</p>
               </div>
             </div>
     
@@ -129,7 +209,7 @@
               <span class="material-icons align-middle mr-2">settings</span> Settings
             </a>
             <a href="#" class="block px-4 py-2 text-gray-700 hover:text-primary hover:text-white">
-              <span class="material-icons align-middle mr-2">logout</span> Logout
+              <span class="material-icons align-middle mr-2"  (click)="signOut();">logout</span> Logout
             </a>
           </div>
         </div>

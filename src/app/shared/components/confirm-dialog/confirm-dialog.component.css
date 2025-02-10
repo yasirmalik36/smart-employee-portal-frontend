@@ -1,0 +1,89 @@
+.modal-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 30px; /* Reduce padding to minimize height */
+  border-radius: 10px;
+  text-align: center;
+  z-index: 1001;
+  position: relative;
+  width: 430px;
+  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+/* .dialog-title {
+  background-color: #c4161c
+  color: white;
+  border-radius: 15px;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
+  position: absolute;
+  top: -26px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.2rem;
+   padding-bottom: 10px;
+  width: 92%;
+  height: 50px;
+  text-align: center;
+
+} */
+
+mat-dialog-content p {
+  font-size: 1.1rem;
+  margin: 10px 0; /* Reduce margin for compact design */
+  color: #333;
+}
+
+
+
+button.mat-raised-button {
+  padding: 5px 15px; /* Smaller padding to make buttons more compact */
+  font-size: 1rem;
+  border-radius: 8px;
+}
+
+button[color="primary"] {
+  background-color: #c4161c
+  color: white;
+}
+
+button[color="primary"]:hover {
+  background-color: #06689c;
+}
+
+button[color="warn"] {
+  background-color: #dc3545;
+  color: white;
+}
+
+button[color="warn"]:hover {
+  background-color: #c82333;
+}
+
+
+.mdc-dialog__actions {
+  display: inline-block; 
+}
+
+.icon-container{
+  height: 60px;
+  width: 60px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #ffd0d0;
+}
+
+

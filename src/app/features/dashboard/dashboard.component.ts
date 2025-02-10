@@ -5,6 +5,7 @@ import { StatsCardComponent } from '../../shared/components/stats-card/stats-car
 import { LineChartComponent } from '../../shared/components/line-chart/line-chart.component';
 import { DonutChartComponent } from '../../shared/components/donut-chart/donut-chart.component';
 import { MaterialModule } from '../../shared/material module/material.module';
+import { AuthService } from '../../account/auth.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -14,5 +15,12 @@ import { MaterialModule } from '../../shared/material module/material.module';
   styleUrls: ['./dashboard.component.css'] // Fix to 'styleUrls' instead of 'styleUrl'
 })
 export class DashboardComponent {
-  
+  fullName!: string;
+ constructor(private authservice:AuthService) {}
+
+  ngOnInit() {
+    debugger
+    this.fullName = this.authservice.getFullNameFromToken();
+  }
+
 }

@@ -6,3 +6,7 @@
 a:hover i {
   color: #ffffff; /* Or any contrasting color */
 }
+.error-message {
+  color: red;
+  margin-top: 10px;
+}
