@@ -1,97 +1,72 @@
-<div class="my-4 page-header-breadcrumb d-flex align-items-center justify-content-between flex-wrap gap-2">
-    <div>
-        <h1 class="page-title fw-medium fs-18 mb-2">Profile</h1>
-        <div class="">
-            <nav>
-                <ol class="breadcrumb mb-0">
-                    <li class="breadcrumb-item"><a href="javascript:void(0);">Pages</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Profile</li>
-                </ol>
-            </nav>
-        </div>
+<div class="max-w-8xl mx-auto p-6 bg-white shadow-lg rounded-lg">
+    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Leave Records</h2>
+  <!-- Filter Form with 90% Width -->
+<form (ngSubmit)="getLeaves()" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 w-full mx-auto">
+    <!-- User ID -->
+    <div class="w-full">
+        <label for="leaveType" class="block text-sm font-medium text-gray-700">Leave Type</label>
+        <select name="leaveType" [(ngModel)]="leaveRequest.leaveType" 
+          class="border p-3 rounded w-full text-sm">
+          <option *ngFor="let type of leaveTypes" [value]="type">{{ type }}</option>
+        </select>
+      </div>
+  
+    <!-- From Date -->
+    <div class="w-full">
+      <label class="block text-sm font-medium text-gray-700">From Date</label>
+      <input type="date" [(ngModel)]="leaveRequest.dateFrom" name="dateFrom"
+        class="mt-1 p-3 border rounded w-full" required />
     </div>
-    <div class="btn-list">
-        <button class="btn btn-primary-light btn-wave me-2 waves-effect waves-light">
-            <i class="bx bx-crown align-middle"></i> Plan Upgrade
-        </button>
-        <button class="btn btn-secondary-light btn-wave me-0 waves-effect waves-light">
-            <i class="ri-upload-cloud-line align-middle"></i> Export Report
-        </button>
+  
+    <!-- To Date -->
+    <div class="w-full">
+      <label class="block text-sm font-medium text-gray-700">To Date</label>
+      <input type="date" [(ngModel)]="leaveRequest.dateTo" name="dateTo"
+        class="mt-1 p-3 border rounded w-full" required />
+    </div>
+  
+    <!-- Submit Button (Takes Full Row) -->
+    <div class="md:col-span-3 w-full">
+      <button type="submit"
+        class="w-full bg-green-600 text-white py-3 px-6 rounded hover:bg-green-700 transition">
+        Search Leaves
+      </button>
+    </div>
+  </form>
+  
+  
+    <!-- Loading Indicator -->
+    <div *ngIf="loading" class="text-center text-green-500">Loading...</div>
+  
+    <!-- Leaves Table -->
+    <div *ngIf="leaveList.length > 0" class="overflow-x-auto">
+      <table class="w-full border-collapse border border-gray-200">
+        <thead>
+          <tr class="bg-gray-100">
+            <th class="border p-2">User ID</th>
+            <th class="border p-2">Leave Type</th>
+            <th class="border p-2">Start Date</th>
+            <th class="border p-2">End Date</th>
+            <th class="border p-2">Status</th>
+            <th class="border p-2">Reason</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let leave of leaveList">
+            <td class="border p-2 text-center">{{ leave.userID }}</td>
+            <td class="border p-2 text-center">{{ leave.leaveType }}</td>
+            <td class="border p-2 text-center">{{ leave.startDate | date }}</td>
+            <td class="border p-2 text-center">{{ leave.endDate | date }}</td>
+            <td class="border p-2 text-center">{{ leave.status }}</td>
+            <td class="border p-2 text-center">{{ leave.reason || 'N/A' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  
+    <!-- No Records Message -->
+    <div *ngIf="leaveList.length === 0 && !loading" class="text-center text-gray-500 mt-4">
+      No leave records found.
     </div>
   </div>
-  <div>
-    
-  </div>
-  <div class="row col-6">
-    <div class="col-6">
-        <div class="row">
-            <div class="col-xl-12">
-                <div class="card-body pb-0 position-relative">
-                    <div class="profile-card">
-                        <div class="card-body pb-0 position-relative">
-                            <!-- Profile Banner Image -->
-                            <div class="profile-banner-img">
-                                <img src="../assets/images/Backroundimage.jpg" class="rounded w-100" alt="Profile Banner">
-                            </div>
-                            
-                            <!-- Profile Picture with Avatar -->
-                            <span class="avatar avatar-xxl avatar-rounded bg-light">
-                                <img src="../assets/images/profiledp.jpg" alt="Profile Picture">
-                            </span>
-                    
-                            <div class="mt-4 mb-0 p-4 d-flex align-items-center flex-wrap gap-3 justify-content-between">
-                                <div>
-                                    <h5 class="fw-semibold mb-3">Abigail Scott</h5>
-                                    <span class="d-block fw-medium text-muted mb-1">Chief Executive Officer (C.E.O)</span>
-                                    <p class="fs-12 mb-0 fw-medium text-muted">
-                                        <span class="me-3"><i class="ri-building-line me-1 align-middle"></i>Georgia</span>
-                                        <span><i class="ri-map-pin-line me-1 align-middle"></i>Washington D.C</span>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-      </div>
-    </div>
-  </div>    
- </div>
-</div>
-<div class="row col-6">
-    <div class="col-6">
-        <div class="row">
-            <div class="col-xl-12">
-                <div class="card-body pb-0 position-relative">
-                    <div class="profile-card">
-                        <div class="card-body pb-0 position-relative">
-                            <!-- Profile Banner Image -->
-                            <div class="profile-banner-img">
-                                <img src="../assets/images/Backroundimage.jpg" class="rounded w-100" alt="Profile Banner">
-                            </div>
-                            
-                            <!-- Profile Picture with Avatar -->
-                            <span class="avatar avatar-xxl avatar-rounded bg-light">
-                                <img src="../assets/images/profiledp.jpg" alt="Profile Picture">
-                            </span>
-                    
-                            <div class="mt-4 mb-0 p-4 d-flex align-items-center flex-wrap gap-3 justify-content-between">
-                                <div>
-                                    <h5 class="fw-semibold mb-3">Abigail Scott</h5>
-                                    <span class="d-block fw-medium text-muted mb-1">Chief Executive Officer (C.E.O)</span>
-                                    <p class="fs-12 mb-0 fw-medium text-muted">
-                                        <span class="me-3"><i class="ri-building-line me-1 align-middle"></i>Georgia</span>
-                                        <span><i class="ri-map-pin-line me-1 align-middle"></i>Washington D.C</span>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-      </div>
-    </div>
-  </div>    
- </div>
-</div>
- 
-
-
+  

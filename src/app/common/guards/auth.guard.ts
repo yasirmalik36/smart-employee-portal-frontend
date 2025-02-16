@@ -18,7 +18,7 @@ const isLoggedIn = this.authService.isLoggedIn();
 
   if (!isLoggedIn) {
  this.router.navigate(['/account/login']);
-this.alertMessage.showError("Please Login First!");
+//this.alertMessage.showError("Please Login First!");
 
 return false;
 }
