@@ -44,10 +44,10 @@ export class LoginComponent {
 
     this.authService.login(identifier, password).subscribe(
       (response:any) => {
-        if (response.statusCode === '00') {
+        if (response.resp.code === '00') {
            debugger
-          localStorage.setItem('token', response.user.token);
-          localStorage.setItem('user', JSON.stringify(response.user));
+          localStorage.setItem('token', response.token);
+          //localStorage.setItem('user', JSON.stringify(response.user));
           localStorage.setItem('activites', JSON.stringify(response.roles));
           this.toastService.showSuccess('Login Successful');
           this.router.navigate(['home/dashboard']);

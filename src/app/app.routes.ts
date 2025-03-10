@@ -30,7 +30,7 @@ export const routes: Routes = [
       // Attendance Module
       {
         path: 'attendance',
-        loadComponent: () => import('./features/attendance/attendance.component').then(m => m.AttendanceComponent),
+        loadComponent: () => import('./features/attendanced/components/attendance/attendance.component').then(m => m.AttendanceComponent),
       },
 
       // Leave Management Module

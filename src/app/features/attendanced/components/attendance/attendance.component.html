@@ -1,7 +1,6 @@
 <div class="max-w-8xl mx-auto p-6 bg-white shadow-lg rounded-lg">
   <h2 class="text-2xl font-semibold text-gray-800 mb-4">Attendance Records</h2>
 
-  <!-- Filter Form -->
   <form (ngSubmit)="getAttendance()" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
     <div>
       <label class="block text-sm font-medium text-gray-700">User ID (Optional)</label>
@@ -9,27 +8,32 @@
         class="mt-1 p-2 border rounded w-full" placeholder="Enter User ID" />
     </div>
     <div>
+      <label class="block text-sm font-medium text-gray-700">Date Range</label>
+      <select [(ngModel)]="attendanceRequest.dateRange" name="dateRange"
+        (change)="setDateRange()" class="mt-1 p-2 border rounded w-full">
+        <option *ngFor="let range of dateRanges" [value]="range.value">{{ range.label }}</option>
+      </select>
+    </div>
+    <div *ngIf="showCustomDates">
       <label class="block text-sm font-medium text-gray-700">From Date</label>
       <input type="date" [(ngModel)]="attendanceRequest.dateFrom" name="dateFrom"
-        class="mt-1 p-2 border rounded w-full" required />
+        class="mt-1 p-2 border rounded w-full" />
     </div>
-    <div>
+    <div *ngIf="showCustomDates">
       <label class="block text-sm font-medium text-gray-700">To Date</label>
       <input type="date" [(ngModel)]="attendanceRequest.dateTo" name="dateTo"
-        class="mt-1 p-2 border rounded w-full" required />
+        class="mt-1 p-2 border rounded w-full" />
     </div>
     <div class="md:col-span-3">
       <button type="submit"
-        class="w-1/4 bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition">
+        class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition">
         Search Attendance
       </button>
     </div>
   </form>
 
-  <!-- Loading Indicator -->
   <div *ngIf="loading" class="text-center text-blue-500">Loading...</div>
 
-  <!-- Attendance Table -->
   <div *ngIf="attendanceList.length > 0" class="overflow-x-auto">
     <table class="w-full border-collapse border border-gray-200">
       <thead>
@@ -45,9 +49,9 @@
       <tbody>
         <tr *ngFor="let attendance of attendanceList">
           <td class="border p-2 text-center">{{ attendance.userID }}</td>
-          <td class="border p-2 text-center">{{ attendance.attendanceDate | date }}</td>
-          <td class="border p-2 text-center">{{ attendance.checkInTime || 'N/A' }}</td>
-          <td class="border p-2 text-center">{{ attendance.checkOutTime || 'N/A' }}</td>
+          <td class="border p-2 text-center">{{ attendance.attendanceDate | date:'yyyy-MM-dd' }}</td>
+          <td class="border p-2 text-center">{{ attendance.checkInTime ? convertToLocalTime(attendance.checkInTime) : 'N/A' }}</td>
+          <td class="border p-2 text-center">{{ attendance.checkOutTime ? convertToLocalTime(attendance.checkOutTime) : 'N/A' }}</td>
           <td class="border p-2 text-center">{{ attendance.status }}</td>
           <td class="border p-2 text-center">{{ attendance.workHours || 'N/A' }}</td>
         </tr>
@@ -55,8 +59,8 @@
     </table>
   </div>
 
-  <!-- No Records Message -->
   <div *ngIf="attendanceList.length === 0 && !loading" class="text-center text-gray-500 mt-4">
     No attendance records found.
   </div>
+  <app-face-recognition></app-face-recognition>
 </div>
