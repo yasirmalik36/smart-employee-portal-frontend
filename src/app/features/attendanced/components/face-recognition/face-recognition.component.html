@@ -1,34 +1,79 @@
 <div class="relative w-[600px] h-[700px] max-w-full mx-auto bg-white p-6 shadow-lg  border border-gray-200 flex flex-col items-center dark:bg-gray-800 dark:border-gray-600">
   <!-- Dark Mode Toggle -->
-  <button (click)="toggleDarkMode()" class="absolute top-4 left-4">
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6 text-gray-600 dark:text-white">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M12 2a10 10 0 0110 10v3a3 3 0 01-3 3h-1a4 4 0 01-4-4h-4a4 4 0 01-4 4H5a3 3 0 01-3-3v-3a10 10 0 0110-10z" />
-    </svg>
-  </button>
+<!-- Dark Mode Toggle Button -->
+<button (click)="toggleDarkMode()" class="absolute top-4 left-4 p-2 rounded-md bg-gray-200 dark:bg-gray-800 transition-all">
+  <!-- Half Moon Icon (for Light Mode) -->
+  <svg *ngIf="!isDarkMode" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" 
+    stroke="currentColor" class="w-6 h-6 text-gray-600">
+    <path stroke-linecap="round" stroke-linejoin="round"
+      d="M12 3c-4.97 0-9 4.03-9 9 0 4.97 4.03 9 9 9 3.313 0 6.312-1.616 8-4a7 7 0 11-8-11z" />
+  </svg>
 
-  <!-- Close Button -->
-  <button (click)="closeModal()" class="absolute top-4 right-4 text-gray-600 hover:text-gray-900 dark:text-white">
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-    </svg>
-  </button>
+  <!-- Sun Icon (Shown in Dark Mode) -->
+  <svg *ngIf="isDarkMode" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+    stroke="currentColor" class="w-6 h-6 text-yellow-400">
+    <path stroke-linecap="round" stroke-linejoin="round"
+      d="M12 3v2m0 14v2m4.24-14.24l1.42-1.42m-9.9 9.9L4.24 6.76m12.02 9.9l1.42 1.42M6.76 17.24l-1.42 1.42M21 12h2m-20 0H1m15 4.24l1.42 1.42m-9.9-9.9L4.24 6.76" />
+  </svg>
+</button>
 
-  <h2 class="text-2xl font-bold text-center text-gray-900 dark:text-white mb-4 flex items-center justify-center gap-2">
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-7 h-7 text-blue-600">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M12 2a10 10 0 00-10 10v3a3 3 0 003 3h1a4 4 0 004-4h4a4 4 0 004 4h1a3 3 0 003-3v-3a10 10 0 00-10-10zm0 0v1m0 16v1m5-6h1m-12 0H6m8.5-4.5l1.5-1.5m-9 0l1.5 1.5M16.5 15l1.5 1.5m-9 0l1.5-1.5" />
-    </svg>
-    Face Recognition Attendance
-  </h2>
+
+
+<!-- Close Button -->
+<button (click)="closeModal()" class="absolute top-4 right-4 p-2 rounded-md bg-gray-200 dark:bg-gray-800 transition-all">
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" 
+    class="w-6 h-6 text-gray-600 dark:text-white">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+  </svg>
+</button>
+
+
+<h2 class="text-2xl font-bold text-center text-gray-900 dark:text-white mb-4 flex items-center justify-center gap-2">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round" class="w-10 h-10 text-blue-600">
+    <!-- Frame Corners -->
+    <path d="M3 7V4a1 1 0 011-1h3M21 7V4a1 1 0 00-1-1h-3M3 17v3a1 1 0 001 1h3M21 17v3a1 1 0 01-1 1h-3" />
+    <!-- Face Outline -->
+    <circle cx="12" cy="12" r="4.5" stroke-width="1.5" />
+    <!-- Eyes -->
+    <circle cx="10.5" cy="11" r="0.8" />
+    <circle cx="13.5" cy="11" r="0.8" />
+    <!-- Facial Scan Line -->
+    <path d="M8 15c1.5 2 6 2 8 0" stroke-width="1.5" />
+    <!-- Face Scan Effect (Optional Glow) -->
+    <rect x="6" y="6" width="12" height="12" rx="6" class="opacity-30 animate-pulse" />
+  </svg>
+  Face Recognition Attendance
+</h2>
 
   <!-- Face Recognition Camera -->
   <div *ngIf="!scanSuccess" class="relative w-72 h-72 border-4 border-blue-500 rounded-full overflow-hidden shadow-md aspect-square">
-    <webcam (imageCapture)="handleImage($event)" [trigger]="triggerObservable" class="w-full h-full object-cover"></webcam>
+    <webcam (imageCapture)="handleImage($event)" [trigger]="triggerObservable" class="w-full h-full object-cover "></webcam>
 
     <!-- Scanning Animation -->
     <div *ngIf="isScanning" class="absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
+      <!-- Corner Markers Only -->
+    <div class="absolute w-48 h-48">
+      <!-- Top Left -->
+      <div class="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-gray-900 animate-marker-glow"></div>
+      <!-- Top Right -->
+      <div class="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-gray-900 animate-marker-glow"></div>
+      <!-- Bottom Left -->
+      <div class="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-gray-900 animate-marker-glow"></div>
+      <!-- Bottom Right -->
+      <div class="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-gray-900 animate-marker-glow"></div>
+    </div>
+
+    <!-- Moving Laser Scan -->
+    <div class="absolute top-0 left-0 w-full h-full flex justify-center">
+      <div class="w-40 h-1 border-gray-900 opacity-80 animate-scan"></div>
+    </div>
+
       <div class="animate-ping bg-blue-500 w-16 h-16 rounded-full"></div>
     </div>
   </div>
+
+  
 
   <!-- Face Tracking Indicator -->
   <div *ngIf="faceTrackingActive && !scanSuccess" class="text-blue-600 dark:text-blue-300 font-medium mt-2">
@@ -41,12 +86,24 @@
   </div>
 
   <!-- Capture Button -->
-  <button *ngIf="!scanSuccess" (click)="triggerSnapshot()" class="mt-5 w-64 flex items-center justify-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition">
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v4m0 12v2m9-9h2m-2 0a9 9 0 10-18 0 9 9 0 0018 0z" />
-    </svg>
-    <span>Capture Face</span>
-  </button>
+  <button *ngIf="!scanSuccess" (click)="triggerSnapshot()" 
+  class="mt-5 w-64 flex items-center justify-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition-all">
+  
+  <!-- Modern Camera Icon -->
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" 
+    stroke="currentColor" class="w-6 h-6">
+    <!-- Camera Body -->
+    <path stroke-linecap="round" stroke-linejoin="round" 
+      d="M5 8h14M4 10v8a2 2 0 002 2h12a2 2 0 002-2v-8M9 4h6l1 3H8l1-3z"/>
+    <!-- Lens -->
+    <circle cx="12" cy="14" r="3"/>
+    <!-- Flash Effect (Animated Pulse) -->
+    <circle cx="18" cy="6" r="1.5" class="animate-pulse opacity-80"/>
+  </svg>
+
+  <span class="font-medium">Capture Face</span>
+</button>
+
 
   <!-- Scanning Animation -->
   <div *ngIf="isScanning && !scanSuccess" class="text-center text-blue-500 mt-4 animate-pulse">
@@ -66,7 +123,7 @@
   </div>
 
   <!-- Attendance Details (After Successful Scan) -->
-  <div *ngIf="scanSuccess" class="mt-4 flex w-full px-4 gap-4 mb-4">
+  <div *ngIf="scanSuccess" class="mt-4 flex w-full px-4 gap-4 mb">
     <div class="w-1/2 text-center bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 p-3 rounded-lg shadow-md">
       <p class="text-sm font-medium">Check-In</p>
       <p class="text-lg font-bold">{{ checkInTime }}</p>

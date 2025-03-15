@@ -14,7 +14,12 @@ export class AttendanceService {
   getAttendance(request: AttendanceRequest): Observable<AttendanceResponse[]> {
     return this.http.post<any[]>(`${this.apiUrl}/GetAttendance`, request);
   }
-
+  checkLiveness(base64Image: string): Observable<any> {
+    const formData = new FormData();
+    const file = this.base64ToFile(base64Image, 'face_capture.png');
+    formData.append('ImageFile', file);
+    return this.http.post(`${this.apiUrl}/check-liveness`, formData);
+  }
 
   
   markAttendance(base64Image: string): Observable<any> {

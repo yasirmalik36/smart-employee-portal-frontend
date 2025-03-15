@@ -4,3 +4,35 @@ webcam {
   height: auto;
   border-radius: 8px;
 }
+.dark {
+  background-color: #1a202c; /* Dark background */
+  color: white;
+}
+
+.dark .border-blue-500 {
+  border-color: #2b6cb0 !important;
+}
+
+.dark .border-green-500 {
+  border-color: #38a169 !important;
+}
+
+@keyframes scan {
+  0% { transform: translateY(-100%); opacity: 0.2; }
+  50% { transform: translateY(100%); opacity: 1; }
+  100% { transform: translateY(-100%); opacity: 0.2; }
+}
+
+@keyframes marker-glow {
+  0% { opacity: 0.5; }
+  50% { opacity: 1; }
+  100% { opacity: 0.5; }
+}
+
+.animate-scan {
+  animation: scan 2s infinite ease-in-out;
+}
+
+.animate-marker-glow {
+  animation: marker-glow 1.5s infinite alternate;
+}

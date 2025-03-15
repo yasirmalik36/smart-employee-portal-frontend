@@ -269,6 +269,7 @@ export class AttendanceComponent implements OnInit {
       maxWidth: '90vw', 
       maxHeight: '90vh',
       disableClose: true,
+      autoFocus: false,
       data: { employeeId: this.attendanceRequest?.employeeId },
       panelClass: 'custom-dialog' // 👈 Add custom class
     });
