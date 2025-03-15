@@ -1,27 +1,38 @@
-/* .captured-image {
-    width: 100px;
-    margin: 5px;
-  }
-  
-  .capture-ring {
-    border-radius: 50%;
-    border: 5px solid #3498db;
-    padding: 10px;
-    margin: 20px;
-    text-align: center;
-    animation: ring 1s linear infinite;
-  }
-  
-  @keyframes ring {
-    0% {
-      transform: scale(1);
-    }
-    50% {
-      transform: scale(1.1);
-    }
-    100% {
-      transform: scale(1);
-    }
-  }
+.table-container {
+  max-height: 400px; /* Adjust height */
+  overflow: auto; /* Enables horizontal & vertical scrolling */
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
 
-   */
+/* Sticky header */
+.sticky-header {
+  position: sticky;
+  top: 0;
+  background: rgb(31, 83, 167); /* User's global color */
+  color: white;
+  z-index: 2;
+}
+
+/* Sticky paginator */
+.sticky-paginator {
+  position: sticky;
+  bottom: 0;
+  background: white;
+  z-index: 2;
+}
+
+/* Custom scrollbar */
+.table-container::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+  background-color: rgba(31, 83, 167, 0.7);
+  border-radius: 10px;
+}
+
+.table-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}

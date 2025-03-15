@@ -1,14 +1,73 @@
+<div class="relative w-[600px] h-[700px] max-w-full mx-auto bg-white p-6 shadow-lg rounded-xl border border-gray-200 flex flex-col items-center dark:bg-gray-800 dark:border-gray-600">
+  <!-- Dark Mode Toggle -->
+  <button (click)="toggleDarkMode()" class="absolute top-4 left-4">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6 text-gray-600 dark:text-white">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 2a10 10 0 0110 10v3a3 3 0 01-3 3h-1a4 4 0 01-4-4h-4a4 4 0 01-4 4H5a3 3 0 01-3-3v-3a10 10 0 0110-10z" />
+    </svg>
+  </button>
 
-<div class="max-w-lg mx-auto bg-white p-6 shadow-lg rounded-lg">
-  <h2 class="text-2xl font-semibold text-gray-800 mb-4">Face Recognition Attendance</h2>
-  <div class="text-center">
-    <webcam [trigger]="triggerObservable" (imageCapture)="handleImage($event)" class="rounded-lg shadow-md"></webcam>
-    <button (click)="triggerSnapshot()" class="mt-4 px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
-      Capture Face
-    </button>
+  <!-- Close Button -->
+  <button (click)="closeModal()" class="absolute top-4 right-4 text-gray-600 hover:text-gray-900 dark:text-white">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+    </svg>
+  </button>
+
+  <h2 class="text-2xl font-bold text-center text-gray-900 dark:text-white mb-4 flex items-center justify-center gap-2">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-7 h-7 text-blue-600">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 2a10 10 0 00-10 10v3a3 3 0 003 3h1a4 4 0 004-4h4a4 4 0 004 4h1a3 3 0 003-3v-3a10 10 0 00-10-10zm0 0v1m0 16v1m5-6h1m-12 0H6m8.5-4.5l1.5-1.5m-9 0l1.5 1.5M16.5 15l1.5 1.5m-9 0l1.5-1.5" />
+    </svg>
+    Face Recognition Attendance
+  </h2>
+
+  <div class="relative w-72 h-72 border-4 border-blue-500 rounded-full overflow-hidden shadow-md aspect-square">
+    <webcam
+      (imageCapture)="handleImage($event)"
+      [trigger]="triggerObservable"
+      class="w-full h-full object-cover">
+    </webcam>
+
+    <!-- Scanning Animation -->
+    <div *ngIf="isScanning" class="absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
+      <div class="animate-ping bg-blue-500 w-16 h-16 rounded-full"></div>
+    </div>
   </div>
-  <div *ngIf="isScanning" class="text-center text-blue-500 mt-4">Scanning...</div>
-  <div *ngIf="scanResult" class="text-center mt-4 font-semibold text-green-600">
-    {{ scanResult }}
+
+  <!-- Face Tracking Indicator -->
+  <div *ngIf="faceTrackingActive" class="text-blue-600 dark:text-blue-300 font-medium mt-2">
+    Face detected! Hold still...
   </div>
+
+  <!-- Auto-Retry Message -->
+  <div *ngIf="retryCount > 0 && retryCount < 3" class="text-red-500 dark:text-red-400 font-medium mt-2">
+    Attempt {{ retryCount }} of 3 - Please adjust your position
+  </div>
+
+  <!-- Capture Button -->
+  <button (click)="triggerSnapshot()" 
+    class="mt-5 w-64 flex items-center justify-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v4m0 12v2m9-9h2m-2 0a9 9 0 10-18 0 9 9 0 0018 0z" />
+    </svg>
+    <span>Capture Face</span>
+  </button>
+
+  <!-- Scanning Animation -->
+  <div *ngIf="isScanning" class="text-center text-blue-500 mt-4 animate-pulse">
+    <svg class="w-6 h-6 animate-spin mx-auto text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 2v2m0 16v2m6-10h2m-16 0H4m12.07 5.93l1.41 1.41m-12.02 0l1.41-1.41M16 8l1.41-1.41M7.41 8 6 6.59M17.66 3.76l1.41-1.41M4 12h2m12 0h2m-3.17 4.24l1.41 1.41M6.59 6.59 8 8" />
+    </svg>
+    <p>Scanning...</p>
+  </div>
+
+  <!-- Scan Result -->
+  <div *ngIf="scanResult" 
+  [ngClass]="{
+    'bg-green-100 border-green-400 text-green-700 dark:bg-green-800 dark:text-green-200': isSuccess,
+    'bg-red-100 border-red-400 text-red-700 dark:bg-red-800 dark:text-red-200': !isSuccess
+  }"
+  class="fixed bottom-24 left-1/2 transform -translate-x-1/2 text-center p-3 border rounded-lg shadow-md w-72">
+{{ scanResult }}
+</div>
+
 </div>

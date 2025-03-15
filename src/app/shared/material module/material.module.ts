@@ -30,7 +30,7 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatTreeModule } from '@angular/material/tree';
 import { MatBadgeModule } from '@angular/material/badge';
-import { MatOptionModule } from '@angular/material/core';
+import { MatNativeDateModule, MatOptionModule } from '@angular/material/core';
 import { CommonModule } from '@angular/common';
 import {MatChipsModule} from '@angular/material/chips';
 import { CdkTableModule } from '@angular/cdk/table';
@@ -40,6 +40,7 @@ import { CdkTableModule } from '@angular/cdk/table';
   declarations: [],
   imports: [
     CommonModule,
+    MatNativeDateModule,
     MatCheckboxModule,
     MatCheckboxModule,
     MatButtonModule,
@@ -81,6 +82,7 @@ import { CdkTableModule } from '@angular/cdk/table';
 ],
 exports: [
     MatCheckboxModule,
+    MatNativeDateModule,
     MatCheckboxModule,
     MatButtonModule,
     MatSnackBarModule,

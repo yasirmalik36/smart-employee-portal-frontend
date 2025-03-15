@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment.development';
+import { AttendanceRequest, AttendanceResponse } from '../../../models/AttendanceRequest';
 
 @Injectable({ providedIn: 'root' })
 export class AttendanceService {
@@ -10,10 +11,12 @@ export class AttendanceService {
 
   constructor(private http: HttpClient) {}
 
-  getAttendance(request: any): Observable<any[]> {
+  getAttendance(request: AttendanceRequest): Observable<AttendanceResponse[]> {
     return this.http.post<any[]>(`${this.apiUrl}/GetAttendance`, request);
   }
 
+
+  
   markAttendance(base64Image: string): Observable<any> {
     const formData = new FormData();
     

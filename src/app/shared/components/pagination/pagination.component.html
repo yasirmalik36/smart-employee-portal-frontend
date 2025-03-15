@@ -1,0 +1,20 @@
+<div class="paginator-container border border-gray-300 flex items-center rounded-md p-6 w-full h-16 fixed bottom-0 bg-white">
+  <mat-paginator
+  [length]="totalRecords"
+  [pageSize]="pageSize"
+  [pageSizeOptions]="[5, 10, 25, 50, 100]"
+  [showFirstLastButtons]="showFirstLastButtons" 
+  (page)="onPageChange($event)">
+</mat-paginator>
+
+</div>
+
+  <!-- <div class="paginator-container border border-gray-300 rounded-md p-1 mt-4 h-16 flex items-center">
+    <mat-paginator
+      [length]="totalRecords"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="[10, 25, 50, 100]"
+      (page)="onPageChange($event)">
+    </mat-paginator>
+  </div> -->
+  

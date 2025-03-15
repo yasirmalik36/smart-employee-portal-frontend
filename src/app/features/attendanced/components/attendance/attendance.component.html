@@ -1,66 +1,279 @@
-<div class="max-w-8xl mx-auto p-6 bg-white shadow-lg rounded-lg">
-  <h2 class="text-2xl font-semibold text-gray-800 mb-4">Attendance Records</h2>
+<!-- Wrapper with Fixed Width to Prevent Table from Expanding the Screen -->
+<div class="p-5 bg-white h-full relative shadow-md rounded-lg overflow-x-scroll overflow-y-scroll mb-8">
+    <!-- Centered Toggle Filters Button -->
+    <div class="absolute top-0 left-1/2 transform -translate-x-1/2 mt-2">
+      <button mat-button (click)="filtersExpanded = !filtersExpanded"
+        class="flex items-center text-blue-600 bg-white  px-4 py-2 rounded-lg border border-gray-300">
+        <mat-icon class="text-gray-900">{{ filtersExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+        <!-- <mat-icon class="text-primary">{{ filtersExpanded ? 'expand_circle_up' : 'expand_circle_down' }}</mat-icon> -->
 
-  <form (ngSubmit)="getAttendance()" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-    <div>
-      <label class="block text-sm font-medium text-gray-700">User ID (Optional)</label>
-      <input type="number" [(ngModel)]="attendanceRequest.userID" name="userID"
-        class="mt-1 p-2 border rounded w-full" placeholder="Enter User ID" />
+        <span class="ml-2">{{ filtersExpanded ? 'Hide Filters' : 'Show Filters' }}</span>
+      </button>
     </div>
-    <div>
-      <label class="block text-sm font-medium text-gray-700">Date Range</label>
-      <select [(ngModel)]="attendanceRequest.dateRange" name="dateRange"
-        (change)="setDateRange()" class="mt-1 p-2 border rounded w-full">
+  <h2 class="text-xl font-semibold mb-2 flex items-center gap-2">
+    <mat-icon class="text-primary">event</mat-icon> 
+    Attendance Records
+  </h2>
+
+
+
+  <!-- Search Filters - Collapsible -->
+  <div *ngIf="filtersExpanded" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    
+    <!-- Employee ID -->
+    <div class="flex flex-col">
+      <label class="text-sm font-medium text-gray-700">Employee ID</label>
+      <input type="text" [(ngModel)]="attendanceRequest.employeeId"
+        class="mt-1 p-2 border border-gray-300 rounded w-full bg-white focus:ring-2 focus:ring-blue-500 transition-all duration-300 shadow-sm"
+        placeholder="Enter Employee ID" />
+    </div>
+
+    <!-- Designation Dropdown (Animated) -->
+    <div class="flex flex-col relative">
+      <label class="text-sm font-medium text-gray-700">Designation</label>
+      <div class="relative">
+        <div class="mt-1 p-2 border border-gray-300 rounded w-full bg-white cursor-pointer flex justify-between items-center"
+          (click)="toggleDropdown('designation')">
+          <span>{{ selectedDesignation?.name || 'Select Designation' }}</span>
+          <svg class="w-5 h-5 transition-transform duration-300"
+            [class.rotate-180]="dropdownOpen === 'designation'" fill="none" stroke="currentColor"
+            viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </div>
+        <ul *ngIf="dropdownOpen === 'designation'"
+          class="absolute w-full bg-white border border-gray-300 rounded mt-1 shadow-md overflow-hidden transform transition-all duration-300 opacity-100 scale-100">
+          <li *ngFor="let designation of designations" (click)="selectDesignation(designation)"
+            class="p-2 hover:bg-blue-100 cursor-pointer">
+            {{ designation.name }}
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Department Dropdown (Animated) -->
+    <div class="flex flex-col relative">
+      <label class="text-sm font-medium text-gray-700">Department</label>
+      <div class="relative">
+        <div class="mt-1 p-2 border border-gray-300 rounded w-full bg-white cursor-pointer flex justify-between items-center"
+          (click)="toggleDropdown('department')">
+          <span>{{ selectedDepartment?.name || 'Select Department' }}</span>
+          <svg class="w-5 h-5 transition-transform duration-300"
+            [class.rotate-180]="dropdownOpen === 'department'" fill="none" stroke="currentColor"
+            viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </div>
+        <ul *ngIf="dropdownOpen === 'department'"
+          class="absolute w-full bg-white border border-gray-300 rounded mt-1 shadow-md overflow-hidden transform transition-all duration-300 opacity-100 scale-100">
+          <li *ngFor="let department of departments" (click)="selectDepartment(department)"
+            class="p-2 hover:bg-blue-100 cursor-pointer">
+            {{ department.name }}
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Shift Dropdown -->
+    <div class="flex flex-col">
+      <label class="text-sm font-medium text-gray-700">Shift</label>
+      <select [(ngModel)]="attendanceRequest.shiftId"
+        class="mt-1 p-2 border border-gray-300 rounded w-full bg-white focus:ring-2 focus:ring-blue-500 transition-all duration-300 shadow-sm">
+        <option value="">Select Shift</option>
+        <option *ngFor="let shift of shifts" [value]="shift.id">{{ shift.name }}</option>
+      </select>
+    </div>
+
+    <!-- Status Dropdown -->
+    <div class="flex flex-col">
+      <label class="text-sm font-medium text-gray-700">Status</label>
+      <select [(ngModel)]="attendanceRequest.status"
+        class="mt-1 p-2 border border-gray-300 rounded w-full bg-white focus:ring-2 focus:ring-blue-500 transition-all duration-300 shadow-sm">
+        <option value="">All</option>
+        <option value="Present">Present</option>
+        <option value="Absent">Absent</option>
+      </select>
+    </div>
+
+    <!-- Date Range -->
+    <div class="flex flex-col">
+      <label class="text-sm font-medium text-gray-700">Date Range</label>
+      <select [(ngModel)]="attendanceRequest.dateRange" (change)="setDateRange()"
+        class="mt-1 p-2 border border-gray-300 rounded w-full bg-white focus:ring-2 focus:ring-blue-500 transition-all duration-300 shadow-sm">
         <option *ngFor="let range of dateRanges" [value]="range.value">{{ range.label }}</option>
       </select>
     </div>
-    <div *ngIf="showCustomDates">
-      <label class="block text-sm font-medium text-gray-700">From Date</label>
-      <input type="date" [(ngModel)]="attendanceRequest.dateFrom" name="dateFrom"
-        class="mt-1 p-2 border rounded w-full" />
+
+    <!-- Custom Date Pickers (Only visible when 'Custom' is selected) -->
+    <div class="flex flex-col" *ngIf="showCustomDates">
+      <label class="text-sm font-medium text-gray-700">From Date</label>
+      <input type="date" [(ngModel)]="attendanceRequest.fromDate"
+        class="mt-1 p-2 border border-gray-300 rounded w-full bg-white focus:ring-2 focus:ring-blue-500 transition-all duration-300 shadow-sm" />
     </div>
-    <div *ngIf="showCustomDates">
-      <label class="block text-sm font-medium text-gray-700">To Date</label>
-      <input type="date" [(ngModel)]="attendanceRequest.dateTo" name="dateTo"
-        class="mt-1 p-2 border rounded w-full" />
+
+    <div class="flex flex-col" *ngIf="showCustomDates">
+      <label class="text-sm font-medium text-gray-700">To Date</label>
+      <input type="date" [(ngModel)]="attendanceRequest.toDate"
+        class="mt-1 p-2 border border-gray-300 rounded w-full bg-white focus:ring-2 focus:ring-blue-500 transition-all duration-300 shadow-sm" />
     </div>
-    <div class="md:col-span-3">
-      <button type="submit"
-        class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition">
-        Search Attendance
+  </div>
+
+
+
+
+  <div class="mt-4 flex justify-between items-center">
+    <!-- Search Attendance Button (Left) -->
+    <button mat-raised-button color="primary" class="w-56">
+      <mat-icon class="mr-2">search</mat-icon> Search Attendance
+    </button>
+  
+    <!-- Other Buttons (Right) -->
+    <div class="flex space-x-4">
+         <!-- Mark Attendance Button -->
+ 
+        <button mat-raised-button color="success" class="w-56 border-radius 8px" [matMenuTriggerFor]="attendanceMenu">
+          <span class="flex items-center space-x-2">
+            <mat-icon >check_circle</mat-icon> Mark Attendance
+          </span>
+          <mat-icon>expand_more</mat-icon>
+        </button>
+        
+        <mat-menu #attendanceMenu="matMenu">
+          <button mat-menu-item (click)="openFaceRecognitionDialog()">
+      
+            <mat-icon>camera</mat-icon> Face Recognition
+          </button>
+          <button mat-menu-item >
+            <mat-icon>person_search</mat-icon> Manual Attendance
+          </button>
+        </mat-menu>
+        
+      <!-- <button mat-raised-button color="primary" class="w-40">
+        <mat-icon class="mr-2">edit</mat-icon> Edit
       </button>
+  
+      <button mat-raised-button color="warn" class="w-40">
+        <mat-icon class="mr-2">download</mat-icon> Export
+      </button> -->
+      <button mat-raised-button [ngStyle]="{'background-color': '#C62828', 'color': 'white'}" 
+      class="w-40 flex items-center justify-between px-4 py-2 rounded-lg" 
+      [matMenuTriggerFor]="exportMenu">
+      <span class="flex items-center space-x-2">
+        <mat-icon>download</mat-icon>
+        <span>Export</span>
+      </span>
+      <mat-icon>expand_more</mat-icon>
+    </button>
+    
+      
+      <mat-menu #exportMenu="matMenu" class="w-40 ">
+        <button mat-menu-item (click)="exportAttendance('csv')">
+          <mat-icon>description</mat-icon>
+          <span>CSV</span>
+        </button>
+        <button mat-menu-item (click)="exportAttendance('excel')">
+          <mat-icon>table_chart</mat-icon> 
+          <span>Excel</span>
+        </button>
+        <button mat-menu-item (click)="exportAttendance('pdf')">
+          <mat-icon>picture_as_pdf</mat-icon> 
+          <span>PDF</span>
+        </button>
+      </mat-menu>
+      
+      
+   
     </div>
-  </form>
-
-  <div *ngIf="loading" class="text-center text-blue-500">Loading...</div>
-
-  <div *ngIf="attendanceList.length > 0" class="overflow-x-auto">
-    <table class="w-full border-collapse border border-gray-200">
-      <thead>
-        <tr class="bg-gray-100">
-          <th class="border p-2">User ID</th>
-          <th class="border p-2">Date</th>
-          <th class="border p-2">Check-In</th>
-          <th class="border p-2">Check-Out</th>
-          <th class="border p-2">Status</th>
-          <th class="border p-2">Hours Worked</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let attendance of attendanceList">
-          <td class="border p-2 text-center">{{ attendance.userID }}</td>
-          <td class="border p-2 text-center">{{ attendance.attendanceDate | date:'yyyy-MM-dd' }}</td>
-          <td class="border p-2 text-center">{{ attendance.checkInTime ? convertToLocalTime(attendance.checkInTime) : 'N/A' }}</td>
-          <td class="border p-2 text-center">{{ attendance.checkOutTime ? convertToLocalTime(attendance.checkOutTime) : 'N/A' }}</td>
-          <td class="border p-2 text-center">{{ attendance.status }}</td>
-          <td class="border p-2 text-center">{{ attendance.workHours || 'N/A' }}</td>
-        </tr>
-      </tbody>
-    </table>
   </div>
+  
 
-  <div *ngIf="attendanceList.length === 0 && !loading" class="text-center text-gray-500 mt-4">
-    No attendance records found.
+
+  <div class="mt-6 w-[81vw] h-[calc(100vh-150px)] overflow-auto">
+    <div *ngIf="loading" class="text-center text-blue-500">Loading...</div>
+  
+    <!-- Scrollable Table Wrapper -->
+    <div class="overflow-auto h-full w-full">
+      <table mat-table [dataSource]="dataSource" matSort class="mat-elevation w-full min-w-max">
+    <ng-container *ngFor="let column of columns" [matColumnDef]="column.key">
+      
+      <mat-header-cell *matHeaderCellDef mat-sort-header 
+        [style.min-width]="column.width" 
+        [style.max-width]="column.width">
+        {{ column.title }}
+      </mat-header-cell>
+  
+      <mat-cell *matCellDef="let row" [style.min-width]="column.width" [style.max-width]="column.width">
+  
+        <!-- Actions Column -->
+        <ng-container *ngIf="column.key === 'actions'">
+          <button mat-icon-button color="primary" (click)="onEditAttendance(row)">
+            <mat-icon>edit</mat-icon>
+          </button>
+        </ng-container>
+  
+        <!-- Employee Name Column with Image -->
+        <ng-container *ngIf="column.key === 'Employee_Name'">
+          <div class="flex items-center space-x-3">
+            <!-- Circular Image (Reduced Size) -->
+            <img 
+              [src]="row.Gender?.toLowerCase() === 'm' ? 'assets/images/man.png' : 'assets/images/woman.png'" 
+              alt="Employee Image" 
+              class="w-8 h-8 rounded-full border border-gray-300 shadow-md"
+            />
+            
+            <!-- Name & Details -->
+            <div class="text-xs">
+              <div class="font-semibold text-gray-800">{{ row.Employee_Name }}</div>
+              <div class="text-gray-600">{{ row.Gender }} | {{ row.DateOfBirth }}</div>
+            </div>
+          </div>
+        </ng-container>
+  
+        <!-- Status Column with Conditional Styling -->
+        <ng-container *ngIf="column.key === 'Status'">
+          <div class="px-2 py-1 rounded-md text-center "
+            [ngClass]="{
+               'status-approved': row?.Status?.toLowerCase() === 'present' || row?.Status?.toLowerCase() === 'leave',
+            'status-rejected': row?.Status?.toLowerCase() === 'absent' || row?.Status?.toLowerCase() === 'late',
+            'status-pending': row?.Status?.toLowerCase() === 'short hours'
+            }">
+            {{ row.Status || 'N/A' }}
+          </div>
+        </ng-container>
+  
+        <!-- Default Cell Content for Other Columns -->
+        <ng-container *ngIf="column.key !== 'Employee_Name' && column.key !== 'Status' && column.key !== 'actions'">
+          {{ row[column.key] }}
+        </ng-container>
+  
+      </mat-cell>
+    </ng-container>
+  
+    <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+  </table>
+  
+  
+  
+  
+  
+  
+  <!-- <mat-paginator [pageSizeOptions]="[5, 10, 25]" showFirstLastButtons></mat-paginator> -->
+       <!-- Pagination Component -->
+     
+  
+</div>
+
+<app-pagination 
+  [totalRecords]="totalPages"
+  [pageSize]="attendanceRequest.pageSize"
+  [showFirstLastButtons]="true" 
+  [currentPage]="attendanceRequest.pageNumber"
+  (pageChanged)="onPageChange($event)">
+</app-pagination>
+
+
   </div>
-  <app-face-recognition></app-face-recognition>
 </div>

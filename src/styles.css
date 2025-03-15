@@ -92,7 +92,8 @@ code[class*='language-'] {
 html, body {
   margin: 0;
   padding: 0;
-  overflow-x: hidden; /* Prevent horizontal scrolling */
+
+  overflow-x: hidden;  /* Prevent horizontal scrolling */
   height: 100%; /* Ensure it fits the viewport */
 }
 Ensure 
@@ -107,16 +108,20 @@ Ensure
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
+  height: 6px;              /* height of horizontal scrollbar ← You're missing this */
+
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #7f8185;
+  background: #c9c6d4;
   border-radius: 8px;
+  height: 6px;              /* height of horizontal scrollbar ← You're missing this */
+
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #3b3a3b;
+  background: #3b1eaf;
 }
 
 /* Active Link Background */
@@ -198,3 +203,57 @@ td {
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+mat-form-field {
+  display: block !important;
+  width: 100% !important;
+}
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+.mat-mdc-form-field:not(.mat-form-field-no-animations) .mdc-text-field__input {
+  transition: none !important;  /* Remove the transition */
+}
+.mat-mdc-form-field:not(.mat-form-field-no-animations) .mat-mdc-form-field-infix {
+  transition: opacity 300ms 0ms ease-in-out;  /* Adjust duration and timing function */
+}
+:root {
+  --mdc-outlined-text-field-input-text-color: red; /* Change text color */
+}
+.mat-mdc-form-field-input {
+  color: black !important; /* Change text color */
+  font-size: 16px; /* Change font size */
+}
+.mat-success {
+  background-color: #4CAF50 !important; /* Green color */
+  color: white !important;
+}
+.status-approved {
+  color: green;
+  background-color: rgb(189, 255, 205); 
+  padding: 2px 24px;
+  font-size: 12px;
+}
+
+.status-rejected {
+  color: #ce1e25;
+  background-color: #ffd9d9;
+  padding: 2px 34px;
+  font-size: 12px;
+}
+
+.status-pending {
+  color: #7f7f33;
+  background-color: #ffffad;
+  padding: 2px 12px;
+  font-size: 12px;
+}
+/* Change mat-sort-header arrows to white */
+.mat-sort-header-arrow {
+  color: white !important;
+  opacity: 1 !important;
+}
+
+/* Ensure the active arrow remains visible */
+.mat-sort-header.mat-sort-header-sorted .mat-sort-header-arrow {
+  color: white !important;
+}

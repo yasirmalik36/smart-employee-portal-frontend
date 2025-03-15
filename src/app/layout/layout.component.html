@@ -1,11 +1,11 @@
 
-<body class="flex h-screen bg-gray-100 font-sans ">
+<body class="flex h-screen bg-gray-100 font-sans shadow-md overflow-hidden">
   <!-- Sidebar -->
-  <aside class="sticky top-0 w-64 bg-white shadow-lg"  [ngClass]="{'collapsed': isCollapsed}">
+  <aside class="sticky top-0 w-64 bg-white shadow-[8px_8px_20px_rgba(0,0,0,0.1)] border border-gray-100 z-[999]"  [ngClass]="{'collapsed': isCollapsed}">
     <div class="flex items-center justify-center h-16 p-4 ">
       <img src="assets/images/Vectorlogo.png" alt="Logo" [ngClass]="{'w-10': isCollapsed, 'w-2/4 mt-5': !isCollapsed}">
 
-      <h2 *ngIf="!isCollapsed" class="text-2xl font-semibold text-primary mb-1 mt-5 ml-0">Smart Employee</h2>
+      <h2 *ngIf="!isCollapsed" class="text-2xl font-semibold text-primary mb-1 mt-6 ml-0 ">Smart Employee</h2>
 
     </div>
     <!-- <nav class="mt-12" [ngClass]="{ 'ml-3': !isCollapsed }">
@@ -107,7 +107,7 @@
         </li>
       </ul>
     </nav> -->
-    <nav class="mt-12" [ngClass]="{ 'ml-3': !isCollapsed }">
+    <nav class="mt-12 " [ngClass]="{ 'ml-3': !isCollapsed }">
       <ul>
         <li *ngFor="let activity of activities" class="nav-item">
           <a
@@ -136,7 +136,18 @@
     </nav>
     
     
+     <!-- <mat-nav-list class="mt-12" [ngClass]="{ 'ml-3': !isCollapsed }">
+      <mat-list-item *ngFor="let activity of activities" [routerLink]="activity.activityURL" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" [ngClass]="{ 'collapsed': isCollapsed }">
+        <mat-icon>{{ getIconForActivity(activity.activityName) }}</mat-icon>
+        <span *ngIf="!isCollapsed" class="ml-3">{{ activity.activityName }}</span>
+      </mat-list-item>
     
+      <mat-list-item (click)="signOut()" [ngClass]="{ 'collapsed': isCollapsed }">
+        <mat-icon>logout</mat-icon>
+        <span *ngIf="!isCollapsed" class="ml-3">Logout</span>
+      </mat-list-item>
+    </mat-nav-list>
+     -->
     
  
   </aside>
@@ -144,7 +155,7 @@
   <!-- Main Content -->
   <div class="flex-1 flex flex-col">
     <!-- Header -->
-    <header class="sticky top-0 z-50 flex items-center justify-between h- px-6 bg-white shadow-md p-2.5">
+    <header class="sticky top-0 z-50 flex items-center justify-between h- px-6 bg-white  p-2.5  drop-shadow-lg border border-gray-300 z-[999]">
       <!-- Left Section: Sidebar Toggle Button + Search Bar -->
       <div class="flex items-center space-x-4">
         <!-- Sidebar Toggle Button -->
@@ -217,7 +228,7 @@
     </header>
     
 
-    <div [ngClass]="{'content-collapsed': isCollapsed}" class="main-content">
+    <div [ngClass]="{'content-collapsed': isCollapsed}" class="main-content ">
       <router-outlet ></router-outlet>
     </div>
   </div>

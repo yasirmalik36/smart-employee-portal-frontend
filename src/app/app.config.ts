@@ -61,7 +61,7 @@ export const appConfig: ApplicationConfig = {
       useFactory: () => ({
         echarts: () => import('echarts'),  // Lazy load echarts
       })
-    }, provideAnimationsAsync()
+    }, provideAnimationsAsync(), provideAnimationsAsync(), provideAnimationsAsync()
   ]
 };
 

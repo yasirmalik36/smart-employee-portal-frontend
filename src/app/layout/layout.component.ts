@@ -4,11 +4,12 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink, RouterModule, RouterOutlet } from '@angular/router';
 import { AuthService } from '../account/auth.service';
 import { Activity } from '../models/Activity';
+import { MaterialModule } from '../shared/material module/material.module';
 
 @Component({
   selector: 'app-layout',
   standalone: true,
-  imports: [RouterOutlet, RouterLink,RouterModule, ReactiveFormsModule, CommonModule],
+  imports: [RouterOutlet, RouterLink,RouterModule, ReactiveFormsModule, CommonModule,MaterialModule],
   templateUrl: './layout.component.html',
   styleUrls: ['./layout.component.css']
 })
