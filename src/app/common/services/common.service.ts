@@ -110,9 +110,44 @@ export class CommonService {
     }
     return activity;
   }
+  
+  // Corrected formatColumnName function
+  formatColumnName(column: string): { key: string; title: string; width: string } {
+    const match = column.match(/_(\d+)$/); // Extract width if present
+    const width = match ? `${match[1]}px` : '200px'; // Assign width if found, else default 200px
+    const key = column.replace(/_\d+$/, ''); // Remove trailing number and underscore
+    const title = key.replace(/_/g, ' ') // Replace underscores with spaces
+      .trim() // Remove any extra spaces
+      .replace(/\b\w/g, char => char.toUpperCase()); // Capitalize words
+    
+    return { key, title, width };
+  }
 
-
+  TimeMatFormatter(params: any) {
+    if (params) {
+      // Check if the input is a time-only string (HH:mm:ss)
+      if (/^\d{2}:\d{2}:\d{2}$/.test(params)) {
+        return moment(`1970-01-01 ${params}`, "YYYY-MM-DD HH:mm:ss").format("hh:mm:ss A");
+      }
+      // Existing logic for date-time formatting
+      return moment(params).format("hh:mm:ss A");
+    } else {
+      return "-";
+    }
+  }
+  
   dateMatFormatter(params: any) {
+    if (params) {
+           return moment(params).format('DD/MM/YYYY');
+  
+     // return moment(params).format('DD/MM/YYYY hh:mm:ss A');
+  
+    } else {
+      return '-';
+    }
+  }
+
+  DateandTimeMatFormatter(params: any) {
     if (params) {
       return moment(params).format('DD/MM/YYYY hh:mm:ss A');
     } else {

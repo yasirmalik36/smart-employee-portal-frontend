@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, inject, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AttendanceService } from '../../services/attendance.service';
@@ -15,6 +15,7 @@ import FileSaver, { saveAs } from 'file-saver';
 import "jspdf-autotable";
 import { FaceRecognitionComponent } from '../face-recognition/face-recognition.component';
 import { MatDialog } from '@angular/material/dialog';
+import { CommonService } from '../../../../common/services/common.service';
 
 @Component({
   selector: 'app-attendance',
@@ -26,6 +27,7 @@ import { MatDialog } from '@angular/material/dialog';
 export class AttendanceComponent implements OnInit {
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | any;
   @ViewChild(MatSort, { static: false }) sort: MatSort | any;
+  private common = inject(CommonService);
   displayedColumns: string[] = [];
   columns: any[] = [];
   dataSource = new MatTableDataSource<any>();
@@ -162,14 +164,14 @@ export class AttendanceComponent implements OnInit {
           this.columns = Object.keys(attendanceData[0] || {})
             .filter(column => !excludedColumns.includes(column))
             .map(column => {
-              const formattedColumn = this.formatColumnName(column);
+              const formattedColumn = this.common.formatColumnName(column);
               columnMapping[column] = formattedColumn.key; // Store mapping of old key to new key
               return formattedColumn;
             });
   
           // Ensure 'actions' column is added only once
           if (!this.columns.some(col => col.key === 'actions')) {
-            this.columns.splice(1, 0, { key: 'actions', title: 'Actions', width: '70px' });
+            this.columns.splice(1, 0, { key: 'actions', title: 'Action', width: '75px' });
           }
   
           this.displayedColumns = this.columns.map(col => col.key);
@@ -185,21 +187,20 @@ export class AttendanceComponent implements OnInit {
   
             // Step 3: Format specific fields (using new keys)
             if (newRecord.Attendance_Date) {
-              newRecord.Attendance_Date = this.dateMatFormatter(newRecord.Attendance_Date);
+              newRecord.Attendance_Date = this.common.dateMatFormatter(newRecord.Attendance_Date);
             }
             if (newRecord.DateOfBirth) {
-              newRecord.DateOfBirth = this.dateMatFormatter(newRecord.DateOfBirth);
+              newRecord.DateOfBirth = this.common.dateMatFormatter(newRecord.DateOfBirth);
             }
             if (newRecord.CheckIn) {
-              newRecord.CheckIn = this.TimeMatFormatter(newRecord.CheckIn);
+              newRecord.CheckIn = this.common.TimeMatFormatter(newRecord.CheckIn);
             }
             if (newRecord.CheckOut) {
-              newRecord.CheckOut = this.TimeMatFormatter(newRecord.CheckOut);
+              newRecord.CheckOut = this.common.TimeMatFormatter(newRecord.CheckOut);
             }
   
             return newRecord;
           });
-           console.log(transformedData)
           this.dataSource = new MatTableDataSource(transformedData);
           this.dataSource.paginator = this.paginator;
           this.dataSource.sort = this.sort;
@@ -213,39 +214,9 @@ export class AttendanceComponent implements OnInit {
     );
   }
   
-  
-  // Corrected formatColumnName function
-  formatColumnName(column: string): { key: string; title: string; width: string } {
-    const match = column.match(/_(\d+)$/); // Extract width if present
-    const width = match ? `${match[1]}px` : '200px'; // Assign width if found, else default 200px
-    const key = column.replace(/_\d+$/, ''); // Remove trailing number and underscore
-    const title = key.replace(/_/g, ' ') // Replace underscores with spaces
-      .trim() // Remove any extra spaces
-      .replace(/\b\w/g, char => char.toUpperCase()); // Capitalize words
-    
-    return { key, title, width };
-  }
+
   
   
- TimeMatFormatter(params: any) {
-    if (params) {
-      return moment(params).format(' hh:mm:ss A');
-     // return moment(params).format('DD/MM/YYYY hh:mm:ss A');
-
-    } else {
-      return '-';
-    }
-  }
-  dateMatFormatter(params: any) {
-    if (params) {
-           return moment(params).format('DD/MM/YYYY');
-
-     // return moment(params).format('DD/MM/YYYY hh:mm:ss A');
-
-    } else {
-      return '-';
-    }
-  }
 
   
   
@@ -293,22 +264,22 @@ export class AttendanceComponent implements OnInit {
   
   openFaceRecognitionDialog() {
     const dialogRef = this.dialog.open(FaceRecognitionComponent, {
-      width: '600px', // Adjust according to your model
-      height: '600px', // Adjust according to your model
-      maxWidth: '90vw', // Ensures compatibility with smaller screens
+      width: '600px', 
+      height: '600px', 
+      maxWidth: '90vw', 
       maxHeight: '90vh',
-      disableClose: false,
-      data: { employeeId: this.attendanceRequest?.employeeId } 
+      disableClose: true,
+      data: { employeeId: this.attendanceRequest?.employeeId },
+      panelClass: 'custom-dialog' // 👈 Add custom class
     });
   
     dialogRef.afterClosed().subscribe(result => {
-      this.getAttendance();
-  
       if (result) {
         this.getAttendance();
       }
     });
   }
+  
   
   
   onPageChange(event: { pageIndex: number, pageSize: number }): void {

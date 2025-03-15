@@ -6,6 +6,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ToastService } from '../../../../shared/components/services/toaster.service';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { CommonService } from '../../../../common/services/common.service';
 
 @Component({
   selector: 'app-face-recognition',
@@ -20,13 +21,22 @@ export class FaceRecognitionComponent {
   isScanning = false;
   scanResult: string | null = null;
   retryCount = 0;
+  emp: any = {}; // Store employee data
+  employeeID: string = '';
+  checkInTime: string = '';
+  checkOutTime: string = '';
+  workHours: number = 0;
   faceTrackingActive = false; // NEW: Shows "Face detected!" message
   darkMode = false;
   private synth = window.speechSynthesis;
   private voices: SpeechSynthesisVoice[] = [];
   private toastService = inject(ToastService);
   private attendanceService = inject(AttendanceService);
+  private common = inject(CommonService);
+
   isSuccess: boolean=false;
+  profilePic: any;
+  scanSuccess: boolean=false;
 
   constructor(
     private dialogRef: MatDialogRef<FaceRecognitionComponent>,
@@ -64,49 +74,48 @@ export class FaceRecognitionComponent {
 
   /** Processes the face recognition logic */
   private processFaceRecognition(webcamImage: WebcamImage) {
+    this.isScanning = true;
     this.attendanceService.markAttendance(webcamImage.imageAsDataUrl).subscribe(
       (response) => {
         this.isScanning = false;
         this.scanResult = response.resp?.description || 'No response from server';
         this.isSuccess = response?.resp?.code === '00';
 
-        if (response?.resp?.code == '00') {
-          this.retryCount=0;
+        if (response?.resp?.code === '00') {
+      
+          this.retryCount = 0;
+          this.emp = response.emp || {};
+          this.employeeID = response.employeeID || 'N/A';
+          this.checkInTime = this.common.TimeMatFormatter(response.checkInTime)  || 'N/A';
+          this.checkOutTime = this.common.TimeMatFormatter(response.checkOutTime) || 'N/A';
+          this.workHours = response.workHours || 0;
+  
           const Emp_FullName = response.emp?.emp_FullName || 'User';
           const isCheckIn = response.resp.description.toLowerCase().includes('check-in');
           const message = isCheckIn
             ? `Welcome ${Emp_FullName}! Have a great day.`
             : `Goodbye ${Emp_FullName}! See you next time.`;
-
+  
           this.speak(message, 'female');
           this.toastService.showSuccess(response.resp.description);
-
-          setTimeout(() => {
-            this.dialogRef.close(true);
-          }, 5000);
+          this.isSuccess=true;
+          this.scanSuccess = true;
+          setTimeout(() => this.dialogRef.close(true), 30000);
         } else {
-          if (this.retryCount < 3) {
-            setTimeout(() => this.triggerSnapshot(), 1500);
-          } else {
-            this.isScanning = false;
-            this.toastService.showError(response.resp.description);
-            setTimeout(() => {
-              this.dialogRef.close(false);
-            }, 3000);
-          }
+          this.retryCount < 3 ? setTimeout(() => this.triggerSnapshot(), 1500) : this.failRecognition(response.resp.description);
         }
       },
-      (error) => {
-        console.error('Face recognition error:', error);
-        this.scanResult = 'Face recognition failed. Please try again.';
-        this.isScanning = false;
-        setTimeout(() => {
-          this.dialogRef.close(false);
-        }, 3000);
-      }
+      (error) => this.failRecognition('Face recognition failed. Please try again.')
     );
   }
-
+  
+  private failRecognition(message: string) {
+    this.isScanning = false;
+    this.scanResult = message;
+    this.toastService.showError(message);
+    setTimeout(() => this.dialogRef.close(false), 3000);
+  }
+  
   /** Handles text-to-speech voice feedback */
   speak(message: string, voiceGender: 'male' | 'female'): void {
     if (!this.synth || this.synth.speaking) {
@@ -134,10 +143,16 @@ export class FaceRecognitionComponent {
     return this.trigger.asObservable();
   }
 
-  /** Toggles dark mode */
-  toggleDarkMode() {
-    this.darkMode = !this.darkMode;
-  }
+/** Toggles dark mode */
+toggleDarkMode() {
+  const htmlElement = document.documentElement;
+  htmlElement.classList.toggle('dark');
+  
+  // Save the preference to localStorage (optional)
+  const isDarkMode = htmlElement.classList.contains('dark');
+  localStorage.setItem('darkMode', isDarkMode ? 'enabled' : 'disabled');
+}
+
 
   /** Closes the modal */
   closeModal() {

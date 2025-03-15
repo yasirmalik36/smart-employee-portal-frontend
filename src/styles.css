@@ -257,3 +257,6 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .mat-sort-header.mat-sort-header-sorted .mat-sort-header-arrow {
   color: white !important;
 }
+::ng-deep .mat-dialog-container {
+  border-radius: 20px !important;
+}
