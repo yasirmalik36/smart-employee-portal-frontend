@@ -13,21 +13,24 @@ import { MatSort } from '@angular/material/sort';
 import moment from 'moment';
 import FileSaver, { saveAs } from 'file-saver';
 import "jspdf-autotable";
+import * as XLSX from 'xlsx';
 import { FaceRecognitionComponent } from '../face-recognition/face-recognition.component';
 import { MatDialog } from '@angular/material/dialog';
 import { CommonService } from '../../../../common/services/common.service';
+import { AlertBoxComponent } from '../../../../shared/components/alert-box/alert-box.component';
+import { ManualAttendanceComponent } from '../manual-attendance/manual-attendance.component';
 
 @Component({
   selector: 'app-attendance',
   standalone: true,
-  imports: [CommonModule,MaterialModule, FormsModule, ReactiveFormsModule,PaginationComponent],
+  imports: [CommonModule,MaterialModule, FormsModule, ReactiveFormsModule,PaginationComponent,AlertBoxComponent,ManualAttendanceComponent],
   templateUrl: './attendance.component.html',
   styleUrl: './attendance.component.css'
 })
 export class AttendanceComponent implements OnInit {
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | any;
   @ViewChild(MatSort, { static: false }) sort: MatSort | any;
-  private common = inject(CommonService);
+  public common = inject(CommonService);
   displayedColumns: string[] = [];
   columns: any[] = [];
   dataSource = new MatTableDataSource<any>();
@@ -42,6 +45,9 @@ export class AttendanceComponent implements OnInit {
   filtersExpanded = true;
   selectedDesignation: any = null;
   selectedDepartment: any = null;
+  selectedempID: any = null;
+  selectedShift: any = null;
+  attendanceData: any;
   attendanceRequest: AttendanceRequest = {
     employeeId: 0,   // ❌ Should be undefined initially if optional
     departmentId: 0,  // ❌
@@ -55,26 +61,41 @@ export class AttendanceComponent implements OnInit {
     pageSize: 25
   };
   
-
-  //designations: string[] = ['Manager', 'Software Engineer', 'HR', 'Admin', 'Technician'];
-  //departments: string[] = ['IT', 'HR', 'Finance', 'Operations', 'Marketing'];
-  //shifts: string[] = ['Morning', 'Evening', 'Night'];
-
   departments: { id: number; name: string }[] = [
     { id: 1, name: 'IT' },
     { id: 2, name: 'HR' },
     { id: 3, name: 'Finance' }
   ];
+  shifts: { id: number; name: string }[] = [
+    { id: 1, name: 'Morning Shift' },
+    { id: 2, name: 'Evening Shift' },
+    { id: 3, name: 'Night Shift' }
+  ];
+  designations: { id: number; name: string }[] = [
+    { id: 1, name: 'Software Engineer' },
+    { id: 2, name: 'Senior Software Engineer' },
+    { id: 3, name: 'HR' },
+    { id: 4, name: 'Admin' },
+    { id: 5, name: 'Technician' }
+  ];
+  
+  dateRanges = [
+    { value: 'currentMonth', label: 'Current Month' },
+    { value: 'lastMonth', label: 'Last Month' }, // ✅ Added Last Month
+    { value: 'last3Months', label: 'Last 3 Months' },
+    { value: 'yearToDate', label: 'Year to Date' },
+    { value: 'lastYear', label: 'Last Year' }, // ✅ Added Last Year
+    { value: 'custom', label: 'Custom Range' }
+  ];
+  
   getRecordValue(record: AttendanceRecord, column: string): any {
     return record[column as keyof AttendanceRecord];
   }
-  
   
   // ✅ Add toggleDropdown method
   toggleDropdown(type: string) {
     this.dropdownOpen = this.dropdownOpen === type ? null : type;
   }
-
   // ✅ Add selectDesignation method
   selectDesignation(designation: any) {
     this.selectedDesignation = designation;
@@ -88,26 +109,11 @@ export class AttendanceComponent implements OnInit {
   }
 
 
-  shifts: { id: number; name: string }[] = [
-    { id: 1, name: 'Morning Shift' },
-    { id: 2, name: 'Evening Shift' },
-    { id: 3, name: 'Night Shift' }
-  ];
-  designations: { id: number; name: string }[] = [
-    { id: 1, name: 'Manager' },
-    { id: 2, name: 'Software Engineer' },
-    { id: 3, name: 'HR' },
-    { id: 4, name: 'Admin' },
-    { id: 5, name: 'Technician' }
-  ];
-  
-  dateRanges = [
-    { value: 'currentMonth', label: 'Current Month' },
-    { value: 'last3Months', label: 'Last 3 Months' },
-    { value: 'yearToDate', label: 'Year to Date' },
-    { value: 'custom', label: 'Custom Range' }
-  ];
-
+  selectShift(shift: any) {
+    this.selectedShift = shift;
+    this.attendanceRequest.shiftId = shift ? shift.id : null; // Update model
+    this.dropdownOpen = null; // Close dropdown
+  }
 
   constructor(private attendanceService: AttendanceService,private dialog: MatDialog) {}
 
@@ -120,16 +126,21 @@ export class AttendanceComponent implements OnInit {
     const today = new Date();
     let fromDate: Date;
     let toDate: Date;
-
+  
     switch (this.attendanceRequest.dateRange) {
       case 'currentMonth':
         fromDate = new Date(today.getFullYear(), today.getMonth(), 1);
-        toDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+        toDate = new Date(today.getFullYear(), today.getMonth() + 1, 0); // ✅ Gets the last day of the current month
+        this.showCustomDates = false;
+        break;
+      case 'lastMonth':
+        fromDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+        toDate = new Date(today.getFullYear(), today.getMonth(), 0); // ✅ Gets the last day of the last month correctly
         this.showCustomDates = false;
         break;
       case 'last3Months':
         fromDate = new Date(today.getFullYear(), today.getMonth() - 2, 1);
-        toDate = today;
+        toDate = new Date(today.getFullYear(), today.getMonth() + 1, 0); // ✅ End of current month
         this.showCustomDates = false;
         break;
       case 'yearToDate':
@@ -137,31 +148,73 @@ export class AttendanceComponent implements OnInit {
         toDate = today;
         this.showCustomDates = false;
         break;
+      case 'lastYear':
+        fromDate = new Date(today.getFullYear() - 1, 0, 1);
+        toDate = new Date(today.getFullYear() - 1, 11, 31); // ✅ Last day of last year
+        this.showCustomDates = false;
+        break;
       case 'custom':
         this.showCustomDates = true;
+        fromDate = new Date(); // ✅ Create a new Date object to ensure it's set properly
+        toDate = new Date();
         return; // Don't set default dates for custom
       default:
         return;
     }
-
+  
     this.attendanceRequest.fromDate = fromDate.toISOString().split('T')[0];
     this.attendanceRequest.toDate = toDate.toISOString().split('T')[0];
   }
-
+  
+  searchAttendance() {
+    this.attendanceRequest.employeeId = this.selectedempID || 0;
+    this.attendanceRequest.departmentId = this.selectedDepartment?.id || 0;
+    this.attendanceRequest.designationId = this.selectedDesignation?.id || 0;
+    this.attendanceRequest.shiftId = this.attendanceRequest.shiftId || 0;
+    this.attendanceRequest.fromDate = this.attendanceRequest.fromDate || '';
+    this.attendanceRequest.toDate = this.attendanceRequest.toDate || '';
+    this.attendanceRequest.status = this.attendanceRequest.status || '';
+  
+    // Validation: Check if the custom date range is selected but dates are missing
+    if (this.attendanceRequest.dateRange === 'custom' && (!this.attendanceRequest.fromDate || !this.attendanceRequest.toDate)) {
+      this.common.showCustomAlert(true, 'warning', 'Please select both From and To dates for a custom date range.');
+      return;
+    }
+  
+    // Validation: Ensure the "From Date" is not after "To Date"
+    if (new Date(this.attendanceRequest.fromDate) > new Date(this.attendanceRequest.toDate)) {
+      this.common.showCustomAlert(true, 'error', 'From Date cannot be after To Date.');
+      return;
+    }
+  
+    // Validation: Ensure at least one filter is applied
+    if (
+      !this.attendanceRequest.employeeId &&!this.attendanceRequest.departmentId &&!this.attendanceRequest.designationId &&!this.attendanceRequest.shiftId &&
+      !this.attendanceRequest.status && !this.attendanceRequest.fromDate &&!this.attendanceRequest.toDate
+    ) {
+      this.common.showCustomAlert(true, 'info', 'Please select at least one filter before searching.');
+      return;
+    }
+  
+    this.getAttendance();
+  }
   
   getAttendance() {
     this.loading = true;
     this.attendanceService.getAttendance(this.attendanceRequest).subscribe(
       (response: any) => {
-        if (response.resp?.code === '00' && response.attendanceData.length > 0) {
+        if (response.resp?.code === '00') {
           this.totalPages=response.resp.totalPages;
-          const attendanceData = response.attendanceData || [];
+           this.attendanceData = response.attendanceData || [];
+           this.attendanceList=response.attendanceData || [];
+           if (this.attendanceData.length === 0) {
+            this.common.showCustomAlert(true, 'info', 'No attendance records found for the selected filters.');
+        }
           const excludedColumns = ['AttendanceID', 'EmployeeID','DateOfBirth', 'Gender'];
-  
           // Step 1: Process column names and store mapping
           const columnMapping: { [originalKey: string]: string } = {};
   
-          this.columns = Object.keys(attendanceData[0] || {})
+          this.columns = Object.keys(this.attendanceData[0] || {})
             .filter(column => !excludedColumns.includes(column))
             .map(column => {
               const formattedColumn = this.common.formatColumnName(column);
@@ -177,7 +230,7 @@ export class AttendanceComponent implements OnInit {
           this.displayedColumns = this.columns.map(col => col.key);
   
           // Step 2: Transform the row data to match new keys
-          const transformedData = attendanceData.map((record: any) => {
+          const transformedData = this.attendanceData.map((record: any) => {
             const newRecord: any = {};
   
             Object.keys(record).forEach((originalKey) => {
@@ -209,6 +262,7 @@ export class AttendanceComponent implements OnInit {
       },
       (error: any) => {
         console.error('Error fetching attendance:', error);
+        this.common.showCustomAlert(true, 'error', 'Failed to fetch attendance records. Please try again later.');
         this.loading = false;
       }
     );
@@ -225,26 +279,39 @@ export class AttendanceComponent implements OnInit {
     // Logic to open modal and pass the selected record for editing
   }
 
+
+  
   exportAttendance(format: string) {
     let fileName = `attendance.${format}`;
   
-    if (format === 'csv') {
-      const csvData = this.convertToCSV(this.attendanceList);
-      const blob = new Blob([csvData], { type: 'text/csv' });
-      saveAs(blob, fileName); // ✅ Corrected to avoid redundant Blob creation
-    } else if (format === 'excel') {
-      import('xlsx').then(xlsx => {
-        const worksheet = xlsx.utils.json_to_sheet(this.attendanceList);
-        const workbook = { Sheets: { data: worksheet }, SheetNames: ['data'] };
-        const excelBuffer = xlsx.write(workbook, { bookType: 'xlsx', type: 'array' });
-        const data = new Blob([excelBuffer], { type: 'application/octet-stream' });
-        const link = document.createElement('a');
-        link.href = window.URL.createObjectURL(data);
-        link.download = fileName;
-        link.click();
-      }); // ✅ Added missing closing parenthesis
+    try {
+      if (!this.attendanceList || this.attendanceList.length === 0) {
+        this.common.showCustomAlert(true, 'warning', 'No attendance data available to export.');
+        return;
+      }
+  
+      if (format === 'csv') {
+        const csvData = this.convertToCSV(this.attendanceList);
+        const blob = new Blob([csvData], { type: 'text/csv' });
+        saveAs(blob, fileName);
+        this.common.showCustomAlert(true, 'success', 'Attendance exported successfully as CSV.');
+      } 
+      else if (format === 'excel') {
+        const worksheet = XLSX.utils.json_to_sheet(this.attendanceList);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Attendance');
+  
+        const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+        const data = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        saveAs(data, fileName);
+        this.common.showCustomAlert(true, 'success', 'Attendance exported successfully as Excel.');
+      }
+    } catch (error) {
+      console.error('Error exporting attendance:', error);
+      this.common.showCustomAlert(true, 'error', 'Failed to export attendance. Please try again.');
     }
   }
+  
   
   exportData() {
     if (!this.attendanceList || this.attendanceList.length === 0) {
@@ -281,7 +348,23 @@ export class AttendanceComponent implements OnInit {
     });
   }
   
-  
+  openManualAttendance() {
+    const dialogRef = this.dialog.open(ManualAttendanceComponent, {
+      width: '600px', 
+      height: '600px', 
+      maxWidth: '90vw', 
+      maxHeight: '90vh',
+      disableClose: true,
+      autoFocus: false,
+      panelClass: 'custom-dialog' // Custom class for styling
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        console.log('Manual attendance marked');
+      }
+    });
+  }
   
   onPageChange(event: { pageIndex: number, pageSize: number }): void {
     debugger

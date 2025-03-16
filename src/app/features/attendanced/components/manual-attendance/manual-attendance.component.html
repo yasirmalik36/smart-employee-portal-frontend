@@ -1,0 +1,111 @@
+<div class="relative p-5">
+    <!-- Header Container with Icon and Title in One Line -->
+    <div class="flex items-center justify-between bg-blue-100 dark:bg-gray-700 p-4 rounded-md">
+      <!-- Icon and Title -->
+      <div class="flex items-center space-x-2">
+        <mat-icon class="text-blue-600 dark:text-blue-300">assignment_ind</mat-icon>
+        <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Manual Attendance</h2>
+      </div>
+      <!-- Close Button -->
+      <button (click)="closeDialog()" class="p-2 rounded-md bg-gray-200 dark:bg-gray-800 transition-all">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+             stroke="currentColor" class="w-6 h-6 text-gray-600 dark:text-white">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+  
+    <!-- Dialog Content -->
+    <div class="mt-4 space-y-6">
+      <!-- Search Field -->
+      <div class="w-full">
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+          Search by Employee ID or Name
+        </label>
+        <div class="relative rounded-md shadow-sm">
+          <input
+            matInput
+            type="text"
+            [(ngModel)]="searchText"
+            (input)="filterEmployees()"
+            placeholder="Enter Employee ID or Name"
+            class="block w-full pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          />
+          <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+            <mat-icon class="text-gray-400">search</mat-icon>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Search Results -->
+      <div *ngIf="filterEmployees().length === 0" class="text-gray-500">
+        No employees found
+      </div>
+      <ul *ngIf="filterEmployees().length > 0" class="divide-y divide-gray-200">
+        <li
+          *ngFor="let emp of filterEmployees()"
+          class="py-2 flex justify-between items-center"
+        >
+          <div>
+            <h3 class="font-medium text-gray-800 flex items-center">
+              <mat-icon class="mr-1">person</mat-icon>
+              {{ emp.name }}
+            </h3>
+            <p class="text-sm text-gray-500 flex items-center">
+              <mat-icon class="mr-1 text-xs">badge</mat-icon>
+              ID: {{ emp.id }}
+            </p>
+          </div>
+          <button
+            mat-button
+            (click)="selectedEmployee = emp"
+            class="flex items-center text-blue-600 hover:text-blue-800"
+          >
+            <mat-icon class="mr-1">check_circle</mat-icon>
+            Select
+          </button>
+        </li>
+      </ul>
+  
+      <!-- Selected Employee Details & Attendance Actions -->
+      <div *ngIf="selectedEmployee" class="p-4 border rounded-md bg-gray-50">
+        <h3 class="text-lg font-semibold text-gray-800 flex items-center">
+          <mat-icon class="mr-1">info</mat-icon>
+          You selected: {{ selectedEmployee.name }} (ID: {{ selectedEmployee.id }})
+        </h3>
+        <div class="flex space-x-4 mt-4">
+          <button
+            mat-raised-button
+            color="success"
+            (click)="markCheckIn()"
+            class="flex items-center"
+          >
+            <mat-icon class="mr-1">login</mat-icon>
+            Mark Check-in
+          </button>
+          <button
+            mat-raised-button
+            color="primary"
+            (click)="markCheckOut()"
+            class="flex items-center"
+          >
+            <mat-icon class="mr-1">logout</mat-icon>
+            Mark Check-out
+          </button>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Dialog Actions (Cancel Button at Bottom Left with a Strip Background) -->
+    <mat-dialog-actions class="mt-4 justify-start">
+      <button
+        mat-stroke-button
+        (click)="closeDialog()"
+        class="flex items-center px-4 py-2 bg-gray-200 dark:bg-gray-800 text-gray-600 hover:text-gray-800 rounded-md transition-all"
+      >
+        <mat-icon class="mr-1">cancel</mat-icon>
+        Cancel
+      </button>
+    </mat-dialog-actions>
+  </div>
+  

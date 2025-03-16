@@ -15,7 +15,13 @@
     Attendance Records
   </h2>
 
-
+  <app-alert-box *ngIf="common.showAlert"
+  [type]="common.alertType"
+  [message]="common.alertMessage"
+  [autoClose]="true"
+  [duration]="4000"
+  (close)="common.showAlert = false">
+</app-alert-box>
 
   <!-- Search Filters - Collapsible -->
   <div *ngIf="filtersExpanded" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -23,7 +29,7 @@
     <!-- Employee ID -->
     <div class="flex flex-col">
       <label class="text-sm font-medium text-gray-700">Employee ID</label>
-      <input type="text" [(ngModel)]="attendanceRequest.employeeId"
+      <input type="text" [(ngModel)]="selectedempID"
         class="mt-1 p-2 border border-gray-300 rounded w-full bg-white focus:ring-2 focus:ring-blue-500 transition-all duration-300 shadow-sm"
         placeholder="Enter Employee ID" />
     </div>
@@ -44,6 +50,9 @@
         </div>
         <ul *ngIf="dropdownOpen === 'designation'"
           class="absolute w-full bg-white border border-gray-300 rounded mt-1 shadow-md overflow-hidden transform transition-all duration-300 opacity-100 scale-100">
+          <li (click)="selectDesignation(null)" class="p-2 hover:bg-blue-100 cursor-pointer">
+            Select Designation
+         </li>
           <li *ngFor="let designation of designations" (click)="selectDesignation(designation)"
             class="p-2 hover:bg-blue-100 cursor-pointer">
             {{ designation.name }}
@@ -68,6 +77,9 @@
         </div>
         <ul *ngIf="dropdownOpen === 'department'"
           class="absolute w-full bg-white border border-gray-300 rounded mt-1 shadow-md overflow-hidden transform transition-all duration-300 opacity-100 scale-100">
+          <li (click)="selectDepartment(null)" class="p-2 hover:bg-blue-100 cursor-pointer">
+            Select Department
+          </li>
           <li *ngFor="let department of departments" (click)="selectDepartment(department)"
             class="p-2 hover:bg-blue-100 cursor-pointer">
             {{ department.name }}
@@ -76,15 +88,34 @@
       </div>
     </div>
 
-    <!-- Shift Dropdown -->
-    <div class="flex flex-col">
-      <label class="text-sm font-medium text-gray-700">Shift</label>
-      <select [(ngModel)]="attendanceRequest.shiftId"
-        class="mt-1 p-2 border border-gray-300 rounded w-full bg-white focus:ring-2 focus:ring-blue-500 transition-all duration-300 shadow-sm">
-        <option value="">Select Shift</option>
-        <option *ngFor="let shift of shifts" [value]="shift.id">{{ shift.name }}</option>
-      </select>
+   <!-- Shift Dropdown (Animated) -->
+<div class="flex flex-col relative">
+  <label class="text-sm font-medium text-gray-700">Shift</label>
+  <div class="relative">
+    <!-- Display Selected Shift or Placeholder -->
+    <div class="mt-1 p-2 border border-gray-300 rounded w-full bg-white cursor-pointer flex justify-between items-center"
+      (click)="toggleDropdown('shift')">
+      <span>{{ selectedShift?.name || 'Select Shift' }}</span>
+      <svg class="w-5 h-5 transition-transform duration-300"
+        [class.rotate-180]="dropdownOpen === 'shift'" fill="none" stroke="currentColor"
+        viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M19 9l-7 7-7-7"></path>
+      </svg>
     </div>
+
+    <!-- Dropdown List -->
+    <ul *ngIf="dropdownOpen === 'shift'"
+      class="absolute w-full bg-white border border-gray-300 rounded mt-1 shadow-md overflow-hidden transform transition-all duration-300 opacity-100 scale-100 z-10">
+      <li (click)="selectShift(null)" class="p-2 hover:bg-blue-100 cursor-pointer">
+        Select Shift
+      </li>
+      <li *ngFor="let shift of shifts" (click)="selectShift(shift)" class="p-2 hover:bg-blue-100 cursor-pointer">
+        {{ shift.name }}
+      </li>
+    </ul>
+  </div>
+</div>
 
     <!-- Status Dropdown -->
     <div class="flex flex-col">
@@ -125,7 +156,7 @@
 
   <div class="mt-4 flex justify-between items-center">
     <!-- Search Attendance Button (Left) -->
-    <button mat-raised-button color="primary" class="w-56">
+    <button mat-raised-button color="primary" class="w-56" (click)="searchAttendance()">
       <mat-icon class="mr-2">search</mat-icon> Search Attendance
     </button>
   
@@ -145,11 +176,11 @@
       
             <mat-icon>camera</mat-icon> Face Recognition
           </button>
-          <button mat-menu-item >
+          <button mat-menu-item  (click)="openManualAttendance()">
             <mat-icon>person_search</mat-icon> Manual Attendance
           </button>
         </mat-menu>
-        
+
       <!-- <button mat-raised-button color="primary" class="w-40">
         <mat-icon class="mr-2">edit</mat-icon> Edit
       </button>
@@ -188,14 +219,12 @@
     </div>
   </div>
   
-
-
   <div class="mt-6 w-[81vw] h-[calc(100vh-150px)] overflow-auto">
     <div *ngIf="loading" class="text-center text-blue-500">Loading...</div>
   
     <!-- Scrollable Table Wrapper -->
     <div class="overflow-auto h-full w-full">
-      <table mat-table [dataSource]="dataSource" matSort class="mat-elevation w-full min-w-max">
+      <table mat-table *ngIf="attendanceData?.length !==0" [dataSource]="dataSource" matSort class="mat-elevation w-full min-w-max">
     <ng-container *ngFor="let column of columns" [matColumnDef]="column.key">
       
       <mat-header-cell *matHeaderCellDef mat-sort-header 
@@ -235,7 +264,7 @@
         <ng-container *ngIf="column.key === 'Status'">
           <div class="px-2 py-1 rounded-md text-center "
             [ngClass]="{
-               'status-approved': row?.Status?.toLowerCase() === 'present' || row?.Status?.toLowerCase() === 'leave',
+               'status-approved': row?.Status?.toLowerCase() === 'present' || row?.Status?.toLowerCase() === 'leave' || row?.Status?.toLowerCase() === 'checked-in',
             'status-rejected': row?.Status?.toLowerCase() === 'absent' || row?.Status?.toLowerCase() === 'late',
             'status-pending': row?.Status?.toLowerCase() === 'short hours'
             }">
@@ -253,10 +282,15 @@
   
     <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
     <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+
   </table>
   
-  
-  
+       <!-- No Data Found Row -->
+       <div *ngIf="attendanceData?.length === 0" class="flex flex-col items-center justify-center h-64 bg-gray-100 rounded-lg shadow-md">
+        <img src="assets/images/no-data.svg" alt="No Data" class="w-32 h-32 mb-4" />
+        <p class="text-lg font-semibold text-gray-700">No Data Found</p>
+        <p class="text-sm text-gray-500">Try adjusting filters or check back later.</p>
+      </div>
   
   
   
@@ -276,4 +310,5 @@
 
 
   </div>
+  
 </div>

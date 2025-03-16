@@ -32,7 +32,17 @@ export class CommonService {
 
 
 
-  
+   showAlert = false;
+   alertType: 'success' | 'error' | 'warning' | 'info' = 'info';
+   alertMessage = '';
+   
+   showCustomAlert(showAlert:boolean,type: 'success' | 'error' | 'warning' | 'info', message: string) {
+    this.showAlert=showAlert;
+     this.alertType = type;
+     this.alertMessage = message;
+     this.showAlert = true;
+   }
+   
 
 
   setDisplayedColumns(columns: any, displayedColumns: any) {

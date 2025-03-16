@@ -10,7 +10,14 @@ export class AttendanceService {
   private apiUrl = environment.apiUrl+'Attendance';
 
   constructor(private http: HttpClient) {}
+  getEmployees(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/employees`);
+  }
 
+  // Mark attendance for a specific employee
+  markManualAttendance(employeeId: number): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/attendance/mark`, { employeeId });
+  }
   getAttendance(request: AttendanceRequest): Observable<AttendanceResponse[]> {
     return this.http.post<any[]>(`${this.apiUrl}/GetAttendance`, request);
   }

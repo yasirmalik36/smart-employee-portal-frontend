@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, Inject, inject } from '@angular/core';
 import { WebcamImage, WebcamModule } from 'ngx-webcam';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, TimeoutConfig } from 'rxjs';
 import { AttendanceService } from '../../services/attendance.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -22,24 +22,25 @@ export class FaceRecognitionComponent {
   scanResult: string | null = null;
   retryCount = 0;
   emp: any = {};
-  employeeID: string = '';
-  checkInTime: string = '';
-  checkOutTime: string = '';
-  workHours: number = 0;
+  employeeID = '';
+  checkInTime = '';
+  checkOutTime = '';
+  workHours = 0;
   faceTrackingActive = false;
   private synth = window.speechSynthesis;
   private voices: SpeechSynthesisVoice[] = [];
   private toastService = inject(ToastService);
   private attendanceService = inject(AttendanceService);
   private common = inject(CommonService);
-  isSuccess: boolean = false;
-  scanSuccess: boolean = false;
-  isDarkMode: boolean = false;
+  isSuccess = false;
+  scanSuccess = false;
+  isDarkMode = false;
+  private closeTimeout: any;
 
   constructor(
     private dialogRef: MatDialogRef<FaceRecognitionComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
-    private cdr: ChangeDetectorRef 
+    private cdr: ChangeDetectorRef
   ) {
     this.isDarkMode = localStorage.getItem('theme') === 'dark';
     this.updateTheme();
@@ -48,15 +49,20 @@ export class FaceRecognitionComponent {
       this.cdr.detectChanges();
     };
   }
-
+  ngOnDestroy() {
+    this.synth.cancel();
+    clearTimeout(this.closeTimeout);
+  }
+  
   triggerSnapshot(): void {
     if (this.retryCount >= 3) {
-      this.scanResult = "Face not recognized. Please try again later.";
+      this.scanResult = 'Face not recognized. Please try again later.';
+      clearTimeout(this.closeTimeout);
       this.closeModal();
       return;
     }
     this.retryCount++;
-    this.cdr.detectChanges(); 
+    this.cdr.detectChanges();
     this.trigger.next();
   }
 
@@ -64,39 +70,42 @@ export class FaceRecognitionComponent {
     this.webcamImage = webcamImage;
     this.isScanning = true;
     this.faceTrackingActive = true;
-   // Captured Image Size must be : 640x480
-    setTimeout(() => {
+    
+    clearTimeout(this.closeTimeout); // Prevent overlapping timeouts
+
+    this.closeTimeout = setTimeout(() => {
       this.faceTrackingActive = false;
       this.cdr.detectChanges();
       this.performLivenessCheck(webcamImage.imageAsDataUrl);
-    }, 1000); // Reduced timeout
+    }, 1000);
   }
 
   performLivenessCheck(imageBase64: string): void {
-    
     this.attendanceService.checkLiveness(imageBase64).subscribe(
       (response) => {
-        if (response.code === "00") {
-          this.processFaceRecognition(imageBase64);
-        } else {
-          this.handleFailedLiveness(response.code, response.description);
-        }
+        response.code === '00'
+          ? this.processFaceRecognition(imageBase64)
+          : this.handleFailedLiveness(response.code, response.description);
       },
-      () => {
-        this.handleFailedLiveness("error", "Liveness detection failed.");
-      }
+      () => this.handleFailedLiveness('error', 'Liveness detection failed.')
     );
   }
 
   handleFailedLiveness(code: string, description: string): void {
-    if (code === "01" && this.retryCount < 3) {
+    if (code === '01' && this.retryCount < 3) {
       this.faceTrackingActive = true;
-
-      this.scanResult = `No face detected.Please Adjust your position.`;
-      this.speak(this.scanResult, "female", () => setTimeout(() => this.triggerSnapshot(), 500));
+      this.scanResult = 'No face detected. Please adjust your position.';
+      
+      this.speak(this.scanResult, 'female', () => setTimeout(() => this.triggerSnapshot(), 500));
     } else {
       this.scanResult = `${description} Please try again later.`;
-      this.speak(this.scanResult, "female", () => this.closeModal());
+
+      this.speak(this.scanResult, 'female', () => {
+        if (!this.scanSuccess) {
+          clearTimeout(this.closeTimeout);
+          this.closeTimeout = setTimeout(() => this.closeModal(), 2000);
+        }
+      });
     }
   }
 
@@ -108,13 +117,9 @@ export class FaceRecognitionComponent {
         this.scanResult = response.resp?.description || 'No response from server';
         this.isSuccess = response?.resp?.code === '00';
 
-        if (this.isSuccess) {
-          this.handleSuccessResponse(response);
-        } else {
-          this.retryCount < 3 ? setTimeout(() => this.triggerSnapshot(), 1000) : this.failRecognition(response.resp.description);
-        }
+        this.isSuccess ? this.handleSuccessResponse(response) : this.retryOrFail(response.resp.description);
       },
-      () => this.failRecognition('Face recognition failed. Please try again.')
+      () => this.retryOrFail('Face recognition failed. Please try again.')
     );
   }
 
@@ -124,33 +129,39 @@ export class FaceRecognitionComponent {
     this.checkInTime = this.common.TimeMatFormatter(response.checkInTime) || 'N/A';
     this.checkOutTime = this.common.TimeMatFormatter(response.checkOutTime) || 'N/A';
     this.workHours = response.workHours || 0;
-
-    const firstName = response.emp?.firstName ;
+    this.scanSuccess = true;
+    const firstName = response.emp?.firstName;
     const lastName = response.emp?.lastName;
-    const empFullName = firstName +" "+ lastName || 'User';
+    const empFullName = `${firstName} ${lastName}` || 'User';
     this.emp = response.emp || {};
-   this.emp.emp_FullName = empFullName;
+    this.emp.emp_FullName = empFullName;
     const isCheckIn = response.resp.description.toLowerCase().includes('check-in');
     const message = isCheckIn
       ? `Welcome ${firstName}! Have a great day.`
       : `Goodbye ${firstName}! See you next time.`;
-      // const message = isCheckIn
-      // ? `Welcome aboard,${empFullName}! Wishing you a fantastic and productive day ahead!`
-      // : `Goodbye, ${empFullName}! Thanks for your hard work—see you next time!`;
 
-    setTimeout(() => {
-      this.speak(message, 'female', () => this.toastService.showSuccess(response.resp.description));
-    }, 300); // Faster execution
+    this.speak(message, 'female', () => {
+      this.toastService.showSuccess(response.resp.description);
 
-    this.scanSuccess = true;
-    setTimeout(() => this.dialogRef.close(true), 5000); // Faster exit
+      clearTimeout(this.closeTimeout);
+      const closeDelay = this.retryCount === 0 ? 1000 : 5000; // Adjusted  to a more reasonable delay
+      this.closeTimeout = setTimeout(() => this.dialogRef.close(true), closeDelay)
+    });
+  }
+
+  private retryOrFail(message: string) {
+    this.retryCount < 3
+      ? setTimeout(() => this.triggerSnapshot(), 1000)
+      : this.failRecognition(message);
   }
 
   private failRecognition(message: string) {
     this.isScanning = false;
     this.scanResult = message;
     this.toastService.showError(message);
-    setTimeout(() => this.dialogRef.close(false), 2000);
+
+    clearTimeout(this.closeTimeout);
+    this.closeTimeout = setTimeout(() => this.dialogRef.close(false), 2000);
   }
 
   speak(message: string, voiceGender: 'male' | 'female', callback?: () => void): void {
@@ -163,7 +174,7 @@ export class FaceRecognitionComponent {
 
     utterance.onend = () => callback?.();
 
-    setTimeout(() => this.synth.speak(utterance), 100); // Faster execution
+    this.synth.speak(utterance);
   }
 
   private setVoice(utterance: SpeechSynthesisUtterance, gender: 'male' | 'female'): void {
@@ -179,6 +190,7 @@ export class FaceRecognitionComponent {
   get triggerObservable(): Observable<void> {
     return this.trigger.asObservable();
   }
+
   toggleDarkMode() {
     this.isDarkMode = !this.isDarkMode;
     localStorage.setItem('theme', this.isDarkMode ? 'dark' : 'light');
@@ -188,7 +200,9 @@ export class FaceRecognitionComponent {
   private updateTheme() {
     document.body.classList.toggle('dark', this.isDarkMode);
   }
+
   closeModal() {
+    clearTimeout(this.closeTimeout);
     this.dialogRef.close(false);
   }
 }

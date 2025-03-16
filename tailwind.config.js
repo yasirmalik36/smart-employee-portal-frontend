@@ -1,9 +1,6 @@
-/** @type {import('tailwindcss').Config} */
 module.exports = {
-  darkMode: 'class', // Enables dark mode via a class
-  content: [
-    './src/**/*.{html,js,ts,jsx,tsx}', // Scans your HTML, JS, TS, and React files for Tailwind classes
-  ],
+  darkMode: "class",
+  content: ["./src/**/*.{html,js,ts,jsx,tsx}"],
   theme: {
     extend: {
       colors: {
@@ -11,11 +8,25 @@ module.exports = {
         secondary: "#ff9800",
         grayBg: "#f9fafb",
       },
+      animation: {
+        float: "float 5s ease-in-out infinite",
+        wave: "wave 6s ease-in-out infinite",
+      },
+      keyframes: {
+        float: {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-20px)" },
+        },
+        wave: {
+          "0%, 100%": { transform: "translateY(0px)" },
+          "50%": { transform: "translateY(15px)" },
+        },
+      },
     },
   },
   plugins: [
-    require('@tailwindcss/forms'),       // Adds better styling for forms
-    require('@tailwindcss/typography'), // Adds typography utilities
-    require('@tailwindcss/aspect-ratio')// Adds aspect ratio utilities
+    require("@tailwindcss/forms"),
+    require("@tailwindcss/typography"),
+    require("@tailwindcss/aspect-ratio"),
   ],
 };

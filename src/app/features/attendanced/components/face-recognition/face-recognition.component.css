@@ -36,3 +36,6 @@ webcam {
 .animate-marker-glow {
   animation: marker-glow 1.5s infinite alternate;
 }
+.animate-scan, .absolute.inset-0.flex {
+  pointer-events: none;
+}
