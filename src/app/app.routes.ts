@@ -16,7 +16,7 @@ export const routes: Routes = [
   { path: 'account/reset-password', component: ResetPasswordComponent },
   
   { path: '', redirectTo: '/account/login', pathMatch: 'full' },
-  { path: 'home/attendance/face-recognition', loadComponent: () => import('./features/attendance/components/face-recognition/face-recognition.component').then(m => m.FaceRecognitionComponent),  },
+  { path: 'attendance/face-recognition', loadComponent: () => import('./features/attendance/components/face-recognition/face-recognition.component').then(m => m.FaceRecognitionComponent),  },
   {
     path: 'home',
     canActivate: [AuthGuard],

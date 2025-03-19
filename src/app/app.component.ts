@@ -8,7 +8,7 @@ import { LoaderComponent } from './common/loader/loader.component';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet,FormsModule,ReactiveFormsModule,LoaderComponent],
+  imports: [RouterOutlet,LoaderComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })

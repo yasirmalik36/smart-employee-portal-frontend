@@ -184,7 +184,26 @@ export class CommonService {
       return '-';
     }
   }
+  private synth = window.speechSynthesis;
+  private voices: SpeechSynthesisVoice[] = [];
+  speak(message: string, voiceGender: 'male' | 'female', callback?: () => void): void {
+    if (!this.synth) return;
+    this.synth.cancel();
+    const utterance = new SpeechSynthesisUtterance(message);
+    this.setVoice(utterance, voiceGender);
+    utterance.onend = () => callback?.();
+    this.synth.speak(utterance);
+  }
 
+  private setVoice(utterance: SpeechSynthesisUtterance, gender: 'male' | 'female'): void {
+    let preferredVoices = this.voices.filter(v =>
+      gender === 'female' ? v.name.toLowerCase().includes('female') : v.name.includes('male')
+    );
+    utterance.voice = preferredVoices.length > 0 ? preferredVoices[0] : this.voices.find(v => v.default) || this.voices[0];
+    utterance.lang = utterance.voice?.lang || 'en-US';
+    utterance.rate = 1;
+    utterance.pitch = gender === 'female' ? 1 : 0.8;
+  }
   exportToExcelWithStatus(columns: any, rows: any, fileName: string) {
     
     const xlsHeader = columns.filter((x: { hide: boolean; columnDef: string; }) => x.hide !== true && x.columnDef !== 'action'

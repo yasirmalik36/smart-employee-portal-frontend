@@ -1,5 +1,5 @@
 <!-- Wrapper with Fixed Width to Prevent Table from Expanding the Screen -->
-<div class="p-5 bg-white h-full relative shadow-md rounded-lg overflow-x-scroll overflow-y-scroll mb-8">
+<div class="p-5 bg-white h-full relative shadow-md rounded-lg overflow-x-scroll overflow-y-scroll mb-8" >
     <!-- Centered Toggle Filters Button -->
     <div class="absolute top-0 left-1/2 transform -translate-x-1/2 mt-2">
       <button mat-button (click)="filtersExpanded = !filtersExpanded"
@@ -264,7 +264,7 @@
         <ng-container *ngIf="column.key === 'Status'">
           <div class="px-2 py-1 rounded-md text-center "
             [ngClass]="{
-               'status-approved': row?.Status?.toLowerCase() === 'present' || row?.Status?.toLowerCase() === 'leave' || row?.Status?.toLowerCase() === 'checked-in',
+               'status-approved': row?.Status?.toLowerCase() === 'present'|| row?.Status?.toLowerCase() === 'half-day' || row?.Status?.toLowerCase() === 'leave' || row?.Status?.toLowerCase() === 'checked-in',
             'status-rejected': row?.Status?.toLowerCase() === 'absent' || row?.Status?.toLowerCase() === 'late',
             'status-pending': row?.Status?.toLowerCase() === 'short hours'
             }">
