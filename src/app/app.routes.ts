@@ -16,7 +16,7 @@ export const routes: Routes = [
   { path: 'account/reset-password', component: ResetPasswordComponent },
   
   { path: '', redirectTo: '/account/login', pathMatch: 'full' },
-  { path: 'home/attendance/face-recognition', loadComponent: () => import('./features/attendanced/components/face-recognition/face-recognition.component').then(m => m.FaceRecognitionComponent),  },
+  { path: 'home/attendance/face-recognition', loadComponent: () => import('./features/attendance/components/face-recognition/face-recognition.component').then(m => m.FaceRecognitionComponent),  },
   {
     path: 'home',
     canActivate: [AuthGuard],
@@ -31,7 +31,7 @@ export const routes: Routes = [
       // Attendance Module
       {
         path: 'attendance',
-        loadComponent: () => import('./features/attendanced/components/attendance/attendance.component').then(m => m.AttendanceComponent),
+        loadComponent: () => import('./features/attendance/components/attendance/attendance.component').then(m => m.AttendanceComponent),
       },
 
       // Leave Management Module

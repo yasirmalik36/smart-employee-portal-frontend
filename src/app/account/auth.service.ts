@@ -70,10 +70,17 @@ export class AuthService {
       }
       return null;
     }
-    getRoleFromToken(): string {
+    getProfileType(): string {
       const payload = this.decodeToken();
-      if (payload && payload.role) {
-        return payload.role;
+      if (payload && payload.ProfileID) {
+        return payload.ProfileID;
+      }
+      return '';
+    }
+    getDesignationFromToken(): string {
+      const payload = this.decodeToken();
+      if (payload && payload.Designation) {
+        return payload.Designation;
       }
       return '';
     }

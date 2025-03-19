@@ -10,6 +10,7 @@ import { NativeDateAdapter, MAT_DATE_FORMATS, MAT_NATIVE_DATE_FORMATS } from '@a
 import { LoaderInterceptor } from './common/interceptors/loader.interceptor';
 import { ErrorInterceptor } from './common/interceptors/error-interceptor';
 import { TokenInterceptor } from './common/interceptors/token.interceptor';
+import { MAT_DIALOG_DEFAULT_OPTIONS } from '@angular/material/dialog';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -27,7 +28,14 @@ export const appConfig: ApplicationConfig = {
     // Router and HTTP Client
     provideRouter(routes),
     provideHttpClient(withInterceptorsFromDi()),
-
+    {
+      provide: MAT_DIALOG_DEFAULT_OPTIONS,
+      useValue: {
+        autoFocus: false, // 👈 Prevents focus issues
+        disableClose: true,
+        backdropClass: 'custom-dialog-backdrop' // 👈 Helps fix `aria-hidden`
+      }
+    },
     // HTTP Interceptors
     {
       provide: HTTP_INTERCEPTORS,

@@ -27,7 +27,6 @@ export class LoaderInterceptor implements HttpInterceptor {
 
     return next.handle(request).pipe(
       finalize(() => {
-        console.log("loader interceptor");
         if (shouldShowLoader) {
           this.loaderService.isLoadingSubject.next(false);
         }

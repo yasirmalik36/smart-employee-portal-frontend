@@ -93,7 +93,7 @@ html, body {
   margin: 0;
   padding: 0;
 
-  overflow-x: hidden;  /* Prevent horizontal scrolling */
+  /*overflow-x: hidden;   Prevent horizontal scrolling */
   height: 100%; /* Ensure it fits the viewport */
 }
 Ensure 
@@ -259,4 +259,11 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 }
 ::ng-deep .mat-dialog-container {
   border-radius: 20px !important;
+}
+.custom-dialog-backdrop {
+  display: flex !important;
+}
+
+app-root[inert] {
+  pointer-events: none; /* Disables interaction but keeps it visible */
 }

@@ -23,7 +23,7 @@ import { ManualAttendanceComponent } from '../manual-attendance/manual-attendanc
 @Component({
   selector: 'app-attendance',
   standalone: true,
-  imports: [CommonModule,MaterialModule, FormsModule, ReactiveFormsModule,PaginationComponent,AlertBoxComponent,ManualAttendanceComponent],
+  imports: [CommonModule,MaterialModule, FormsModule, ReactiveFormsModule,PaginationComponent,AlertBoxComponent],
   templateUrl: './attendance.component.html',
   styleUrl: './attendance.component.css'
 })
@@ -211,6 +211,7 @@ export class AttendanceComponent implements OnInit {
             this.common.showCustomAlert(true, 'info', 'No attendance records found for the selected filters.');
         }
           const excludedColumns = ['AttendanceID', 'EmployeeID','DateOfBirth', 'Gender'];
+          
           // Step 1: Process column names and store mapping
           const columnMapping: { [originalKey: string]: string } = {};
   

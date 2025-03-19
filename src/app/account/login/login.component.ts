@@ -48,12 +48,12 @@ export class LoginComponent {
            debugger
           localStorage.setItem('token', response.token);
           //localStorage.setItem('user', JSON.stringify(response.user));
-          localStorage.setItem('activites', JSON.stringify(response.roles));
+          localStorage.setItem('activites', JSON.stringify(response.act));
           this.toastService.showSuccess('Login Successful');
           this.router.navigate(['home/dashboard']);
         } else {
           // Failed login
-          this.toastService.showError(response.statusMessage);
+          this.toastService.showError(response.resp.description);
 
         }
       },

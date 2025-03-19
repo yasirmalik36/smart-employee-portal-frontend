@@ -20,7 +20,7 @@ export class LayoutComponent implements OnInit, OnDestroy {
   profilePopupVisible: boolean = false;
   private clickListener!: (() => void);
   fullName: string = '';
-  role: string = '';
+  Designation: string = '';
   gender: string = '';  
   constructor(private router: Router, private renderer: Renderer2, private elRef: ElementRef,private authservice:AuthService) {}
 
@@ -31,7 +31,7 @@ export class LayoutComponent implements OnInit, OnDestroy {
       this.activities = JSON.parse(storedActivities) as Activity[];
     }
     this.fullName = this.authservice.getFullNameFromToken();
-    this.role = this.authservice.getRoleFromToken();
+    this.Designation = this.authservice.getDesignationFromToken();
     this.gender = this.authservice.getGenderFromToken();
     this.clickListener = this.renderer.listen('document', 'click', (event: Event) => {
       const clickedInside = this.elRef.nativeElement.contains(event.target);

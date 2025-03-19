@@ -82,10 +82,10 @@
 
   <!-- Face Recognition Camera -->
   <div *ngIf="!scanSuccess" class="relative w-72 h-72 border-4 border-blue-500 rounded-full overflow-hidden shadow-md aspect-square z-0 pointer-events-auto">
-    <webcam (imageCapture)="handleImage($event)" [trigger]="triggerObservable" class="w-full h-full object-cover "></webcam>
+    <webcam (imageCapture)="handleImage($event)" [trigger]="triggerObservable" class="w-full h-full object-cover " style="width: 24rem;"></webcam>
 
     <!-- Scanning Animation -->
-    <div *ngIf="isScanning" class="absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
+    <div *ngIf="isScanning" class="absolute inset-0 flex items-center justify-center  bg-gray-900 bg-opacity-50">
       <!-- Corner Markers Only -->
       <div class="absolute w-48 h-48">
         <!-- Top Left -->

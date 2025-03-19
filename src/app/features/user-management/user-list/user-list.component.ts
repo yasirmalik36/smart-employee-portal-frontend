@@ -31,7 +31,8 @@ export class UserListComponent implements OnInit {
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | any;
   @ViewChild(MatSort, { static: false }) sort: MatSort | any;
   isFormVisible: boolean= false;
-  Userrole!: string;
+  Designation!: string;
+  profiletype!: string;
 
   constructor(
     private userService: UserService,
@@ -42,7 +43,8 @@ export class UserListComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.Userrole =this.authservice.getRoleFromToken();
+    this.Designation =this.authservice.getDesignationFromToken();
+    this.profiletype =this.authservice.getProfileType();
     this.loadUsers();
   }
 
