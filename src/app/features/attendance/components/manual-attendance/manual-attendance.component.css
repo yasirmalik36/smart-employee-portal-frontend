@@ -9,4 +9,15 @@
   button:disabled {
     background-color: #d1d5db;
   }
+  .status-green {
+    color: rgb(2, 158, 2) ;
+  }
+  
+  .status-red {
+    color: #d20a10 ; /* Red */
+  }
+  
+  .status-yellow {
+    color: #c9c900 ; /* Yellow */
+  }
   

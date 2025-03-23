@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Inject, inject, OnDestroy } from '@angular/core';
+import { ChangeDetectorRef, Component, Inject, inject, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { WebcamImage, WebcamModule } from 'ngx-webcam';
 import { Observable, Subject } from 'rxjs';
 import { AttendanceService } from '../../services/attendance.service';
@@ -15,7 +15,7 @@ import { CommonService } from '../../../../common/services/common.service';
   templateUrl: './face-recognition.component.html',
   styleUrls: ['./face-recognition.component.css'],
 })
-export class FaceRecognitionComponent implements OnDestroy {
+export class FaceRecognitionComponent implements OnInit, OnDestroy {
   public webcamImage: WebcamImage | null = null;
   private trigger: Subject<void> = new Subject<void>();
   isScanning = false;
@@ -41,54 +41,64 @@ export class FaceRecognitionComponent implements OnDestroy {
   constructor(
     private dialogRef: MatDialogRef<FaceRecognitionComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private ngZone: NgZone
   ) {
     this.isDarkMode = localStorage.getItem('theme') === 'dark';
+  }
+
+  ngOnInit() {
+    console.log('Component initialized');
+    this.loadVoices();
+  }
+
+  private loadVoices(): void {
+    this.voices = this.synth.getVoices();
+    if (this.voices.length > 0) {
+      this.voiceLoaded = true;
+      console.log('Voices loaded:', this.voices);
+      return;
+    }
+
     this.synth.onvoiceschanged = () => {
-      setTimeout(() => {
+      this.ngZone.run(() => {
         this.voices = this.synth.getVoices();
-        this.cdr.detectChanges();
-      }, 100); // Ensure voices are loaded properly before using them
+        if (this.voices.length > 0) {
+          this.voiceLoaded = true;
+          console.log('Voices loaded:', this.voices);
+        } else {
+          setTimeout(() => this.loadVoices(), 500);
+        }
+      });
     };
   }
 
   ngOnDestroy() {
+    console.log('Component destroyed');
     this.synth.cancel();
     clearTimeout(this.closeTimeout);
   }
 
-  // triggerSnapshot(): void {
-  //   if (this.retryCount >= 3) {
-  //     this.scanResult = 'Face not recognized. Please try again later.';
-  //     this.closeModal();
-  //     return;
-  //   }
-  //   this.retryCount++;
-  //   this.cdr.detectChanges();
-  //   this.trigger.next();
-  // }
   triggerSnapshot(): void {
     if (this.retryCount >= 3) {
+      this.closeModal();
+
+      speechSynthesis.cancel();
       this.scanResult = 'Face not recognized. Please try again later.';
       this.speak(this.scanResult, 'female', () => {
         this.closeModal();
       });
       return;
     }
-  
+
     this.retryCount++;
-    this.cdr.detectChanges();
-  
-    // Speak the attempt message if retry count is greater than 1
-    if (this.retryCount >1) {
-     // const attemptMessage = `Attempt ${this.retryCount}. Please adjust your position.`;
-      this.speak('Please adjust your position', 'female', () => {
-      });
+
+    if (this.retryCount > 1) {
+      this.speak('Please adjust your position', 'female', () => {});
     }
     this.trigger.next();
-
   }
-  
+
   handleImage(webcamImage: WebcamImage): void {
     this.webcamImage = webcamImage;
     this.isScanning = true;
@@ -97,9 +107,8 @@ export class FaceRecognitionComponent implements OnDestroy {
     clearTimeout(this.closeTimeout);
     this.closeTimeout = setTimeout(() => {
       this.faceTrackingActive = false;
-      this.cdr.detectChanges();
       this.processFaceRecognition(webcamImage.imageAsDataUrl);
-    }, 1500); // Adding delay before processing face recognition
+    }, 1500);
   }
 
   private processFaceRecognition(image: string) {
@@ -114,7 +123,7 @@ export class FaceRecognitionComponent implements OnDestroy {
           this.handleSuccessResponse(response);
         } else if (response.resp?.code === '01') {
           this.speak(response.resp.description, 'female', () => {
-            setTimeout(() => this.triggerSnapshot(), 5000); // Adding delay before retry
+            setTimeout(() => this.triggerSnapshot(), 1000);
           });
         } else {
           this.retryOrFail(response.resp.description);
@@ -139,72 +148,103 @@ export class FaceRecognitionComponent implements OnDestroy {
     const empFullName = `${firstName} ${lastName}` || 'User';
     this.emp = response.emp || {};
     this.emp.emp_FullName = empFullName;
-    const isCheckIn = response.status.toLowerCase().includes('checked-in');
+    const isCheckIn = response.status.toLowerCase().includes('check-in');
     const message = isCheckIn
-      ? `Welcome ${firstName}! Have a great day.`
-      : `Goodbye ${firstName}! See you next time.`;
+      ? `Welcome ${firstName}!`
+      : `Goodbye ${firstName}`;
 
     this.speak(message, 'female', () => {
       setTimeout(() => {
-        this.toastService.showSuccess(response.resp.description);
-        this.closeTimeout = setTimeout(() => this.dialogRef.close(true), 2000); // Adding delay before closing the dialog
-      }, 2000);
+        this.closeTimeout = setTimeout(() => this.dialogRef.close(true), 1000);
+      }, 1000);
+      this.toastService.showSuccess(response.resp.description);
+
     });
+
   }
 
   private retryOrFail(message: string) {
     this.retryCount < 3
-      ? setTimeout(() => this.triggerSnapshot(), 2000) // Adding delay before retrying
+      ? setTimeout(() => this.triggerSnapshot(), 2000)
       : this.failRecognition(message);
   }
+
   private failRecognition(message: string) {
     this.isScanning = false;
     this.scanResult = message;
     this.toastService.showError(message);
-    
-    // Speak the error message
+
     this.speak(message, 'female', () => {
       setTimeout(() => {
         this.dialogRef.close(false);
-      }, 2000); // Adding delay before closing the modal
+      }, 1000);
     });
+  }
+
+  speak(message: string, voiceGender: 'female', callback?: () => void): void {
+    if (!this.synth || !this.voiceLoaded) {
+      console.warn('Speech synthesis not available or voices not loaded.');
+      callback?.(); // Ensure callback is called even if speech synthesis is unavailable
+      return;
+    }
+  
+    try {
+      console.log('Speaking message:', message);
+  
+      this.synth.cancel();
+      const utterance = new SpeechSynthesisUtterance(message);
+      this.setVoice(utterance, voiceGender);
+  
+      utterance.onend = () => {
+        console.log('Speech finished');
+        callback?.();
+      };
+  
+      utterance.onerror = (error) => {
+        console.error('Speech synthesis error:', error);
+        callback?.(); // Ensure callback is called even in case of an error
+      };
+  
+      this.synth.speak(utterance);
+    } catch (error) {
+      console.error('Unexpected error in speech synthesis:', error);
+      callback?.(); // Call the callback even if an exception occurs
+    }
   }
   
 
-  speak(message: string, voiceGender: 'female', callback?: () => void): void {
-    if (!this.synth) return;
-    this.synth.cancel();
-    const utterance = new SpeechSynthesisUtterance(message);
-    this.setVoice(utterance, voiceGender);
-    utterance.onend = () => callback?.();
-    this.synth.speak(utterance);
-  }
-
   private setVoice(utterance: SpeechSynthesisUtterance, gender: 'male' | 'female'): void {
-    let preferredVoices: SpeechSynthesisVoice[] = [];
-    if (gender === 'female') {
-      preferredVoices = this.voices.filter((v) =>
-        v.name.toLowerCase().includes('female') || v.lang.toLowerCase().includes('female')
-      );
-    } else if (gender === 'male') {
-      preferredVoices = this.voices.filter((v) =>
-        v.name.toLowerCase().includes('male') || v.lang.toLowerCase().includes('male')
-      );
-    }
+    console.log('All available voices:', this.voices);
 
-    if (preferredVoices.length === 0) {
-      preferredVoices = this.voices.filter(v =>
-        v.lang.toLowerCase().includes('en-us') || v.lang.toLowerCase().includes('en-in')
-      );
+    let preferredVoices: SpeechSynthesisVoice[] = [];
+
+    if (gender === 'female') {
+      preferredVoices = this.voices.filter((v) => {
+        const isFemale =
+                           v.name.toLowerCase().includes('google us english') 
+                         || v.name.toLowerCase().includes('female')
+                         || v.name.toLowerCase().includes('woman') 
+                         || v.name.toLowerCase().includes('zira');
+        const isEnglish = v.lang.toLowerCase().includes('en');
+        return isFemale && isEnglish;
+      });
+
+      console.log('Filtered female voices:', preferredVoices);
+
+      if (preferredVoices.length === 0) {
+        preferredVoices = this.voices.filter((v) => v.lang.toLowerCase().includes('en'));
+        console.log('Fallback English voices:', preferredVoices);
+      }
     }
 
     utterance.voice = preferredVoices.length > 0
       ? preferredVoices[0]
       : this.voices.find((v) => v.default) || this.voices[0];
-    
+
+    console.log('Selected voice:', utterance.voice);
     utterance.lang = utterance.voice?.lang || 'en-US';
-    utterance.rate = 1;
-    utterance.pitch = gender === 'female' ? 1.8 : 1;
+    utterance.rate = 1.9;
+    utterance.pitch = gender === 'female' ? 1.2 : 1;
   }
 
   get triggerObservable(): Observable<void> {
@@ -222,6 +262,7 @@ export class FaceRecognitionComponent implements OnDestroy {
   }
 
   closeModal() {
+    console.log('Closing modal');
     clearTimeout(this.closeTimeout);
     this.dialogRef.close(false);
   }

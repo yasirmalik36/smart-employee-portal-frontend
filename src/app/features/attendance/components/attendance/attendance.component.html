@@ -1,15 +1,18 @@
 <!-- Wrapper with Fixed Width to Prevent Table from Expanding the Screen -->
-<div class="p-5 bg-white h-full relative shadow-md rounded-lg overflow-x-scroll overflow-y-scroll mb-8" >
+<div class="p-5 pb-2 bg-white h-full relative shadow-md rounded-lg overflow-x-scroll overflow-y-scroll mb-8" >
     <!-- Centered Toggle Filters Button -->
     <div class="absolute top-0 left-1/2 transform -translate-x-1/2 mt-2">
-      <button mat-button (click)="filtersExpanded = !filtersExpanded"
-        class="flex items-center text-blue-600 bg-white  px-4 py-2 rounded-lg border border-gray-300">
-        <mat-icon class="text-gray-900">{{ filtersExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
-        <!-- <mat-icon class="text-primary">{{ filtersExpanded ? 'expand_circle_up' : 'expand_circle_down' }}</mat-icon> -->
-
-        <span class="ml-2">{{ filtersExpanded ? 'Hide Filters' : 'Show Filters' }}</span>
+      <button mat-button (click)="toggleFilters()"
+        class="flex items-center text-blue-600 bg-white px-4 py-2 rounded-lg border border-gray-300">
+        <mat-icon class="text-gray-900">
+          {{ common.filtersExpanded() ? 'expand_less' : 'expand_more' }}
+        </mat-icon>
+        <span class="ml-2">
+          {{ common.filtersExpanded() ? 'Hide Filters' : 'Show Filters' }}
+        </span>
       </button>
     </div>
+    
   <h2 class="text-xl font-semibold mb-2 flex items-center gap-2">
     <mat-icon class="text-primary">event</mat-icon> 
     Attendance Records
@@ -24,7 +27,7 @@
 </app-alert-box>
 
   <!-- Search Filters - Collapsible -->
-  <div *ngIf="filtersExpanded" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+  <div *ngIf="common.filtersExpanded()" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
     
     <!-- Employee ID -->
     <div class="flex flex-col">
@@ -219,96 +222,99 @@
     </div>
   </div>
   
-  <div class="mt-6 w-[81vw] h-[calc(100vh-150px)] overflow-auto">
+  <div class="mt-4   overflow-auto mb-4" [ngClass]="tableWidth()">
     <div *ngIf="loading" class="text-center text-blue-500">Loading...</div>
   
     <!-- Scrollable Table Wrapper -->
-    <div class="overflow-auto h-full w-full">
-      <table mat-table *ngIf="attendanceData?.length !==0" [dataSource]="dataSource" matSort class="mat-elevation w-full min-w-max">
-    <ng-container *ngFor="let column of columns" [matColumnDef]="column.key">
-      
-      <mat-header-cell *matHeaderCellDef mat-sort-header 
-        [style.min-width]="column.width" 
-        [style.max-width]="column.width">
-        {{ column.title }}
-      </mat-header-cell>
-  
-      <mat-cell *matCellDef="let row" [style.min-width]="column.width" [style.max-width]="column.width">
-  
-        <!-- Actions Column -->
-        <ng-container *ngIf="column.key === 'actions'">
-          <button mat-icon-button color="primary" (click)="onEditAttendance(row)">
-            <mat-icon>edit</mat-icon>
-          </button>
-        </ng-container>
-  
-        <!-- Employee Name Column with Image -->
-        <ng-container *ngIf="column.key === 'Employee_Name'">
-          <div class="flex items-center space-x-3">
-            <!-- Circular Image (Reduced Size) -->
-            <img 
-              [src]="row.Gender?.toLowerCase() === 'm' ? 'assets/images/man.png' : 'assets/images/woman.png'" 
-              alt="Employee Image" 
-              class="w-8 h-8 rounded-full border border-gray-300 shadow-md"
-            />
-            
-            <!-- Name & Details -->
-            <div class="text-xs">
-              <div class="font-semibold text-gray-800">{{ row.Employee_Name }}</div>
-              <div class="text-gray-600">{{ row.Gender }} | {{ row.DateOfBirth }}</div>
-            </div>
-          </div>
-        </ng-container>
-  
-        <!-- Status Column with Conditional Styling -->
-        <ng-container *ngIf="column.key === 'Status'">
-          <div class="px-2 py-1 rounded-md text-center "
-            [ngClass]="{
-               'status-approved': row?.Status?.toLowerCase() === 'present'|| row?.Status?.toLowerCase() === 'half-day' || row?.Status?.toLowerCase() === 'leave' || row?.Status?.toLowerCase() === 'checked-in',
-            'status-rejected': row?.Status?.toLowerCase() === 'absent' || row?.Status?.toLowerCase() === 'late',
-            'status-pending': row?.Status?.toLowerCase() === 'short hours'
-            }">
-            {{ row.Status || 'N/A' }}
-          </div>
-        </ng-container>
-  
-        <!-- Default Cell Content for Other Columns -->
-        <ng-container *ngIf="column.key !== 'Employee_Name' && column.key !== 'Status' && column.key !== 'actions'">
-          {{ row[column.key] }}
-        </ng-container>
-  
-      </mat-cell>
-    </ng-container>
-  
-    <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
-    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-
-  </table>
-  
-       <!-- No Data Found Row -->
-       <div *ngIf="attendanceData?.length === 0" class="flex flex-col items-center justify-center h-64 bg-gray-100 rounded-lg shadow-md">
+    <div class=" overflow-hidden mb-4">
+      <div *ngIf="loading" class="text-center text-blue-500">Loading...</div>
+    
+      <!-- Scrollable Table Wrapper -->
+      <div class="overflow-auto relative" [style.height]="TableHeight()">
+        <table mat-table *ngIf="attendanceData?.length !== 0" [dataSource]="dataSource" matSort 
+          class="mat-elevation w-full min-w-max">
+          
+          <ng-container *ngFor="let column of columns" [matColumnDef]="column.key">
+            <mat-header-cell *matHeaderCellDef mat-sort-header 
+              [style.min-width]="column.width" 
+              [style.max-width]="column.width">
+              {{ column.title }}
+            </mat-header-cell>
+    
+            <mat-cell *matCellDef="let row" [style.min-width]="column.width" [style.max-width]="column.width">
+              <!-- Actions Column -->
+              <ng-container *ngIf="column.key === 'actions'">
+                <button mat-icon-button color="primary" (click)="onEditAttendance(row)">
+                  <mat-icon>edit</mat-icon>
+                </button>
+              </ng-container>
+    
+              <!-- Employee Name Column with Image -->
+              <ng-container *ngIf="column.key === 'Employee_Name'">
+                <div class="flex items-center space-x-3">
+                  <img 
+                    [src]="row.Gender?.toLowerCase() === 'm' ? 'assets/images/man.png' : 'assets/images/woman.png'" 
+                    alt="Employee Image" 
+                    class="w-8 h-8 rounded-full border border-gray-300 shadow-md"
+                  />
+                  <div class="text-xs">
+                    <div class="font-semibold text-gray-800">{{ row.Employee_Name }}</div>
+                    <div class="text-gray-600">{{ row.Gender }} | {{ row.DateOfBirth }}</div>
+                  </div>
+                </div>
+              </ng-container>
+    
+              <!-- Status Column -->
+              <ng-container *ngIf="column.key === 'Status'">
+                <div class="px-2 py-1 rounded-md text-center"
+                  [ngClass]="{
+                    'status-approved': row?.Status?.toLowerCase() === 'present'|| row?.Status?.toLowerCase() === 'half-day' || row?.Status?.toLowerCase() === 'leave' || row?.Status?.toLowerCase() === 'check-in',
+                    'status-rejected': row?.Status?.toLowerCase() === 'absent' || row?.Status?.toLowerCase() === 'late',
+                    'status-pending': row?.Status?.toLowerCase() === 'short-hours'
+                  }">
+                  {{ row.Status || 'N/A' }}
+                </div>
+              </ng-container>
+    
+              <!-- Other Columns -->
+              <ng-container *ngIf="column.key !== 'Employee_Name' && column.key !== 'Status' && column.key !== 'actions'">
+                {{ row[column.key] }}
+              </ng-container>
+            </mat-cell>
+          </ng-container>
+    
+          <mat-header-row *matHeaderRowDef="displayedColumns;" class="sticky-header"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    
+        </table>
+      </div>
+    
+      <!-- No Data Found Message -->
+      <div *ngIf="attendanceData?.length === 0" class="flex flex-col items-center justify-center h-64 bg-gray-100 rounded-lg shadow-md">
         <img src="assets/images/no-data.svg" alt="No Data" class="w-32 h-32 mb-4" />
         <p class="text-lg font-semibold text-gray-700">No Data Found</p>
         <p class="text-sm text-gray-500">Try adjusting filters or check back later.</p>
       </div>
-  
-  
-  
-  <!-- <mat-paginator [pageSizeOptions]="[5, 10, 25]" showFirstLastButtons></mat-paginator> -->
-       <!-- Pagination Component -->
-     
-  
-</div>
+    
+      <!-- Sticky Pagination -->
+      <div class="sticky bottom-0 left-0 bg-white shadow-md w-full flex justify-end pr-4 border border-gray-300">
+        <mat-paginator class="mr-2"
+          [length]="totalPages" 
+          [pageIndex]="attendanceRequest.pageNumber - 1"  
+          [pageSize]="attendanceRequest.pageSize" 
+          [pageSizeOptions]="[5, 10, 25, 100]" 
+          showFirstLastButtons
+          (page)="onPageChange($event)">
+        </mat-paginator>
+      </div>
+    </div>
+    
 
-<app-pagination 
-  [totalRecords]="totalPages"
-  [pageSize]="attendanceRequest.pageSize"
-  [showFirstLastButtons]="true" 
-  [currentPage]="attendanceRequest.pageNumber"
-  (pageChanged)="onPageChange($event)">
-</app-pagination>
+
+  
 
 
   </div>
+
   
 </div>

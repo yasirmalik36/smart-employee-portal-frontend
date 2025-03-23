@@ -1,14 +1,13 @@
-import { Component, inject, OnInit, ViewChild } from '@angular/core';
+import { Component, computed, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AttendanceService } from '../../services/attendance.service';
-import { PaginationComponent } from '../../../../shared/components/pagination/pagination.component';
 import { MaterialModule } from '../../../../shared/material module/material.module';
 import { AttendanceRecord, AttendanceRequest } from '../../../../models/AttendanceRequest';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatTableDataSource } from '@angular/material/table';
-import { MatPaginator } from '@angular/material/paginator';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import moment from 'moment';
 import FileSaver, { saveAs } from 'file-saver';
@@ -23,13 +22,13 @@ import { ManualAttendanceComponent } from '../manual-attendance/manual-attendanc
 @Component({
   selector: 'app-attendance',
   standalone: true,
-  imports: [CommonModule,MaterialModule, FormsModule, ReactiveFormsModule,PaginationComponent,AlertBoxComponent],
+  imports: [CommonModule,MaterialModule, FormsModule, ReactiveFormsModule,AlertBoxComponent],
   templateUrl: './attendance.component.html',
   styleUrl: './attendance.component.css'
 })
 export class AttendanceComponent implements OnInit {
-  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | any;
-  @ViewChild(MatSort, { static: false }) sort: MatSort | any;
+  @ViewChild(MatPaginator, { static: false }) paginator!: MatPaginator ;
+  @ViewChild(MatSort, { static: false }) sort!: MatSort ;
   public common = inject(CommonService);
   displayedColumns: string[] = [];
   columns: any[] = [];
@@ -42,12 +41,15 @@ export class AttendanceComponent implements OnInit {
   loading = false;
   dropdownOpen: string | null = null;
   isCollapsed: boolean = false; // Track collapsed state
-  filtersExpanded = true;
   selectedDesignation: any = null;
   selectedDepartment: any = null;
   selectedempID: any = null;
   selectedShift: any = null;
   attendanceData: any;
+  tableWidth = this.common.Tablewidth;
+  TableHeight = this.common.TableHeight;
+
+
   attendanceRequest: AttendanceRequest = {
     employeeId: 0,   // ❌ Should be undefined initially if optional
     departmentId: 0,  // ❌
@@ -114,10 +116,15 @@ export class AttendanceComponent implements OnInit {
     this.attendanceRequest.shiftId = shift ? shift.id : null; // Update model
     this.dropdownOpen = null; // Close dropdown
   }
+  private attendanceService = inject(AttendanceService);
+  constructor(private dialog: MatDialog) {
 
-  constructor(private attendanceService: AttendanceService,private dialog: MatDialog) {}
+  }
 
   ngOnInit() {
+    this.totalPages = 0; // Set default value
+    this.attendanceRequest.pageNumber = 1;
+    this.attendanceRequest.pageSize = 25;
     this.setDateRange();
     this.getAttendance();
   }
@@ -130,17 +137,17 @@ export class AttendanceComponent implements OnInit {
     switch (this.attendanceRequest.dateRange) {
       case 'currentMonth':
         fromDate = new Date(today.getFullYear(), today.getMonth(), 1);
-        toDate = new Date(today.getFullYear(), today.getMonth() + 1, 0); // ✅ Gets the last day of the current month
+        toDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
         this.showCustomDates = false;
         break;
       case 'lastMonth':
         fromDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-        toDate = new Date(today.getFullYear(), today.getMonth(), 0); // ✅ Gets the last day of the last month correctly
+        toDate = new Date(today.getFullYear(), today.getMonth(), 0);
         this.showCustomDates = false;
         break;
       case 'last3Months':
         fromDate = new Date(today.getFullYear(), today.getMonth() - 2, 1);
-        toDate = new Date(today.getFullYear(), today.getMonth() + 1, 0); // ✅ End of current month
+        toDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
         this.showCustomDates = false;
         break;
       case 'yearToDate':
@@ -150,14 +157,14 @@ export class AttendanceComponent implements OnInit {
         break;
       case 'lastYear':
         fromDate = new Date(today.getFullYear() - 1, 0, 1);
-        toDate = new Date(today.getFullYear() - 1, 11, 31); // ✅ Last day of last year
+        toDate = new Date(today.getFullYear() - 1, 11, 31);
         this.showCustomDates = false;
         break;
       case 'custom':
+        fromDate = new Date(today); // ✅ Assign today's date
+        toDate = new Date(today);   // ✅ Assign today's date
         this.showCustomDates = true;
-        fromDate = new Date(); // ✅ Create a new Date object to ensure it's set properly
-        toDate = new Date();
-        return; // Don't set default dates for custom
+        break;
       default:
         return;
     }
@@ -165,6 +172,7 @@ export class AttendanceComponent implements OnInit {
     this.attendanceRequest.fromDate = fromDate.toISOString().split('T')[0];
     this.attendanceRequest.toDate = toDate.toISOString().split('T')[0];
   }
+  
   
   searchAttendance() {
     this.attendanceRequest.employeeId = this.selectedempID || 0;
@@ -174,7 +182,8 @@ export class AttendanceComponent implements OnInit {
     this.attendanceRequest.fromDate = this.attendanceRequest.fromDate || '';
     this.attendanceRequest.toDate = this.attendanceRequest.toDate || '';
     this.attendanceRequest.status = this.attendanceRequest.status || '';
-  
+    this.common.filtersExpanded.set(false);
+
     // Validation: Check if the custom date range is selected but dates are missing
     if (this.attendanceRequest.dateRange === 'custom' && (!this.attendanceRequest.fromDate || !this.attendanceRequest.toDate)) {
       this.common.showCustomAlert(true, 'warning', 'Please select both From and To dates for a custom date range.');
@@ -204,6 +213,7 @@ export class AttendanceComponent implements OnInit {
     this.attendanceService.getAttendance(this.attendanceRequest).subscribe(
       (response: any) => {
         if (response.resp?.code === '00') {
+          debugger
           this.totalPages=response.resp.totalPages;
            this.attendanceData = response.attendanceData || [];
            this.attendanceList=response.attendanceData || [];
@@ -256,13 +266,18 @@ export class AttendanceComponent implements OnInit {
             return newRecord;
           });
           this.dataSource = new MatTableDataSource(transformedData);
-          this.dataSource.paginator = this.paginator;
-          this.dataSource.sort = this.sort;
+          setTimeout(() => {
+            if (this.paginator) {
+              this.dataSource.paginator = this.paginator;
+            }
+            if (this.sort) {
+              this.dataSource.sort = this.sort;
+            }
+          });
         }
         this.loading = false;
       },
       (error: any) => {
-        console.error('Error fetching attendance:', error);
         this.common.showCustomAlert(true, 'error', 'Failed to fetch attendance records. Please try again later.');
         this.loading = false;
       }
@@ -276,7 +291,6 @@ export class AttendanceComponent implements OnInit {
   
   
   onEditAttendance(record: AttendanceRecord) {
-    console.log('Edit attendance record:', record);
     // Logic to open modal and pass the selected record for editing
   }
 
@@ -308,7 +322,6 @@ export class AttendanceComponent implements OnInit {
         this.common.showCustomAlert(true, 'success', 'Attendance exported successfully as Excel.');
       }
     } catch (error) {
-      console.error('Error exporting attendance:', error);
       this.common.showCustomAlert(true, 'error', 'Failed to export attendance. Please try again.');
     }
   }
@@ -351,8 +364,8 @@ export class AttendanceComponent implements OnInit {
   
   openManualAttendance() {
     const dialogRef = this.dialog.open(ManualAttendanceComponent, {
-      width: '600px', 
-      height: '600px', 
+      width: '670px', 
+      height: '670px', 
       maxWidth: '90vw', 
       maxHeight: '90vh',
       disableClose: true,
@@ -362,19 +375,18 @@ export class AttendanceComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        console.log('Manual attendance marked');
+        this.getAttendance();
       }
     });
   }
   
-  onPageChange(event: { pageIndex: number, pageSize: number }): void {
-    debugger
-    this.attendanceRequest.pageNumber = event.pageIndex; // Already 0-based
+  onPageChange(event: PageEvent) {
+    this.attendanceRequest.pageNumber = event.pageIndex + 1; 
     this.attendanceRequest.pageSize = event.pageSize;
-    if(this.attendanceRequest.pageNumber==0){
-      this.attendanceRequest.pageNumber =1;
-    }
-    this.getAttendance();
   }
   
+  
+  toggleFilters() {
+    this.common.toggleExpanded();
+  }
 }

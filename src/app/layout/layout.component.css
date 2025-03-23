@@ -122,3 +122,28 @@ a span {
 }
 
 
+/* Sidebar Animation */
+aside {
+  width: 250px; /* Expanded width */
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+aside:hover {
+  box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Adding a Cool Slide-in Effect on Sidebar */
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+aside {
+  animation: slideIn 0.5s ease-out;
+}

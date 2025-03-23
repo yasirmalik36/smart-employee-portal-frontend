@@ -1,4 +1,4 @@
-import { Injectable, Renderer2, Inject, inject, WritableSignal, signal } from '@angular/core';
+import { Injectable, Renderer2, Inject, inject, WritableSignal, signal, Signal, computed } from '@angular/core';
 import { MatDialogConfig } from '@angular/material/dialog';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
@@ -11,9 +11,9 @@ import * as XLSX from 'xlsx';
   providedIn: 'root',
 })
 export class CommonService {
+  isCollapsed = signal<boolean>(false);
+  filtersExpanded = signal(false);
 
-
- 
   router=inject(Router)
   gridHeight: string;
   styleValue!: string;
@@ -30,7 +30,7 @@ export class CommonService {
    }
 
 
-
+ 
 
    showAlert = false;
    alertType: 'success' | 'error' | 'warning' | 'info' = 'info';
@@ -62,7 +62,60 @@ export class CommonService {
       return processedItem;
     });
   }
+toggleExpanded(){
+  this.filtersExpanded.set(!this.filtersExpanded());
+}
+  toggleSidebar() {
+    this.isCollapsed.set(!this.isCollapsed()); // Toggle the state
+  }
 
+  setSidebarState(state: boolean) {
+    this.isCollapsed.set(state); // Explicitly set state
+  }
+
+ Tablewidth= computed(() => {
+    const screenWidth = window.innerWidth;
+    
+    if (screenWidth >= 1536) {
+      return this.isCollapsed() ? 'w-[94vw]' : 'w-[81.5vw]';
+    } else if (screenWidth >= 1280) {
+      return this.isCollapsed() ? 'w-[96vw]' : 'w-[83vw]';
+    } else if (screenWidth >= 1024) {
+      return this.isCollapsed() ? 'w-[98vw]' : 'w-[85vw]';
+    } else {
+      return this.isCollapsed() ? 'w-full' : 'w-[90vw]'; // Mobile fallback
+    }
+  });
+// Computed signal for the div height
+TableHeight = computed(() => {
+  const screenHeight = window.innerHeight;
+
+  if (this.filtersExpanded()) {
+    // When filters are expanded:
+    if (screenHeight < 768) {
+      // For small screens (e.g. your 730px screen)
+      return '322px';
+    } else if (screenHeight < 900) {
+      // For medium screens
+      return '322px';
+    } else {
+      // For large screens
+      return '351px';
+    }
+  } else {
+    // When filters are NOT expanded, use a dynamic calc formula.
+    if (screenHeight < 768) {
+      // For small screens (e.g. your 730px screen, 100vh equals 730px)
+      // Using calc(100vh - 238px) gives: 730 - 238 = 492px.
+      return 'calc(100vh - 238px)';
+    } else if (screenHeight < 900) {
+      return 'calc(100vh - 250px)';
+    } else {
+      return 'calc(100vh - 270px)';
+    }
+  }
+});
+  
   // Helper function to convert a string to title case
   private convertToTitleCase(str: string): string {
     return str
@@ -183,26 +236,6 @@ export class CommonService {
     } else {
       return '-';
     }
-  }
-  private synth = window.speechSynthesis;
-  private voices: SpeechSynthesisVoice[] = [];
-  speak(message: string, voiceGender: 'male' | 'female', callback?: () => void): void {
-    if (!this.synth) return;
-    this.synth.cancel();
-    const utterance = new SpeechSynthesisUtterance(message);
-    this.setVoice(utterance, voiceGender);
-    utterance.onend = () => callback?.();
-    this.synth.speak(utterance);
-  }
-
-  private setVoice(utterance: SpeechSynthesisUtterance, gender: 'male' | 'female'): void {
-    let preferredVoices = this.voices.filter(v =>
-      gender === 'female' ? v.name.toLowerCase().includes('female') : v.name.includes('male')
-    );
-    utterance.voice = preferredVoices.length > 0 ? preferredVoices[0] : this.voices.find(v => v.default) || this.voices[0];
-    utterance.lang = utterance.voice?.lang || 'en-US';
-    utterance.rate = 1;
-    utterance.pitch = gender === 'female' ? 1 : 0.8;
   }
   exportToExcelWithStatus(columns: any, rows: any, fileName: string) {
     

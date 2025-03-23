@@ -42,3 +42,44 @@
   background: white; /* Optional */
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); /* Optional */
 }
+.attendance-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.responsive-container {
+  width: 90vw;
+}
+
+@media (min-width: 640px) { /* Small screens */
+  .responsive-container {
+    width: 85vw;
+  }
+}
+
+@media (min-width: 768px) { /* Medium screens */
+  .responsive-container {
+    width: 81vw;
+  }
+}
+
+@media (min-width: 1024px) { /* Large screens */
+  .responsive-container {
+    width: 75vw;
+  }
+}
+
+@media (min-width: 1280px) { /* Extra-large screens */
+  .responsive-container {
+    width: 70vw;
+  }
+}
+/* Ensure the table scrolls horizontally without affecting pagination */
+.overflow-auto {
+  overflow-x: auto;
+}
+
+/* Make pagination sticky */
+.sticky {
+  position: sticky;
+}

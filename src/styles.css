@@ -230,7 +230,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .status-approved {
   color: green;
   background-color: rgb(189, 255, 205); 
-  padding: 2px 24px;
+  padding: 2px 33px;
   font-size: 12px;
 }
 
@@ -244,7 +244,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .status-pending {
   color: #7f7f33;
   background-color: #ffffad;
-  padding: 2px 12px;
+  padding: 2px 21px;
   font-size: 12px;
 }
 /* Change mat-sort-header arrows to white */
@@ -266,4 +266,20 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 app-root[inert] {
   pointer-events: none; /* Disables interaction but keeps it visible */
+}
+/* Generic styles for all disabled Material buttons */
+button[mat-raised-button]:disabled {
+  background-color: #808080 !important;  /* Gray background */
+  color: #ffffff !important;  /* White text */
+  opacity: 0.6;  /* Slight transparency */
+  cursor: not-allowed;
+  box-shadow: none !important; /* Remove Material shadow */
+}
+.paginator-container {
+  justify-content: flex-start; /* Aligns to the left */
+  margin-top: 3px;
+}
+
+.mat-mdc-paginator-page-size-label {
+  white-space: nowrap;
 }

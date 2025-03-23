@@ -7,8 +7,8 @@ export interface AttendanceRequest {
   designationId?: number;
   status?: string;
   shiftId?: number;
-  fromDate?: string ;
-  toDate?: string;
+  fromDate?: string |null;
+  toDate?: string |null;
   pageNumber: number;
   pageSize: number;
 }

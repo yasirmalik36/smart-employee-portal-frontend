@@ -13,11 +13,20 @@ export class AttendanceService {
   getEmployees(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/employees`);
   }
-
-  // Mark attendance for a specific employee
-  markManualAttendance(employeeId: number): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/attendance/mark`, { employeeId });
+  getEmployeeDetails(employeeIdOrName: string): Observable<any> {
+    const uri=this.apiUrl.replace("Attendance","Employee");
+    return this.http.get<any>(`${uri}/GetEmployeeDetails/?employeeIdOrName=${employeeIdOrName}`);
+  }  
+  checkAttendanceStatus(request: AttendanceRequest): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/CheckAttendanceStatus`, request);
   }
+  markManualAttendance(employeeId: number, attendanceFlag: 'checkin' | 'checkout'): Observable<any> {
+    const requestBody = {
+      employeeId: employeeId, attendanceFlag: attendanceFlag
+    };
+    return this.http.post(`${this.apiUrl}/ManualAttendance`, requestBody);
+  }
+
   getAttendance(request: AttendanceRequest): Observable<AttendanceResponse[]> {
     return this.http.post<any[]>(`${this.apiUrl}/GetAttendance`, request);
   }
