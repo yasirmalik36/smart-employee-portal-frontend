@@ -21,7 +21,7 @@ export interface AttendanceResponse {
     code: string;
     message: string;
     description: string;
-    totalPages: string;
+    totalRecords: string;
   }
   
   export interface AttendanceRecord {

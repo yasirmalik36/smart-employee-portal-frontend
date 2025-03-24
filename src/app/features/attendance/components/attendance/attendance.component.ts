@@ -1,15 +1,12 @@
-import { Component, computed, inject, OnInit, signal, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, computed, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AttendanceService } from '../../services/attendance.service';
 import { MaterialModule } from '../../../../shared/material module/material.module';
 import { AttendanceRecord, AttendanceRequest } from '../../../../models/AttendanceRequest';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import moment from 'moment';
 import FileSaver, { saveAs } from 'file-saver';
 import "jspdf-autotable";
 import * as XLSX from 'xlsx';
@@ -27,14 +24,15 @@ import { ManualAttendanceComponent } from '../manual-attendance/manual-attendanc
   styleUrl: './attendance.component.css'
 })
 export class AttendanceComponent implements OnInit {
-  @ViewChild(MatPaginator, { static: false }) paginator!: MatPaginator ;
-  @ViewChild(MatSort, { static: false }) sort!: MatSort ;
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
   public common = inject(CommonService);
   displayedColumns: string[] = [];
   columns: any[] = [];
-  dataSource = new MatTableDataSource<any>();
-  totalPages = 1;
-  currentPage = 1;
+  dataSource = new MatTableDataSource<any>([]);
+  totalRecords = 0;
+  pageNumber:number=1;
+  pageSize: number=10;
   showCustomDates = false;
   tableColumns: { key: string; title: string; width?: string }[] = [];
   attendanceList: AttendanceRecord[] = [];
@@ -117,14 +115,11 @@ export class AttendanceComponent implements OnInit {
     this.dropdownOpen = null; // Close dropdown
   }
   private attendanceService = inject(AttendanceService);
-  constructor(private dialog: MatDialog) {
+  constructor(private dialog: MatDialog,private cdr: ChangeDetectorRef ) {
 
   }
 
   ngOnInit() {
-    this.totalPages = 0; // Set default value
-    this.attendanceRequest.pageNumber = 1;
-    this.attendanceRequest.pageSize = 25;
     this.setDateRange();
     this.getAttendance();
   }
@@ -210,11 +205,13 @@ export class AttendanceComponent implements OnInit {
   
   getAttendance() {
     this.loading = true;
+    this.attendanceRequest.pageNumber=this.pageNumber;
+    this.attendanceRequest.pageSize=this.pageSize
     this.attendanceService.getAttendance(this.attendanceRequest).subscribe(
       (response: any) => {
         if (response.resp?.code === '00') {
           debugger
-          this.totalPages=response.resp.totalPages;
+          this.totalRecords=response.resp.totalRecords;
            this.attendanceData = response.attendanceData || [];
            this.attendanceList=response.attendanceData || [];
            if (this.attendanceData.length === 0) {
@@ -266,15 +263,10 @@ export class AttendanceComponent implements OnInit {
             return newRecord;
           });
           this.dataSource = new MatTableDataSource(transformedData);
-          setTimeout(() => {
-            if (this.paginator) {
-              this.dataSource.paginator = this.paginator;
-            }
-            if (this.sort) {
-              this.dataSource.sort = this.sort;
-            }
-          });
-        }
+          this.totalRecords = response.resp.totalRecords;
+
+             }
+
         this.loading = false;
       },
       (error: any) => {
@@ -381,9 +373,11 @@ export class AttendanceComponent implements OnInit {
   }
   
   onPageChange(event: PageEvent) {
-    this.attendanceRequest.pageNumber = event.pageIndex + 1; 
-    this.attendanceRequest.pageSize = event.pageSize;
-  }
+    this.pageNumber = event.pageIndex + 1;
+    this.pageSize = event.pageSize;
+    this.getAttendance(); 
+}
+
   
   
   toggleFilters() {

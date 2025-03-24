@@ -222,13 +222,13 @@
     </div>
   </div>
   
-  <div class="mt-4   overflow-auto mb-4" [ngClass]="tableWidth()">
+  <div class="mt-4 overflow-auto mb-4" [ngClass]="tableWidth()">
     <div *ngIf="loading" class="text-center text-blue-500">Loading...</div>
   
-    <!-- Scrollable Table Wrapper -->
-    <div class=" overflow-hidden mb-4">
+    <!-- Table Container -->
+    <div class="overflow-hidden mb-4">
       <div *ngIf="loading" class="text-center text-blue-500">Loading...</div>
-    
+  
       <!-- Scrollable Table Wrapper -->
       <div class="overflow-auto relative" [style.height]="TableHeight()">
         <table mat-table *ngIf="attendanceData?.length !== 0" [dataSource]="dataSource" matSort 
@@ -240,7 +240,7 @@
               [style.max-width]="column.width">
               {{ column.title }}
             </mat-header-cell>
-    
+  
             <mat-cell *matCellDef="let row" [style.min-width]="column.width" [style.max-width]="column.width">
               <!-- Actions Column -->
               <ng-container *ngIf="column.key === 'actions'">
@@ -248,7 +248,7 @@
                   <mat-icon>edit</mat-icon>
                 </button>
               </ng-container>
-    
+  
               <!-- Employee Name Column with Image -->
               <ng-container *ngIf="column.key === 'Employee_Name'">
                 <div class="flex items-center space-x-3">
@@ -263,7 +263,7 @@
                   </div>
                 </div>
               </ng-container>
-    
+  
               <!-- Status Column -->
               <ng-container *ngIf="column.key === 'Status'">
                 <div class="px-2 py-1 rounded-md text-center"
@@ -275,46 +275,36 @@
                   {{ row.Status || 'N/A' }}
                 </div>
               </ng-container>
-    
+  
               <!-- Other Columns -->
               <ng-container *ngIf="column.key !== 'Employee_Name' && column.key !== 'Status' && column.key !== 'actions'">
                 {{ row[column.key] }}
               </ng-container>
             </mat-cell>
           </ng-container>
-    
+  
           <mat-header-row *matHeaderRowDef="displayedColumns;" class="sticky-header"></mat-header-row>
           <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-    
         </table>
       </div>
-    
+  
       <!-- No Data Found Message -->
       <div *ngIf="attendanceData?.length === 0" class="flex flex-col items-center justify-center h-64 bg-gray-100 rounded-lg shadow-md">
         <img src="assets/images/no-data.svg" alt="No Data" class="w-32 h-32 mb-4" />
         <p class="text-lg font-semibold text-gray-700">No Data Found</p>
         <p class="text-sm text-gray-500">Try adjusting filters or check back later.</p>
       </div>
-    
+  
       <!-- Sticky Pagination -->
       <div class="sticky bottom-0 left-0 bg-white shadow-md w-full flex justify-end pr-4 border border-gray-300">
         <mat-paginator class="mr-2"
-          [length]="totalPages" 
-          [pageIndex]="attendanceRequest.pageNumber - 1"  
-          [pageSize]="attendanceRequest.pageSize" 
-          [pageSizeOptions]="[5, 10, 25, 100]" 
-          showFirstLastButtons
-          (page)="onPageChange($event)">
-        </mat-paginator>
+        [length]="totalRecords"
+        [pageSize]="pageSize"
+        showFirstLastButtons
+        [pageSizeOptions]="[5, 10, 25,50,100]"
+        (page)="onPageChange($event)">
+      </mat-paginator>
       </div>
     </div>
-    
-
-
-  
-
-
   </div>
-
-  
 </div>

@@ -33,7 +33,6 @@ export class LayoutComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    debugger
     const storedActivities = localStorage.getItem('activites');
     if (storedActivities) {
       this.activities = JSON.parse(storedActivities) as Activity[];
