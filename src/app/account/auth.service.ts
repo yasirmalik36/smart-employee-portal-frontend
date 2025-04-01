@@ -97,7 +97,13 @@ export class AuthService {
       return localStorage.getItem("activities");
     }
     getUserId() {
-      return localStorage.getItem("userId") || '';
+    //  return localStorage.getItem("UserID") || '';
+
+      const payload = this.decodeToken();
+      if (payload && payload.UserID) {
+        return payload.UserID;
+      }
+      return '';
     }
 
     

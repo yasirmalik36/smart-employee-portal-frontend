@@ -19,7 +19,7 @@ import { ManualAttendanceComponent } from '../manual-attendance/manual-attendanc
 @Component({
   selector: 'app-attendance',
   standalone: true,
-  imports: [CommonModule,MaterialModule, FormsModule, ReactiveFormsModule,AlertBoxComponent],
+  imports: [CommonModule,MaterialModule, FormsModule, ReactiveFormsModule],
   templateUrl: './attendance.component.html',
   styleUrl: './attendance.component.css'
 })

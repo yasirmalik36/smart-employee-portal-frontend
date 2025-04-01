@@ -13,7 +13,9 @@ import * as XLSX from 'xlsx';
 export class CommonService {
   isCollapsed = signal<boolean>(false);
   filtersExpanded = signal(false);
-
+  showAlert = signal(false);
+  alertType = signal<'success' | 'error' | 'warning' | 'info'>('info');
+  alertMessage = signal('');
   router=inject(Router)
   gridHeight: string;
   styleValue!: string;
@@ -30,19 +32,26 @@ export class CommonService {
    }
 
 
- 
+   getProfilePic(emp: any): string {
+    if (emp.ProfilePic && emp.ProfilePic.trim() !== '') {
+      return `data:image/jpeg;base64,${emp.ProfilePic}`;
+    }
+    return emp.Gender?.toLowerCase() === 'm' 
+      ? 'assets/images/man.png' 
+      : 'assets/images/woman.png';
+  }
+  
 
-   showAlert = false;
-   alertType: 'success' | 'error' | 'warning' | 'info' = 'info';
-   alertMessage = '';
+ 
    
-   showCustomAlert(showAlert:boolean,type: 'success' | 'error' | 'warning' | 'info', message: string) {
-    this.showAlert=showAlert;
-     this.alertType = type;
-     this.alertMessage = message;
-     this.showAlert = true;
-   }
-   
+  showCustomAlert(showAlert: boolean, type: 'success' | 'error' | 'warning' | 'info', message: string) {
+    this.showAlert.set(showAlert);
+    this.alertType.set(type);
+    this.alertMessage.set(message);
+  }
+  hideAlert() {
+    this.showAlert.set(false);
+  }
 
 
   setDisplayedColumns(columns: any, displayedColumns: any) {

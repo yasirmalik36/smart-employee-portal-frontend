@@ -1,2 +1,10 @@
+<app-alert-box *ngIf="common.showAlert()"
+  [type]="common.alertType()"
+  [message]="common.alertMessage()"
+  [autoClose]="true"
+  [duration]="7000"
+  (close)="common.hideAlert()">
+</app-alert-box>
+
 <app-loader></app-loader>
 <router-outlet></router-outlet>

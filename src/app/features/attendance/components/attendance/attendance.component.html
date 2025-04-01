@@ -18,14 +18,6 @@
     Attendance Records
   </h2>
 
-  <app-alert-box *ngIf="common.showAlert"
-  [type]="common.alertType"
-  [message]="common.alertMessage"
-  [autoClose]="true"
-  [duration]="4000"
-  (close)="common.showAlert = false">
-</app-alert-box>
-
   <!-- Search Filters - Collapsible -->
   <div *ngIf="common.filtersExpanded()" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
     
@@ -223,7 +215,6 @@
   </div>
   
   <div class="mt-4 overflow-auto mb-4" [ngClass]="tableWidth()">
-    <div *ngIf="loading" class="text-center text-blue-500">Loading...</div>
   
     <!-- Table Container -->
     <div class="overflow-hidden mb-4">
@@ -252,11 +243,16 @@
               <!-- Employee Name Column with Image -->
               <ng-container *ngIf="column.key === 'Employee_Name'">
                 <div class="flex items-center space-x-3">
-                  <img 
+                  <!-- <img 
                     [src]="row.Gender?.toLowerCase() === 'm' ? 'assets/images/man.png' : 'assets/images/woman.png'" 
                     alt="Employee Image" 
                     class="w-8 h-8 rounded-full border border-gray-300 shadow-md"
-                  />
+                  /> -->
+                  <img 
+                  [src]="common.getProfilePic(row)" 
+                  alt="Employee Image" 
+                  class="w-8 h-8 rounded-full border border-gray-300 shadow-md transition-all duration-200 hover:scale-125 hover:shadow-lg hover:ring-2 hover:ring-blue-300 hover:bg-gray-100"
+                />
                   <div class="text-xs">
                     <div class="font-semibold text-gray-800">{{ row.Employee_Name }}</div>
                     <div class="text-gray-600">{{ row.Gender }} | {{ row.DateOfBirth }}</div>

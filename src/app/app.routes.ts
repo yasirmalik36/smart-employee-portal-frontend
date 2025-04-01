@@ -2,18 +2,16 @@ import { Routes } from '@angular/router';
 import { LoginComponent } from './account/login/login.component';
 import { RegisterComponent } from './account/register/register.component';
 import { ProfileComponent } from './account/profile/profile.component';
-import { ForgotPasswordComponent } from './account/forgot-password/forgot-password.component';
-import { ResetPasswordComponent } from './account/reset-password/reset-password.component';
 import { LayoutComponent } from './layout/layout.component';
 import { NotFoundComponent } from './features/not-found/not-found.component';
 import { AuthGuard } from './common/guards/auth.guard';
+import { ChangePasswordComponent } from './account/change-password/change-password.component';
 
 export const routes: Routes = [
   { path: 'account/login', component: LoginComponent },
   { path: 'account/register', component: RegisterComponent },
   { path: 'account/profile', component: ProfileComponent },
-  { path: 'account/forgot-password', component: ForgotPasswordComponent },
-  { path: 'account/reset-password', component: ResetPasswordComponent },
+  { path: 'account/change-password', component: ChangePasswordComponent },
   
   { path: '', redirectTo: '/account/login', pathMatch: 'full' },
   { path: 'attendance/face-recognition', loadComponent: () => import('./features/attendance/components/face-recognition/face-recognition.component').then(m => m.FaceRecognitionComponent),  },
@@ -49,11 +47,7 @@ export const routes: Routes = [
       // employee Management Module
       {
         path: 'employee-management',
-        loadComponent: () => import('./features/user-management/user-list/user-list.component').then(m => m.UserListComponent),
-      },
-      {
-        path: 'user-form/:id',
-        loadComponent: () => import('./features/user-management/user-form/user-form.component').then(m => m.UserFormComponent),
+        loadComponent: () => import('./features/employee/component/employee-management/employee-management.component').then(m=>m.EmployeeManagementComponent),
       },
 
       // Task Management Module

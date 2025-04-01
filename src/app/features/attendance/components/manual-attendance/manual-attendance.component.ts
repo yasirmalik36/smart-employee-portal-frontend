@@ -22,7 +22,7 @@ export class ManualAttendanceComponent implements OnInit {
   isLoading: boolean = false;
   private toastService = inject(ToastService);
   private attendanceService = inject(AttendanceService);
-  private common = inject(CommonService);
+  public common = inject(CommonService);
   StatusresponseData: any;
   employeeStatus: string='';
   constructor(
@@ -32,15 +32,7 @@ export class ManualAttendanceComponent implements OnInit {
 
   ngOnInit() {
   }
-  getProfilePic(emp: any): string {
-    if (emp.ProfilePic && emp.ProfilePic.trim() !== '') {
-      return `data:image/jpeg;base64,${emp.ProfilePic}`;
-    }
-    return emp.Gender?.toLowerCase() === 'm' 
-      ? 'assets/images/man.png' 
-      : 'assets/images/woman.png';
-  }
-  
+
   fetchEmployees(event: KeyboardEvent) {
     if (event.key === 'Enter' && this.searchText.trim()) {
       this.attendanceService.getEmployeeDetails(this.searchText).subscribe(

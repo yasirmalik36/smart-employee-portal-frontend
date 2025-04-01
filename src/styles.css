@@ -283,3 +283,7 @@ button[mat-raised-button]:disabled {
 .mat-mdc-paginator-page-size-label {
   white-space: nowrap;
 }
+.password-text {
+  color: #0c0ca0;  /* Green color */
+  font-weight: 500; /* Medium boldness */
+}

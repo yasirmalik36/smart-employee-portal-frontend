@@ -20,7 +20,7 @@ export class ToastService {
     this.toastr.warning(message, title, { timeOut: duration });
   }
 
-  showInfo(message: string, title: string = '', duration: number = 3000): void {
+  showInfo(message: string, title: string = '', duration: number = 7000): void {
     this.toastr.info(message, title, { timeOut: duration });
   }
 }
