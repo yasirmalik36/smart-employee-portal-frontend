@@ -1,0 +1,67 @@
+button {
+    transition: all 0.3s ease-in-out;
+  }
+  
+  button:hover {
+    transform: scale(1.05);
+  }
+  
+  input {
+    transition: border 0.2s ease-in-out;
+  }
+  
+  input:focus {
+    border-color: #1f83a7;
+    outline: none;
+  }
+  .form-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+    padding: 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+  }
+  
+  mat-form-field {
+    width: 100%;
+  }
+  
+  .submit-container {
+    text-align: center;
+    margin-top: 20px;
+  }
+  .header {
+    position: relative;
+  }
+  
+  .cancel-button {
+    position: absolute;
+    top: -1px;
+    right: -1px;
+    color: red; /* Change color if needed */
+    z-index: 1000PX;
+  }
+  /* Top Right Cancel Icon */
+.cancel-icon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: red;
+  }
+  
+  /* Align Buttons */
+  .button-container {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  
+  /* Save & Submit Button */
+  .submit-button {
+    background-color: #1f53a7; /* Your global color */
+    color: white;
+  }
+  
+ 

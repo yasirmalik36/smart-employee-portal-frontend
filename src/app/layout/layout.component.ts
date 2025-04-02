@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, Renderer2, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, ElementRef, Renderer2, OnInit, OnDestroy, inject, ViewEncapsulation } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink, RouterModule, RouterOutlet } from '@angular/router';
 import { AuthService } from '../account/auth.service';
@@ -12,7 +12,7 @@ import { CommonService } from '../common/services/common.service';
   standalone: true,
   imports: [RouterOutlet, RouterLink,RouterModule, ReactiveFormsModule, CommonModule,MaterialModule],
   templateUrl: './layout.component.html',
-  styleUrls: ['./layout.component.css']
+  styleUrls: ['./layout.component.css'],
 })
 export class LayoutComponent implements OnInit, OnDestroy {
   isUserMenuOpen = false;
@@ -91,6 +91,10 @@ export class LayoutComponent implements OnInit, OnDestroy {
       'Account/Authentication': 'lock'
     };
     return icons[activityName] || 'help_outline'; // Default icon
+  }
+  ViewMyEProfile() {
+
+    this.router.navigate(['/home/employee-profile'], { queryParams: { mode: 'view'} });
   }
   
 

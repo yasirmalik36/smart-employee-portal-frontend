@@ -12,6 +12,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { AuthService } from '../../../../account/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-employee-management',
@@ -32,11 +33,11 @@ export class EmployeeManagementComponent {
     isFormVisible: boolean = false;
     Designation!: string;
     profiletype!: string;
-  
     private toastService = inject(ToastService);
     private authservice = inject(AuthService);
     private service = inject(EmployeeService);
     public common = inject(CommonService);
+    private router = inject(Router);
 
     constructor(private dialog: MatDialog) {}
     tableWidth = this.common.Tablewidth;
@@ -44,6 +45,7 @@ export class EmployeeManagementComponent {
     ngOnInit() {
         this.Designation = this.authservice.getDesignationFromToken();
         this.profiletype = this.authservice.getProfileType();
+
         this.getEmployeeList();
     }
 
@@ -112,17 +114,16 @@ export class EmployeeManagementComponent {
         this.dataSource.filter = filterValue;
     }
 
-    /** Edit Employee */
-    editEmployee(employee: any) {
-        console.log("Edit Employee:", employee);
-        // Implement your edit logic here
+    editEmployee(employeeId: number): void {
+      this.router.navigate(['/home/employee-profile'], { queryParams: { mode: 'edit', id:employeeId } });
+
     }
     resetPassword(row: any) {
       const dialogRef = this.dialog.open(ConfirmDialogComponent, {
         data: {
           title: 'Reset Password',
           message: 'Are you sure you want to reset the password?',
-          dialogType: 'alert',
+          dialogType: 'reset',
           showCancelButton: true 
         }
       });
@@ -145,7 +146,7 @@ export class EmployeeManagementComponent {
                   title: 'Password Reset Successful',
                   message: `Password has been reset successfully.<br> 
               New Password: <strong class="password-text">${response.generatedPassword}</strong>`,
-                  dialogType: 'alert',
+                  dialogType: 'reset',
                   showCancelButton: false // Hide the cancel button for alerts
                 }
               });
@@ -173,6 +174,7 @@ export class EmployeeManagementComponent {
         dialogRef.afterClosed().subscribe((result: any) => {
             if (result) {
                 console.log(`Deleting employee with ID: ${id}`);
+                this.toastService.showSuccess(`Deleting employee with Employee Id: ${id}`)
                 // Implement deletion logic here
             }
         });
@@ -186,8 +188,10 @@ export class EmployeeManagementComponent {
 
     /** Open Add Employee Dialog */
     openAddEmployeeDialog() {
-        console.log("Opening Add Employee Form...");
-        // Implement add employee logic here
+
+    }
+    Addemployee() {
+      this.router.navigate(['/home/employee-profile'], { queryParams: { mode: 'add' } });
     }
     getEmployeeDetails(row: any) {
       return {

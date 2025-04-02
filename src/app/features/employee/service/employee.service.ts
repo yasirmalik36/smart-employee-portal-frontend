@@ -30,7 +30,7 @@ export class EmployeeService {
       fromObject: {
         employeeID: request.employeeID?.toString() || 0,
         pageNumber: (request.pageNumber || 1).toString(),
-        pageSize: (request.pageSize || 10).toString()
+        pageSize: (request.pageSize || 100).toString()
       }
     });
 
@@ -45,4 +45,7 @@ export class EmployeeService {
     return this.http.post<any>(`${this.apiUrl}/ResetEmployeePassword`, body);
   }
 
+  addUpdateEmployee(employeeData: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/AddUpdateEmployee`, employeeData);
+  }
 }

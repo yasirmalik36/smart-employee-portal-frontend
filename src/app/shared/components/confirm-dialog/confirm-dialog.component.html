@@ -1,35 +1,71 @@
-<div class="modal-background">
-  <div class="modal-content h-45">
-      <div class="flex justify-center items-center" style="gap: 12px;">
-          <div>
-              <div  *ngIf="dialogType === 'alert'" class="icon-container">
-                  <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="40" height="40" x="0" y="0" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512" xml:space="preserve" class=""><g><path d="M256 213.107v51.375M256 351.816h0M473.573 146.439l-12.643 6.326M398.582 60.648l-4.495 13.471M492 249.77l-13.384-4.524M38.427 146.439l12.643 6.326M113.418 60.648l4.495 13.471M20 249.77l13.384-4.524M417.334 281.003 303.802 91.205c-21.683-36.249-73.921-36.249-95.604 0L43.655 366.284c-22.377 37.409 4.404 85.068 47.802 85.068h329.087c43.186 0 69.916-47.193 48.127-84.518" style="stroke-width:40;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;" fill="none" stroke="#dc3f3f" stroke-width="40" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" data-original="#000000" opacity="1" class=""></path></g></svg>
-              </div>
-              <div  *ngIf="dialogType === 'delete'" class="icon-container">
-                  <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="40" height="40" x="0" y="0" viewBox="0 0 24 24" style="enable-background:new 0 0 512 512" xml:space="preserve" class=""><g><path d="M15.84 22.25H8.16a3.05 3.05 0 0 1-3-2.86L4.25 5.55a.76.76 0 0 1 .2-.55.77.77 0 0 1 .55-.25h14a.75.75 0 0 1 .75.8l-.87 13.84a3.05 3.05 0 0 1-3.04 2.86zm-10-16 .77 13.05a1.55 1.55 0 0 0 1.55 1.45h7.68a1.56 1.56 0 0 0 1.55-1.45l.81-13z" fill="#dc3f3f" opacity="1" data-original="#000000"></path><path d="M21 6.25H3a.75.75 0 0 1 0-1.5h18a.75.75 0 0 1 0 1.5z" fill="#dc3f3f" opacity="1" data-original="#000000"></path><path d="M15 6.25H9a.76.76 0 0 1-.75-.75V3.7a2 2 0 0 1 1.95-1.95h3.6a2 2 0 0 1 1.95 2V5.5a.76.76 0 0 1-.75.75zm-5.25-1.5h4.5v-1a.45.45 0 0 0-.45-.45h-3.6a.45.45 0 0 0-.45.45zM15 18.25a.76.76 0 0 1-.75-.75v-8a.75.75 0 0 1 1.5 0v8a.76.76 0 0 1-.75.75zM9 18.25a.76.76 0 0 1-.75-.75v-8a.75.75 0 0 1 1.5 0v8a.76.76 0 0 1-.75.75zM12 18.25a.76.76 0 0 1-.75-.75v-8a.75.75 0 0 1 1.5 0v8a.76.76 0 0 1-.75.75z" fill="#dc3f3f" opacity="1" data-original="#000000"></path></g></svg>            </div>
-          </div>
-        <div >
-          <h2 mat-dialog-title class="dialog-title ml-4 mb-0 p-0 pb-1 text-start" style="line-height: 0; text-align: left; margin-top: -16px; text-wrap-mode: nowrap;">{{ data.title }}</h2>
-        <mat-dialog-content>
-          <p class="text-secondary text-start p-0 " style="text-align: left;" [innerHTML]="data.message"></p>
-        </mat-dialog-content>
-        </div>
+<div class="modal-background flex justify-center items-center">
+  <div class="modal-content p-4 bg-white rounded-lg shadow-xl w-96 max-w-full">
+    
+    <!-- Modal Content -->
+    <div class="flex flex-col items-center gap-2">
+      <img 
+        *ngIf="dialogType === 'alert'" 
+        src="assets/images/alert-image.svg" 
+        alt="Alert Icon" 
+        class="w-32 h-32"
+      />
+
+      <img 
+        *ngIf="dialogType === 'delete'" 
+        src="assets/images/delete-image.svg" 
+        alt="Delete Icon" 
+        class="w-32 h-32"
+      />
+
+      <img 
+        *ngIf="dialogType === 'cancel'" 
+        src="assets/images/cancel-image.svg" 
+        alt="Cancel Icon" 
+        class="w-32 h-32"
+      />
+
+      <img 
+        *ngIf="dialogType === 'reset'" 
+        src="assets/images/reset-image.svg" 
+        alt="Reset Icon" 
+        class="w-32 h-32"
+      />
+    </div>
+
+    <div class="mt-2 text-center">
+      <h2 mat-dialog-title class="text-lg font-semibold text-gray-800">{{ data.title }}</h2>
+      <mat-dialog-content>
+        <p class="text-gray-600 text-sm" [innerHTML]="data.message"></p>
+      </mat-dialog-content>
+    </div>
+
+    <!-- Dialog Actions with Button Behavior -->
+    <mat-dialog-actions align="center" class="w-full mt-3">
+      <div *ngIf="showCancelButton; else singleButton" class="flex gap-3 w-full">
+
+        <!-- "No" Button -->
+        <button mat-raised-button color="warn" 
+                class="flex-1 py-2 text-white rounded-md shadow-md text-base font-medium hover:bg-red-600 transition duration-300" 
+                mat-dialog-close>
+          No
+        </button>
+            <!-- "Yes" Button -->
+            <button mat-raised-button color="primary" 
+            class="flex-1 py-2 text-white rounded-md shadow-md text-base font-medium hover:bg-blue-600 transition duration-300" 
+            [mat-dialog-close]="true">
+      Yes
+    </button>
       </div>
-    <mat-dialog-actions align="center" class="w-100">
-      <div class="flex justify-center items-center w-full gap-4">
-          <div class="col-6">
-              <button  class="w-full" *ngIf="showCancelButton"  mat-raised-button color="primary" [mat-dialog-close]="true">Yes</button>
-          </div>
-          <div class="col-6">
-              <button class="w-full" *ngIf="showCancelButton" mat-raised-button color="warn" mat-dialog-close>No</button>
-          </div>
-          <div class="col-12">
-              <button class="w-full" *ngIf="!showCancelButton" mat-raised-button color="primary" [mat-dialog-close]="true">OK</button>
-          </div>
-      </div>
-      
-      
-      
+
+      <!-- Single Button (OK) When No Cancel Option -->
+      <ng-template #singleButton>
+        <button mat-raised-button color="primary" 
+                class="w-full py-2 text-white rounded-md shadow-md text-base font-medium hover:bg-blue-600 transition duration-300" 
+                [mat-dialog-close]="true">
+          OK
+        </button>
+      </ng-template>
     </mat-dialog-actions>
+
   </div>
 </div>

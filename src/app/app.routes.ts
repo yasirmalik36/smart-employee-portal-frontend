@@ -49,7 +49,10 @@ export const routes: Routes = [
         path: 'employee-management',
         loadComponent: () => import('./features/employee/component/employee-management/employee-management.component').then(m=>m.EmployeeManagementComponent),
       },
-
+      {
+        path: 'employee-profile',
+        loadComponent: () => import('./features/employee/component/employee-profile/employee-profile.component').then(m=>m.EmployeeProfileComponent),
+      },
       // Task Management Module
       {
         path: 'task-management',

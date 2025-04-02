@@ -1,1 +1,422 @@
-<p>employee-profile works!</p>
+<form [formGroup]="employeeForm">
+
+    <div class="container mx-auto p-4" [ngClass]="tableWidth() + '2'">
+        <div class="header">
+            <button *ngIf="mode() === 'add' || mode() === 'edit'" 
+                    mat-icon-button 
+                    (click)="BackToParent()" 
+                    class="cancel-button">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+      <div class="flex flex-col md:flex-row bg-white rounded-lg shadow-lg overflow-hidden ">
+      
+        <div class="border border-gray-300 rounded-lg p-4 mb-6 mt-8 ml-6 ">
+            
+          <div class="w-full flex flex-col items-center p-4 bg-gray-100 relative border border-gray-300 rounded-md"
+            style="background-image: url('assets/images/Backroundimage.jpg'); background-size: cover; background-position: center; height: 155px;">
+            <label class="cursor-pointer relative mb-4">
+              <input type="file" class="hidden" (change)="uploadImage($event)" accept="image/*">
+              <img *ngIf="profileImage; else defaultImage" [src]="profileImage"
+                class="w-32 h-32 rounded-full border-4 border-gray-300 hover:border-blue-500 transition-all"
+                alt="Profile Image">
+              <ng-template #defaultImage>
+                <img src="assets/images/profiledp.jpg"
+                  class="w-32 h-32 rounded-full border-4 border-gray-300 hover:border-blue-500 transition-all"
+                  alt="Default Profile Image">
+              </ng-template>
+            </label>
+  
+            <div class="flex gap-4 mt-4 mb-4 h-10">
+              <button
+                class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition-all whitespace-nowrap"
+                (click)="triggerFileInput()">
+                <i class="fas fa-upload"></i> Upload Image
+              </button>
+              <button
+                class="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700 transition-all whitespace-nowrap"
+                (click)="openCamera()">
+                <i class="fas fa-camera"></i> Take Picture
+              </button>
+            </div>
+            <h2 class="text-lg font-bold mt-6">{{ employeeForm.get('firstName')?.value || 'Employee Name' }}</h2>
+            <p class="text-sm text-gray-600">{{ employeeForm.get('email')?.value || 'email@example.com' }}</p>
+            <input type="file" #fileInput class="hidden" (change)="uploadImage($event)" accept="image/*">
+          </div>
+        </div>
+  
+        <div class="w-full  p-6 mr-4 mt-2" [style.height]="TableHeight()">
+          <div class="flex border-b mb-4 border border-gray-300 rounded overflow-hidden">
+            <button (click)="setActiveTab(1)"
+              class="flex-1 p-3 flex items-center justify-center gap-2 border-b-2 transition-all"
+              [ngClass]="{ 'border-blue-500 text-blue-500': activeTab === 1, 'border-transparent text-gray-500 hover:text-blue-400': activeTab !== 1 }">
+              <i class="fas fa-user"></i> Employee Account 
+            </button>
+            <button (click)="setActiveTab(2)"
+              class="flex-1 p-3 flex items-center justify-center gap-2 border-b-2 transition-all"
+              [ngClass]="{ 'border-blue-500 text-blue-500': activeTab === 2, 'border-transparent text-gray-500 hover:text-blue-400': activeTab !== 2 }">
+              <i class="fas fa-id-card"></i> Personal Info
+            </button>
+            <button (click)="setActiveTab(3)"
+              class="flex-1 p-3 flex items-center justify-center gap-2 border-b-2 transition-all"
+              [ngClass]="{ 'border-blue-500 text-blue-500': activeTab === 3, 'border-transparent text-gray-500 hover:text-blue-400': activeTab !== 3 }">
+              <i class="fas fa-graduation-cap"></i> Academic Details
+            </button>
+            <button (click)="setActiveTab(4)"
+              class="flex-1 p-3 flex items-center justify-center gap-2 border-b-2 transition-all" *ngIf="mode() === 'add' || mode() === 'edit'" 
+              [ngClass]="{ 'border-blue-500 text-blue-500': activeTab === 4, 'border-transparent text-gray-500 hover:text-blue-400': activeTab !== 4 }">
+              <i class="fas fa-briefcase"></i> Employment Details
+            </button>
+          </div>
+  
+          <div *ngIf="activeTab === 1">
+            <div class="grid grid-cols-2 gap-4 border border-gray-300 p-4 rounded">
+              <div class="block">
+                <label>First Name</label>
+                <input type="text" class="w-full p-2 border rounded" formControlName="firstName">
+                <div *ngIf="employeeForm.get('firstName')?.touched && employeeForm.get('firstName')?.invalid"
+                  class="text-red-500 text-sm">
+                  <span *ngIf="employeeForm.get('firstName')?.errors?.['required']">First Name is required.</span>
+                </div>
+              </div>
+              <div class="block">
+                <label>Last Name</label>
+                <input type="text" class="w-full p-2 border rounded" formControlName="lastName">
+                <div *ngIf="employeeForm.get('lastName')?.touched && employeeForm.get('lastName')?.invalid"
+                  class="text-red-500 text-sm">
+                  <span *ngIf="employeeForm.get('lastName')?.errors?.['required']">Last Name is required.</span>
+                </div>
+              </div>
+              <div class="block">
+                <label>Email</label>
+                <input type="email" class="w-full p-2 border rounded" formControlName="email">
+                <div *ngIf="employeeForm.get('email')?.touched && employeeForm.get('email')?.invalid"
+                  class="text-red-500 text-sm">
+                  <span *ngIf="employeeForm.get('email')?.errors?.['required']">Email is required.</span>
+                  <span *ngIf="employeeForm.get('email')?.errors?.['email']">Invalid email format.</span>
+                </div>
+              </div>
+              <div class="block">
+                <label>Personal Email</label>
+                <input type="email" class="w-full p-2 border rounded" formControlName="personalEmail">
+                <div *ngIf="employeeForm.get('personalEmail')?.touched && employeeForm.get('personalEmail')?.invalid"
+                  class="text-red-500 text-sm">
+                  <span *ngIf="employeeForm.get('personalEmail')?.errors?.['email']">Invalid email format.</span>
+                </div>
+              </div>
+              <!-- <div class="block" *ngIf="mode() === 'add'" >
+                <label>Password</label>
+                <div class="relative">
+                  <input 
+                    [type]="hidePassword ? 'password' : 'text'" 
+                    class="w-full p-2 border rounded pr-10" 
+                    formControlName="password">
+                  <button 
+                    type="button" 
+                    (click)="togglePasswordVisibility()" 
+                    class="absolute right-3 top-1/2 transform -translate-y-1/2 bg-transparent border-none cursor-pointer">
+                    <mat-icon class="text-gray-600">{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+                  </button>
+                </div>
+                <div *ngIf="employeeForm.get('password')?.touched && employeeForm.get('password')?.invalid"
+                  class="text-red-500 text-sm">
+                  <span *ngIf="employeeForm.get('password')?.errors?.['required']">Password is required.</span>
+                </div>
+              </div> -->
+      
+              <div class="block">
+                <label>Phone</label>
+                <input type="text" class="w-full p-2 border rounded" formControlName="phone">
+                <div *ngIf="employeeForm.get('phone')?.touched && employeeForm.get('phone')?.invalid"
+                  class="text-red-500 text-sm">
+                  <span *ngIf="employeeForm.get('phone')?.errors?.['required']">Phone is required.</span>
+                  <span *ngIf="employeeForm.get('phone')?.errors?.['pattern']">Invalid phone number.</span>
+                </div>
+              </div>
+              <div class="block">
+                <label>CNIC</label>
+                <input type="text" class="w-full p-2 border rounded" formControlName="cnic">
+                <div *ngIf="employeeForm.get('cnic')?.touched && employeeForm.get('cnic')?.invalid"
+                  class="text-red-500 text-sm">
+                  <span *ngIf="employeeForm.get('cnic')?.errors?.['required']">CNIC is required.</span>
+                  <span *ngIf="employeeForm.get('cnic')?.errors?.['pattern']">Invalid CNIC format.</span>
+                </div>
+              </div>
+              <div class="block">
+         <label class="block">Gender
+      <select class="w-full p-2 border rounded" formControlName="gender">
+      <option *ngFor="let gender of genders" [value]="gender.value">{{ gender.label }}</option>
+      </select>
+       </label>
+                <div *ngIf="employeeForm.get('gender')?.touched && employeeForm.get('gender')?.invalid"
+                  class="text-red-500 text-sm">
+                  <span *ngIf="employeeForm.get('gender')?.errors?.['required']">Gender is required.</span>
+                </div>
+              </div>
+              <div class="block">
+                <label>Date of Birth</label>
+                <input type="date" class="w-full p-2 border rounded" formControlName="dateOfBirth">
+                <div *ngIf="employeeForm.get('dateOfBirth')?.touched && employeeForm.get('dateOfBirth')?.invalid"
+                  class="text-red-500 text-sm">
+                  <span *ngIf="employeeForm.get('dateOfBirth')?.errors?.['required']">Date of Birth is required.</span>
+                </div>
+              </div>
+              <div class="block mt-2">
+                <mat-checkbox formControlName="isActive" color="primary">
+                  Is Active
+                </mat-checkbox>
+                <div *ngIf="employeeForm.get('isActive')?.touched && employeeForm.get('isActive')?.invalid"
+                  class="text-red-500 text-sm">
+                  <span *ngIf="employeeForm.get('isActive')?.errors?.['required']">isActive is required.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+  
+          <div *ngIf="activeTab === 2" style="overflow-y: auto; max-height: 471px;">
+            <div class="grid grid-cols-2 gap-4 border border-gray-300 p-4 rounded">
+              <div class="block">
+                <label>Address</label>
+                <input type="text" class="w-full p-2 border rounded" formControlName="address">
+                <div *ngIf="employeeForm.get('address')?.touched && employeeForm.get('address')?.invalid"
+                  class="text-red-500 text-sm">
+                  <span *ngIf="employeeForm.get('address')?.errors?.['required']">Address is required.</span>
+                </div>
+              </div>
+              <div class="block">
+                <label>City</label>
+                <input type="text" class="w-full p-2 border rounded" formControlName="city">
+                <div *ngIf="employeeForm.get('city')?.touched && employeeForm.get('city')?.invalid"
+                  class="text-red-500 text-sm">
+                  <span *ngIf="employeeForm.get('city')?.errors?.['required']">City is required.</span>
+                </div>
+              </div>
+              <div class="block">
+                <label>State</label>
+                <input type="text" class="w-full p-2 border rounded" formControlName="state">
+                <div *ngIf="employeeForm.get('state')?.touched && employeeForm.get('state')?.invalid"
+                  class="text-red-500 text-sm">
+                  <span *ngIf="employeeForm.get('state')?.errors?.['required']">State is required.</span>
+                </div>
+              </div>
+              <div class="block">
+                <label>Country</label>
+                <input type="text" class="w-full p-2 border rounded" formControlName="country">
+                <div *ngIf="employeeForm.get('country')?.touched && employeeForm.get('country')?.invalid"
+                  class="text-red-500 text-sm">
+                  <span *ngIf="employeeForm.get('country')?.errors?.['required']">Country is required.</span>
+                </div>
+              </div>
+              <div class="block">
+                <label>Zip Code</label>
+                <input type="text" class="w-full p-2 border rounded" formControlName="zipCode">
+              </div>
+         
+              <div class="block">
+                <label>Medications</label>
+                <input type="text" class="w-full p-2 border rounded" formControlName="medications">
+              </div>
+              <div class="block">
+                <label>Health Condition</label>
+                <input type="text" class="w-full p-2 border rounded" formControlName="healthCondition">
+              </div>
+              <div class="block">
+                <label>Disability Status</label>
+                <input type="text" class="w-full p-2 border rounded" formControlName="disabilityStatus">
+              </div>
+              <div class="block">
+                <label>Emergency Contact Name *</label>
+                <input type="text" class="w-full p-2 border rounded" formControlName="emergencyContactName">
+                <div *ngIf="employeeForm.get('emergencyContactName')?.touched && employeeForm.get('emergencyContactName')?.invalid"
+                class="text-red-500 text-sm">
+                <span *ngIf="employeeForm.get('emergencyContactName')?.errors?.['required']">Emergency Contact Name is required.</span>
+              </div>
+              </div>
+              <div class="block">
+                <label>Emergency Contact Number *</label>
+                <input type="text" class="w-full p-2 border rounded" formControlName="emergencyContactNumber">
+                <div *ngIf="employeeForm.get('emergencyContactNumber')?.touched && employeeForm.get('emergencyContactNumber')?.invalid"
+                class="text-red-500 text-sm">
+                <span *ngIf="employeeForm.get('emergencyContactNumber')?.errors?.['required']">Emergency Contact No. is required.</span>
+              </div>
+            </div>
+              <div class="block">
+                <label>Emergency Contact Relationship *</label>
+                <input type="text" class="w-full p-2 border rounded" formControlName="emergencyContactRelationship">
+                <div *ngIf="employeeForm.get('emergencyContactRelationship')?.touched && employeeForm.get('emergencyContactRelationship')?.invalid"
+                class="text-red-500 text-sm">
+                <span *ngIf="employeeForm.get('emergencyContactRelationship')?.errors?.['required']">Emergency Contact Relationship is required.</span>
+              </div>
+            </div>
+              <div class="block">
+                <label>Marital Status</label>
+                <select class="w-full p-2 border rounded" formControlName="maritalStatus">
+                  <option *ngFor="let status of maritalStatuses" [value]="status">{{ status }}</option>
+                </select>
+              </div>
+              <div class="block">
+                <label>Number of Dependents</label>
+                <input type="number" class="w-full p-2 border rounded" formControlName="numberOfDependents">
+              </div>
+              <div class="block">
+                <label>Blood Group *</label>
+                <input type="text" class="w-full p-2 border rounded" formControlName="bloodGroup">
+                <div *ngIf="employeeForm.get('bloodGroup')?.touched && employeeForm.get('bloodGroup')?.invalid"
+                class="text-red-500 text-sm">
+                <span *ngIf="employeeForm.get('bloodGroup')?.errors?.['required']">Blood Group is required.</span>
+              </div>
+              </div>
+            </div>
+          </div>
+  
+          <div *ngIf="activeTab === 3">
+            <div class="grid grid-cols-2 gap-4 border border-gray-300 p-4 rounded">
+              <div class="block">
+                <label>Highest Degree</label>
+                <input type="text" class="w-full p-2 border rounded" formControlName="highestDegree">
+                <div *ngIf="employeeForm.get('highestDegree')?.touched && employeeForm.get('highestDegree')?.invalid"
+                  class="text-red-500 text-sm">
+                  <span *ngIf="employeeForm.get('highestDegree')?.errors?.['required']">Highest Degree is required.</span>
+                </div>
+              </div>
+              <div class="block">
+                <label>Institution</label>
+                <input type="text" class="w-full p-2 border rounded" formControlName="institution">
+                <div *ngIf="employeeForm.get('institution')?.touched && employeeForm.get('institution')?.invalid"
+                  class="text-red-500 text-sm">
+                  <span *ngIf="employeeForm.get('institution')?.errors?.['required']">Institution is required.</span>
+                </div>
+              </div>
+              <div class="block">
+                <label>Year of Graduation</label>
+                <input type="number" class="w-full p-2 border rounded" formControlName="yearOfGraduation">
+                <div *ngIf="employeeForm.get('yearOfGraduation')?.touched && employeeForm.get('yearOfGraduation')?.invalid"
+                  class="text-red-500 text-sm">
+                  <span *ngIf="employeeForm.get('yearOfGraduation')?.errors?.['required']">Year of Graduation is required.</span>
+                  <span *ngIf="employeeForm.get('yearOfGraduation')?.errors?.['pattern']">Invalid year format.</span>
+                </div>
+              </div>
+              <div class="block">
+                <label>Major</label>
+                <input type="text" class="w-full p-2 border rounded" formControlName="major">
+                <div *ngIf="employeeForm.get('major')?.touched && employeeForm.get('major')?.invalid"
+                  class="text-red-500 text-sm">
+                  <span *ngIf="employeeForm.get('major')?.errors?.['required']">Major is required.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+  
+          <div *ngIf="activeTab === 4 && (mode() === 'add' || mode() === 'edit')" >
+            <div class="grid grid-cols-2 gap-4 border border-gray-300 p-4 rounded">
+              <div class="block">
+                <label>Designation ID</label>
+                <input type="number" class="w-full p-2 border rounded" formControlName="designationID">
+                <div *ngIf="employeeForm.get('designationID')?.touched && employeeForm.get('designationID')?.invalid"
+                  class="text-red-500 text-sm">
+                  <span *ngIf="employeeForm.get('designationID')?.errors?.['required']">Designation ID is required.</span>
+                </div>
+              </div>
+              <div class="block">
+                <label>Department ID</label>
+                <input type="number" class="w-full p-2 border rounded" formControlName="departmentID">
+                <div *ngIf="employeeForm.get('departmentID')?.touched && employeeForm.get('departmentID')?.invalid"
+                  class="text-red-500 text-sm">
+                  <span *ngIf="employeeForm.get('departmentID')?.errors?.['required']">Department ID is required.</span>
+                </div>
+              </div>
+              <div class="block">
+                <label>Joining Date</label>
+                <input type="date" class="w-full p-2 border rounded" formControlName="joiningDate">
+                <div *ngIf="employeeForm.get('joiningDate')?.touched && employeeForm.get('joiningDate')?.invalid"
+                  class="text-red-500 text-sm">
+                  <span *ngIf="employeeForm.get('joiningDate')?.errors?.['required']">Joining Date is required.</span>
+                </div>
+              </div>
+              <div class="block">
+                <label>Shift ID</label>
+                <input type="number" class="w-full p-2 border rounded" formControlName="shiftID">
+                <div *ngIf="employeeForm.get('shiftID')?.touched && employeeForm.get('shiftID')?.invalid"
+                  class="text-red-500 text-sm">
+                  <span *ngIf="employeeForm.get('shiftID')?.errors?.['required']">Shift ID is required.</span>
+                </div>
+              </div>
+              <div class="block">
+                <label>Employment Type</label>
+                <select class="w-full p-2 border rounded" formControlName="employmentType">
+                  <option *ngFor="let type of employmentTypes" [value]="type">{{ type }}</option>
+                </select>
+                <div *ngIf="employeeForm.get('employmentType')?.touched && employeeForm.get('employmentType')?.invalid"
+                  class="text-red-500 text-sm">
+                  <span *ngIf="employeeForm.get('employmentType')?.errors?.['required']">Employment Type is required.</span>
+                </div>
+              </div>
+              <div class="block">
+                <label>Work Location</label>
+                <input type="text" class="w-full p-2 border rounded" formControlName="workLocation">
+                <div *ngIf="employeeForm.get('workLocation')?.touched && employeeForm.get('workLocation')?.invalid"
+                  class="text-red-500 text-sm">
+                  <span *ngIf="employeeForm.get('workLocation')?.errors?.['required']">Work Location is required.</span>
+                </div>
+              </div>
+              <div class="block">
+                <label>Reporting Manager</label>
+                <input type="text" class="w-full p-2 border rounded" formControlName="reportingManager">
+                <div *ngIf="employeeForm.get('reportingManager')?.touched && employeeForm.get('reportingManager')?.invalid"
+                  class="text-red-500 text-sm">
+                  <span *ngIf="employeeForm.get('reportingManager')?.errors?.['required']">Reporting Manager is required.</span>
+                </div>
+              </div>
+              <div class="block">
+                <label class="block">Is On Probation
+                    <select class="w-full p-2 border rounded" formControlName="IsOnProbation">
+                      <option [ngValue]="true">Yes</option>
+                      <option [ngValue]="false">No</option>
+                    </select>
+                  </label>
+                <div *ngIf="employeeForm.get('IsOnProbation')?.touched && employeeForm.get('IsOnProbation')?.invalid"
+                  class="text-red-500 text-sm">
+                  <span *ngIf="employeeForm.get('IsOnProbation')?.errors?.['required']">Probation Status is required.</span>
+                </div>
+              </div>
+              <div class="block">
+                <label>Probation End Date</label>
+                <input type="date" class="w-full p-2 border rounded" formControlName="ProbationEndDate">
+                <div *ngIf="employeeForm.get('ProbationEndDate')?.touched && employeeForm.get('ProbationEndDate')?.invalid"
+                  class="text-red-500 text-sm">
+                  <span *ngIf="employeeForm.get('ProbationEndDate')?.errors?.['required']">Probation End Date is required.</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+<!-- Button Container -->
+<!-- Button Container -->
+
+  
+        </div>
+        <div class="relative mb-2 ">
+            <!-- Buttons Container -->
+            <div class="flex justify-end gap-4 mt-4 absolute bottom-0 right-0 mb-4 mr-4">
+              <!-- Cancel Button -->
+              <button mat-stroked-button color="warn"
+                      *ngIf="mode() === 'add' || mode() === 'edit'"
+                      (click)="BackToParent()"
+                      class="custom-cancel-button flex items-center gap-2">
+                Cancel
+              </button>
+          
+              <button mat-raised-button color="primary" 
+              class="px-6 py-2 rounded-lg bg-blue-500 text-white disabled:opacity-50 flex items-center gap-2 mr-5"
+              (click)="submitForm()">
+        <span class="whitespace-nowrap">Save & Submit</span> <!-- Prevent text wrap -->
+      </button>
+      
+            </div>
+          </div>
+          
+          
+          
+      </div>
+    </div>
+  </form>

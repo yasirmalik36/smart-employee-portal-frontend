@@ -7,7 +7,7 @@ body { margin: 0; font-family: 'Roboto', 'Lato', "Helvetica Neue", sans-serif; }
   html, body {
     font-size: 16px;
     line-height: 1.5;
-    height: 100%; 
+    height: 100%;
   }
   body {
     margin: 0;
@@ -15,39 +15,39 @@ body { margin: 0; font-family: 'Roboto', 'Lato', "Helvetica Neue", sans-serif; }
     background-color: #f5f5f5; /* Light background for better contrast */
     color: #333; /* Dark text for readability */
   }
-  
+
   /* Button styles */
   button {
     font-family: 'Roboto', 'Helvetica Neue', sans-serif; /* Ensure buttons use the same font */
     font-weight: 700; /* Bold text for buttons */
   }
-  
+
   /* Heading styles */
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Montserrat', sans-serif; /* Use Montserrat for headings */
     font-weight: 700; /* Bold headings */
   }
-  
+
   /* Links */
   a {
     color: #1976d2; /* Link color */
     text-decoration: none; /* Remove underline */
   }
-  
+
   a:hover {
     text-decoration: underline; /* Underline on hover */
   }
-  
+
   /* Other global styles */
   .container {
     max-width: 1200px; /* Limit the width of containers */
     margin: auto; /* Center containers */
     padding: 20px; /* Add padding */
   }
-  
 
 
-/* 
+
+/*
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
 
 html,
@@ -96,7 +96,7 @@ html, body {
   /*overflow-x: hidden;   Prevent horizontal scrolling */
   height: 100%; /* Ensure it fits the viewport */
 }
-Ensure 
+Ensure
 /* Sidebar styles */
 .collapsed {
   width: 64px;
@@ -191,7 +191,7 @@ td {
   color: white !important;
 }
 
-.mat-mdc-header-cell, 
+.mat-mdc-header-cell,
 .mdc-data-table__header-cell {
   background-color: #6453b2 !important;
   color: white !important;
@@ -229,7 +229,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 }
 .status-approved {
   color: green;
-  background-color: rgb(189, 255, 205); 
+  background-color: rgb(189, 255, 205);
   padding: 2px 33px;
   font-size: 12px;
 }
@@ -286,4 +286,15 @@ button[mat-raised-button]:disabled {
 .password-text {
   color: #0c0ca0;  /* Green color */
   font-weight: 500; /* Medium boldness */
+}
+.disabled-button {
+  background-color: #d1d5db; /* Light gray color */
+  color: #9ca3af; /* Gray text color */
+  cursor: not-allowed; /* Change cursor to indicate it's not clickable */
+}
+::ng-deep .custom-cancel-button {
+  border: 2px solid #3b82f6 !important;  /* Tailwind blue-500 color */
+  padding: 8px 24px;  /* Optional: Adjust the padding */
+  background-color: transparent !important; /* Optional: Ensure background is transparent */
+  color: #3b82f6 !important; /* Optional: Ensure text color matches */                    /* Optional: You can adjust the padding to fit your design */
 }

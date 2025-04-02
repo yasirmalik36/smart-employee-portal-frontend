@@ -24,6 +24,9 @@ module.exports = {
       },
     },
   },
+  corePlugins: {
+    preflight: true, // Keep Tailwind's global styles
+  },
   plugins: [
     require("@tailwindcss/forms"),
     require("@tailwindcss/typography"),
