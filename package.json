@@ -28,6 +28,7 @@
     "echarts": "^5.5.1",
     "f": "^1.4.0",
     "file-saver": "^2.0.5",
+    "framer-motion": "^12.6.3",
     "jspdf": "^3.0.0",
     "jspdf-autotable": "^5.0.2",
     "moment": "^2.30.1",
