@@ -38,8 +38,8 @@ button {
   
   .cancel-button {
     position: absolute;
-    top: -1px;
-    right: -1px;
+    top: 0px;
+    right: 3px;
     color: red; /* Change color if needed */
     z-index: 1000PX;
   }
@@ -64,4 +64,6 @@ button {
     color: white;
   }
   
- 
+  .custom-mat-tab-group{
+    max-width: 600px;
+   }

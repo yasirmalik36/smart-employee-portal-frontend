@@ -1,0 +1,26 @@
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.custom-tab-group .mat-tab-label {
+  @apply text-gray-600 transition-colors duration-300 flex items-center;
+}
+
+.custom-tab-group .mat-tab-label-active {
+  @apply text-blue-600 font-bold;
+}
+
+.custom-tab-group .mat-ink-bar {
+  @apply bg-blue-600 transition-all duration-300;
+}

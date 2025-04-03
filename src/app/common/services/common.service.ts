@@ -14,6 +14,7 @@ export class CommonService {
   isCollapsed = signal<boolean>(false);
   filtersExpanded = signal(false);
   showAlert = signal(false);
+  isDropdownOpen = signal(false);
   alertType = signal<'success' | 'error' | 'warning' | 'info'>('info');
   alertMessage = signal('');
   router=inject(Router)
@@ -32,11 +33,11 @@ export class CommonService {
    }
 
 
-   getProfilePic(emp: any): string {
-    if (emp.ProfilePic && emp.ProfilePic.trim() !== '') {
-      return `data:image/jpeg;base64,${emp.ProfilePic}`;
+   getProfilePic(ProfilePic: string ,Gender:string){
+    if (ProfilePic && ProfilePic.trim() !== '') {
+      return `data:image/jpeg;base64,${ProfilePic}`;
     }
-    return emp.Gender?.toLowerCase() === 'm' 
+    return Gender?.toLowerCase() === 'm' 
       ? 'assets/images/man.png' 
       : 'assets/images/woman.png';
   }
@@ -81,7 +82,13 @@ toggleExpanded(){
   setSidebarState(state: boolean) {
     this.isCollapsed.set(state); // Explicitly set state
   }
+  toggleDropdown() {
+    this.isDropdownOpen.set(!this.isDropdownOpen());
+  }
 
+  closeDropdown() {
+    this.isDropdownOpen.set(false);
+  }
  Tablewidth= computed(() => {
     const screenWidth = window.innerWidth;
     

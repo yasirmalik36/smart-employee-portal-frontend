@@ -22,7 +22,7 @@ mat-header-row {
 
 /* Adjust cells to prevent misalignment */
 mat-header-cell, mat-cell {
-    padding: 12px;
+    padding: 3px;
     white-space: nowrap;
 }
 

@@ -154,82 +154,120 @@
 
   <!-- Main Content -->
   <div class="flex-1 flex flex-col ">
-    <!-- Header -->
-    <header class="sticky top-0 z-50 flex items-center justify-between h- px-6 bg-white  p-2.5  drop-shadow-lg border border-gray-300 z-[999]">
-      <!-- Left Section: Sidebar Toggle Button + Search Bar -->
-      <div class="flex items-center space-x-4">
-        <!-- Sidebar Toggle Button -->
-        <button class="material-icons cursor-pointer text-primary" (click)="toggleSidebar()">menu</button>
-    
-        <!-- Search Bar -->
-        <div class="relative">
-          <input
-            type="text"
-            placeholder="Search..."
-            class="w-72 py-2 pl-10 pr-4 bg-gray-50 rounded-lg shadow-inner focus:ring-2 focus:ring-yellow-500 focus:outline-none"
-          />
-          <span class="material-icons absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400">search</span>
+<!-- Header -->
+<header class="sticky top-0 z-[999] flex items-center justify-between px-6 bg-white shadow-md border-b border-gray-300">
+  <!-- Left Section: Sidebar Toggle Button + Search Bar -->
+  <div class="flex items-center space-x-4">
+    <!-- Sidebar Toggle Button -->
+    <button class="material-icons cursor-pointer text-primary text-2xl" (click)="toggleSidebar()">menu</button>
+  
+    <!-- Search Bar -->
+    <div class="relative">
+      <input
+        type="text"
+        placeholder="Search..."
+        class="w-64 h-10 pl-10 pr-4 bg-gray-50 rounded-lg shadow-inner focus:ring-2 focus:ring-yellow-500 focus:outline-none"
+      />
+      <span class="material-icons absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg">search</span>
+    </div>
+  </div>
+  
+  <!-- Right Section: Notification and User Profile -->
+  <div class="flex items-center space-x-6">
+    <!-- Notifications -->
+    <div class="relative cursor-pointer group" (click)="toggleNotifications()">
+      <span class="material-icons text-blue-600 text-2xl transition-transform duration-300 group-hover:scale-110 animate-bounce">
+        notifications
+      </span>
+  
+      <!-- Notification Badge -->
+      <span class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center">
+        {{ notifications.length }}
+      </span>
+  
+      <!-- Notification Popup -->
+      <div *ngIf="isNotificationsOpen" class="absolute right-0 mt-3 w-80 bg-white rounded-xl shadow-2xl border border-gray-300 overflow-hidden animate-fadeInUp z-30">
+        
+        <div class="px-5 py-4 font-semibold bg-gray-100 border-b border-gray-300 flex justify-between">
+          <span>Notifications</span>
+          <button class="text-xs text-blue-600 hover:text-blue-800" (click)="clearNotifications()">Clear All</button>
         </div>
-      </div>
-    
-      <!-- Right Section: Notification and User Profile -->
-      <div class="flex items-center space-x-6">
-        <!-- Notifications -->
-        <div class="relative cursor-pointer">
-          <span class="material-icons text-gray-700">notifications</span>
-          <span
-            class="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.1">
-            15
-          </span>
-        </div>
-    
-        <!-- User Profile Dropdown -->
-        <div class="relative">
-          <!-- Profile Summary -->
-          <div class="flex items-center cursor-pointer" (click)="toggleUserMenu()">
-            <img *ngIf="gender?.toLowerCase() === 'm'" src="assets/images/man.png" alt="User" class="w-10 h-10 rounded-full">
-            <img *ngIf="gender?.toLowerCase() === 'f'" src="assets/images/woman.png" alt="User" class="w-10 h-10 rounded-full">
-            <div class="ml-2 text-gray-700 font-medium">
-              <div>{{ fullName }}</div>
-              <div class="text-sm text-gray-500">{{ Designation }}</div>
+        
+        <div class="max-h-80 overflow-y-auto" *ngIf="notifications.length > 0; else noNotifications">
+          <div *ngFor="let notification of notifications" class="flex items-start p-4 border-b last:border-none hover:bg-gray-50 transition-all duration-200">
+            <span class="material-icons text-blue-500 text-xl mr-3 animate-pulse">notifications_active</span>
+            <div>
+              <p class="text-sm font-medium text-gray-800">{{ notification.title }}</p>
+              <p class="text-xs text-gray-500">{{ notification.time }}</p>
             </div>
-            <span class="material-icons text-gray-700 ml-1">arrow_drop_down</span>
-          </div>
-    
-          <!-- Dropdown Menu -->
-          <div
-            *ngIf="isUserMenuOpen"
-            class="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg z-10">
-            <!-- Profile Section -->
-            <div class="flex items-center  px-4 py-3 border-b">
-              <img *ngIf="gender?.toLowerCase() === 'm'" src="assets/images/man.png" alt="User" class="w-10 h-10 rounded-full">
-              <img *ngIf="gender?.toLowerCase() === 'f'" src="assets/images/woman.png" alt="User" class="w-10 h-10 rounded-full">
-
-              <div class="ml-3 text-gray-700">
-                <p class="font-medium">{{ fullName }}</p>
-
-                <p class="text-sm text-gray-500">{{ Designation }}</p>
-              </div>
-            </div>
-    
-            <!-- Dropdown Items -->
-            <a (click)="ViewMyEProfile();" class="block px-4 py-2 text-gray-700 hover:text-primary hover:text-white">
-              <span class="material-icons align-middle mr-2">person</span>My Profile
-            </a>
-            <a routerLink="/account/change-password" class="block px-4 py-2 text-gray-700 hover:bg-primary hover:text-white">
-              <span class="material-icons align-middle mr-2">password</span> Change Password
-            </a>   
-            <a href="#" class="block px-4 py-2 text-gray-700 hover:text-primary hover:text-white">
-              <span class="material-icons align-middle mr-2">settings</span> Settings
-            </a>
-            <a href="#" class="block px-4 py-2 text-gray-700 hover:text-primary hover:text-white">
-              <span class="material-icons align-middle mr-2"  (click)="signOut();">logout</span> Logout
-            </a>
           </div>
         </div>
+        
+        <!-- No Notifications Message -->
+        <ng-template #noNotifications>
+          <div class="p-6 text-center text-gray-500 text-sm">No new notifications</div>
+        </ng-template>
+  
+        <div class="text-center py-3 bg-gray-100 cursor-pointer text-sm font-semibold text-blue-600 hover:text-blue-700 transition-all duration-200" (click)="viewAllNotifications()">
+          View All
+        </div>
       </div>
-    </header>
+    </div>
     
+    <!-- User Profile Dropdown -->
+    <div class="relative">
+      <div 
+        class="flex items-center cursor-pointer mt-1 mb-1 p-1 rounded-lg transition-all duration-300 hover:bg-gray-200" 
+        (click)="toggleUserMenu($event)">
+        
+        <img [src]="common.getProfilePic(ProfilePic,gender)" alt="User" class="w-12 h-12 rounded-full shadow-lg border-2 border-green-500 hover:border-green-500 transition-all hover:scale-110">
+        
+        <div class="ml-3 text-gray-900 font-semibold">
+          <div class="text-sm">{{ fullName }}</div>
+          <div class="text-xs text-gray-500">{{ Designation }}</div>
+        </div>
+        
+        <span class="material-icons text-gray-700 ml-2 transition-transform duration-300 text-lg" 
+          [ngClass]="{'rotate-180': isUserMenuOpen()}">
+          expand_more
+        </span>
+      </div>
+  
+      <!-- Dropdown Menu -->
+      <div *ngIf="isUserMenuOpen()" 
+           class="absolute right-0 mt-3 w-64 bg-white rounded-xl shadow-2xl border border-gray-300 overflow-hidden animate-fadeInUp z-20">
+        
+        <div class="relative flex items-center px-5 py-4 text-white border-b" 
+             style="background: url('assets/images/Backroundimage.jpg') center/cover no-repeat;">
+             <div class="absolute inset-0 bg-gray-700 opacity-40 rounded-t-xl"></div>
+          
+          <img [src]="common.getProfilePic(ProfilePic,gender)" alt="User" class="w-14 h-14 rounded-full shadow-lg border-2 border-green-500 hover:border-green-500 transition-all hover:scale-110 relative z-10">
+          
+          <div class="ml-4 relative z-10">
+            <p class="font-semibold text-sm">{{ fullName }}</p>
+            <p class="text-xs opacity-90">{{ Designation }}</p>
+          </div>
+        </div>
+  
+        <a (click)="ViewMyEProfile(); common.closeDropdown()" class="flex items-center px-5 py-3 hover:bg-gray-200 hover:text-gray-900 text-sm">
+          <span class="material-icons text-gray-600 mr-3">person</span> My Profile
+        </a>
+        <a routerLink="/account/change-password" (click)="common.closeDropdown()" class="flex items-center px-5 py-3 hover:bg-gray-200 hover:text-gray-900 text-sm">
+          <span class="material-icons text-gray-600 mr-3">password</span> Change Password
+        </a>
+        <a (click)="common.closeDropdown()" class="flex items-center px-5 py-3 hover:bg-gray-200 hover:text-gray-900 text-sm">
+          <span class="material-icons text-gray-600 mr-3">settings</span> Settings
+        </a>
+        <a (click)="signOut(); common.closeDropdown()" class="flex items-center px-5 py-3 text-red-600 hover:bg-red-500 hover:text-white text-sm">
+          <span class="material-icons mr-3">logout</span> Logout
+        </a>
+      </div>
+    </div>
+  </div>
+</header>
+
+
+
 
     <div [ngClass]="{'content-collapsed': isCollapsed}" class="main-content ">
       <router-outlet ></router-outlet>

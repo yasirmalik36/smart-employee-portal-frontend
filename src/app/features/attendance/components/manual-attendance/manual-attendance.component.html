@@ -42,7 +42,7 @@
         <div class="flex items-center space-x-3">
           <!-- Employee Image -->
           <img 
-            [src]="common.getProfilePic(emp)" 
+            [src]="common.getProfilePic(emp.ProfilePic,emp.Gender)" 
             alt="Employee Image" 
             class="w-10 h-10 rounded-full border border-gray-300 shadow-md transition-all duration-200 hover:scale-125 hover:shadow-lg hover:ring-2 hover:ring-blue-300 hover:bg-gray-100"
           />

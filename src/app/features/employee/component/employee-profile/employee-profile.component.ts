@@ -11,6 +11,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { AuthService } from '../../../../account/auth.service';
+import { decryptText } from '../../../../common/export functions/customfunctions';
 
 @Component({
   selector: 'app-employee-profile',
@@ -27,17 +28,10 @@ export class EmployeeProfileComponent {
   public common = inject(CommonService);
   public router = inject(Router);
   private dialog = inject(MatDialog);
-  mode: Signal<string | null> = toSignal(
-    this.route.queryParamMap.pipe(
-      map(params => (params.get('mode') ?? null) as string | null) 
-    ),
-    { initialValue: null } 
-  );
-
-  employeeId = toSignal(this.route.queryParamMap.pipe(map(params => params.get('id'))));
-  userId!: string;
+  mode = signal<string | null>(null);
+  employeeId = signal<number | null>(null);
   employeeForm: FormGroup;
-  activeTab: number = 1;
+  activeTab: number = 0;
   profileImage: string | ArrayBuffer | null = null;
   @ViewChild('fileInput') fileInput!: ElementRef;
   hidePassword: boolean = true; 
@@ -48,11 +42,32 @@ export class EmployeeProfileComponent {
   ];
   maritalStatuses = ['Single', 'Married', 'Divorced', 'Widowed'];
   employmentTypes = ['Full-Time', 'Part-Time', 'Contract', 'Internship'];
-
+  departmentName: string = 'IT'; // Replace with actual department name
+  designationName: string = 'Software Engineer'; // Replace with actual designation name
+  reportingManagerName: string = 'John Doe'; // Repl
 
   screenHeight = signal(window.innerHeight);
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder) {   const encryptedParams$ = this.route.queryParamMap.pipe(map(params => params.get('params')));
+    const encryptedParamsSignal = toSignal(encryptedParams$);
+
+    if (encryptedParamsSignal()) {
+      try {
+        const decryptedParamsString = decryptText(encryptedParamsSignal()!);
+        const decryptedParams = JSON.parse(decryptedParamsString);
+
+        this.mode.set(decryptedParams.mode);
+        if (decryptedParams.id) {
+          this.employeeId.set(parseInt(decryptedParams.id, 10));
+        }
+
+      } catch (error) {
+        console.error('Decryption error:', error);
+        this.mode.set(null);
+        this.employeeId.set(null);
+      }
+    }
+  
     this.employeeForm = this.fb.group({
       firstName: ['', [Validators.required]],
       lastName: ['', [Validators.required]],
@@ -84,7 +99,7 @@ export class EmployeeProfileComponent {
       shiftID: ['', [Validators.required]],
       employmentType: ['', [Validators.required]],
       workLocation: ['', [Validators.required]],
-      reportingManager: ['', [Validators.required]],
+      reportingManagerID: ['', [Validators.required]],
       zipCode: [''],
       // password: ['',[Validators.required]],
       isActive: [true,[Validators.required]],
@@ -108,14 +123,9 @@ export class EmployeeProfileComponent {
   updateScreenHeight = () => this.screenHeight.set(window.innerHeight);
 
   ngOnInit() {
-    debugger
-    this.userId = this.authservice.getUserId();
- 
-    if (this.userId && this.mode() === "view") {
-      this.getEmployeeInfoByID(Number(this.userId));
-    } else if (this.employeeId() && this.mode() === "edit") {
+    if (this.employeeId()) {
       const empId = Number(this.employeeId());
-      if (!isNaN(empId) && empId > 0) { 
+      if (!isNaN(empId) && empId > 0 && (this.mode() === "view" || this.mode() === "edit")) {
         this.getEmployeeInfoByID(empId);
       }
     }
@@ -146,20 +156,32 @@ export class EmployeeProfileComponent {
     );
   }
   
-  submitForm(): void {
+  submitForm() {
     if (this.employeeForm.valid) {
       let employeeData = {
         ...this.employeeForm.value,
         IsOnProbation: this.employeeForm.get('IsOnProbation')?.value === 'Yes' ? true : false,
       };
+      if(this.mode() === "view" || this.mode() === "edit"){
+        employeeData.employeeId=this.employeeId();
+      }
       employeeData.ProfilePic=this.profileImage;
-      employeeData.profileID=3;
+      if(this.mode() !== "add"){
+        employeeData.profileID=3;
+      }
+      
       this.service.addUpdateEmployee(employeeData).subscribe({
         next: (response) => {
-          if (response.resp?.code === '00') {
-            this.toastService.showSuccess(response.resp?.description);
-          } else {
-            this.toastService.showError(response.resp?.description || 'Failed to save employee.');
+          if (response.code === '00') {
+            this.toastService.showSuccess(response.description);
+            if(this.mode() !== "view" || this.mode() === "edit"){
+              employeeData.employeeId=this.employeeId();
+            }
+            if(this.mode() !== "view"){
+              this.router.navigate(['/home/employee-management']);
+            }
+            } else {
+            this.toastService.showError(response.description || 'Failed to save employee.');
           }
         },
         error: (err) => {
@@ -204,7 +226,7 @@ export class EmployeeProfileComponent {
       shiftID: employee.ShiftID || '',
       employmentType: employee.EmploymentType || '',
       workLocation: employee.WorkLocation || '',
-      reportingManager: employee.ReportingManagerID || '',
+      reportingManagerID: employee.ReportingManagerID || '',
       zipCode: employee.ZipCode || '',
       isActive: employee.IsActive || true,
       medications: employee.Medications || '',

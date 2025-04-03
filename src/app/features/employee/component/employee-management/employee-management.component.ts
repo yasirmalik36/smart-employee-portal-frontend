@@ -13,6 +13,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { AuthService } from '../../../../account/auth.service';
 import { Router } from '@angular/router';
+import { encryptText } from '../../../../common/export functions/customfunctions';
 
 @Component({
   selector: 'app-employee-management',
@@ -66,7 +67,7 @@ export class EmployeeManagementComponent {
                   name: row.FirstName + ' ' + row.LastName,
                   gender: row.Gender,
                   dob: row.DateOfBirth,
-                  image: this.common.getProfilePic(row)
+                  image: this.common.getProfilePic(row.ProfilePic,row.Gender)
                 })
               },
               ...Object.keys(data.employeeData[0])
@@ -114,10 +115,8 @@ export class EmployeeManagementComponent {
         this.dataSource.filter = filterValue;
     }
 
-    editEmployee(employeeId: number): void {
-      this.router.navigate(['/home/employee-profile'], { queryParams: { mode: 'edit', id:employeeId } });
+  
 
-    }
     resetPassword(row: any) {
       const dialogRef = this.dialog.open(ConfirmDialogComponent, {
         data: {
@@ -191,14 +190,28 @@ export class EmployeeManagementComponent {
 
     }
     Addemployee() {
-      this.router.navigate(['/home/employee-profile'], { queryParams: { mode: 'add' } });
+      const queryParams = { mode: 'add' };
+      const encryptedParams = encryptText(JSON.stringify(queryParams));
+    
+      this.router.navigate(['/home/employee-profile'], {
+        queryParams: { params: encryptedParams },
+      });
+    }
+    
+    editEmployee(employeeId: number): void {
+      const queryParams = { mode: 'edit', id: employeeId.toString() };
+      const encryptedParams = encryptText(JSON.stringify(queryParams));
+    
+      this.router.navigate(['/home/employee-profile'], {
+        queryParams: { params: encryptedParams },
+      });
     }
     getEmployeeDetails(row: any) {
       return {
         name: `${row.FirstName} ${row.LastName}`,
         gender: row.Gender,
         dob: this.common.dateMatFormatter(row.DateOfBirth),
-        image: this.common.getProfilePic(row)
+        image: this.common.getProfilePic(row.ProfilePic,row.Gender)
       };
     }
 }

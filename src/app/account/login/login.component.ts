@@ -49,6 +49,7 @@ export class LoginComponent {
         if (response.resp.code === '00') {
            debugger
           localStorage.setItem('token', response.token);
+          localStorage.setItem('profilePic', response.profilePic);
           //localStorage.setItem('user', JSON.stringify(response.user));
           localStorage.setItem('activites', JSON.stringify(response.act));
           if(response.isPasswordResetRequired){
