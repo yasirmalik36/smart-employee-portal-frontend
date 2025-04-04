@@ -1,0 +1,190 @@
+<div class="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 p-4 overflow-y-auto">
+
+  <main class="space-y-8">
+      <section class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
+          <div class="mb-4 flex items-center">
+              <mat-icon class="mr-4 text-blue-700 text-3xl">insert_chart</mat-icon>
+              <h2 class="text-2xl font-semibold text-blue-700" style="margin: 0px;">Generate New Report</h2>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div class="relative rounded-md shadow-sm">
+                  <label for="reportType" class="absolute -top-2 left-2 inline-block bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-xs font-bold px-2">
+                      <span class="bg-white dark:bg-gray-800 pr-1">Report Type</span>
+                  </label>
+                  <select
+                      id="reportType"
+                      [(ngModel)]="reportType"
+                      class="block w-full pl-3 pr-10 py-2 border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md bg-white dark:bg-gray-800"
+                  >
+                      <option *ngFor="let type of reportTypes" [value]="type">
+                          <mat-icon class="mr-2 align-middle">{{ getReportIcon(type) }}</mat-icon>
+                          {{ type | titlecase }}
+                      </option>
+                  </select>
+                  <div class="absolute inset-y-0 right-0 flex items-center pointer-events-none">
+                      <mat-icon class="text-gray-400 dark:text-gray-600 mr-2">list</mat-icon>
+                  </div>
+              </div>
+
+              <div class="relative rounded-md shadow-sm">
+                  <label for="startDate" class="absolute -top-2 left-2 inline-block bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-xs font-bold px-2">
+                      <span class="bg-white dark:bg-gray-800 pr-1">Start Date</span>
+                  </label>
+                  <input
+                      id="startDate"
+                      type="date"
+                      [(ngModel)]="startDate"
+                      class="block w-full pl-3 pr-3 py-2 border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md bg-white dark:bg-gray-800"
+                  />
+              </div>
+
+              <div class="relative rounded-md shadow-sm">
+                  <label for="endDate" class="absolute -top-2 left-2 inline-block bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-xs font-bold px-2">
+                      <span class="bg-white dark:bg-gray-800 pr-1">End Date</span>
+                  </label>
+                  <input
+                      id="endDate"
+                      type="date"
+                      [(ngModel)]="endDate"
+                      class="block w-full pl-3 pr-3 py-2 border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md bg-white dark:bg-gray-800"
+                  />
+              </div>
+
+              <div class="relative rounded-md shadow-sm">
+                  <label for="department" class="absolute -top-2 left-2 inline-block bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-xs font-bold px-2">
+                      <span class="bg-white dark:bg-gray-800 pr-1">Department</span>
+                  </label>
+                  <select
+                      id="department"
+                      [(ngModel)]="department"
+                      class="block w-full pl-3 pr-10 py-2 border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md bg-white dark:bg-gray-800"
+                  >
+                      <option value="all">All Departments</option>
+                      <option *ngFor="let dept of departments" [value]="dept">{{ dept }}</option>
+                  </select>
+                  <div class="absolute inset-y-0 right-0 flex items-center pointer-events-none">
+                      <mat-icon class="text-gray-400 dark:text-gray-600 mr-2">domain</mat-icon>
+                  </div>
+              </div>
+
+              <div class="relative rounded-md shadow-sm">
+                  <label for="employee" class="absolute -top-2 left-2 inline-block bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-xs font-bold px-2">
+                      <span class="bg-white dark:bg-gray-800 pr-1">Employee</span>
+                  </label>
+                  <select
+                      id="employee"
+                      [(ngModel)]="employee"
+                      class="block w-full pl-3 pr-10 py-2 border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md bg-white dark:bg-gray-800"
+                  >
+                      <option value="all">All Employees</option>
+                      <option *ngFor="let emp of employees" [value]="emp">{{ emp }}</option>
+                  </select>
+                  <div class="absolute inset-y-0 right-0 flex items-center pointer-events-none">
+                      <mat-icon class="text-gray-400 dark:text-gray-600 mr-2">person</mat-icon>
+                  </div>
+              </div>
+
+              <div class="col-span-1 md:col-span-2 lg:col-span-3 flex justify-center">
+                  <button
+                      mat-raised-button
+                      color="primary"
+                      (click)="generateReport()"
+                      [disabled]="isGenerating"
+                      class="w-full sm:w-auto py-3 px-6 rounded-md shadow-md hover:bg-blue-700 transition-colors duration-300 flex items-center justify-center"
+                  >
+                      <mat-icon class="mr-2">file_download</mat-icon>
+                      <span *ngIf="!isGenerating">Generate Report</span>
+                      <span *ngIf="isGenerating">Generating...</span>
+                  </button>
+              </div>
+          </div>
+      </section>
+
+      <section *ngIf="generatedReports.length > 0 || isLoading || errorMessage" class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
+          <div class="mb-2 flex items-center">
+              <mat-icon class="mr-4 text-indigo-500 text-3xl">folder_open</mat-icon>
+              <h2 class="text-2xl font-semibold text-indigo-500" style="margin: 0px;">Generated Reports</h2>
+          </div>
+
+          <div *ngIf="isLoading" class="text-center py-8">
+              <p class="mt-2 text-gray-600 dark:text-gray-400">Loading reports...</p>
+          </div>
+
+          <div *ngIf="errorMessage" class="text-center py-8 text-red-500">
+              <mat-icon class="text-5xl">error_outline</mat-icon>
+              <p class="mt-2">{{ errorMessage }}</p>
+          </div>
+
+          <div *ngIf="generatedReports.length > 0" class="overflow-x-auto">
+              <table class="min-w-full leading-normal">
+                  <thead class="bg-gray-200 dark:bg-gray-700 sticky top-0 z-10">
+                      <tr>
+                          <th class="px-4 py-3 border-b-2 border-gray-300 dark:border-gray-600 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                              <div class="flex items-center">
+                                  <mat-icon class="text-white mr-1">description</mat-icon>
+                                  <span class="text-white">Type</span>
+                              </div>
+                          </th>
+                          <th class="px-4 py-3 border-b-2 border-gray-300 dark:border-gray-600 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                              <div class="flex items-center">
+                                  <mat-icon class="text-white mr-1">calendar_today</mat-icon>
+                                  <span class="text-white">Range</span>
+                              </div>
+                          </th>
+                          <th class="px-4 py-3 border-b-2 border-gray-300 dark:border-gray-600 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                              <div class="flex items-center">
+                                  <mat-icon class="text-white mr-1">domain</mat-icon>
+                                  <span class="text-white">Dept</span>
+                              </div>
+                          </th>
+                          <th class="px-4 py-3 border-b-2 border-gray-300 dark:border-gray-600 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                              <div class="flex items-center">
+                                  <mat-icon class="text-white mr-1">settings</mat-icon>
+                                  <span class="text-white">Actions</span>
+                              </div>
+                          </th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      <tr *ngFor="let report of generatedReports; let i = index" class="hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors duration-200">
+                          <td class="px-4 py-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm">
+                              <div class="flex items-center">
+                                  <div class="mr-2">
+                                      <mat-icon>{{ getReportIcon(report.reportType) }}</mat-icon>
+                                  </div>
+                                  <p class="text-gray-900 dark:text-gray-100 whitespace-no-wrap">
+                                      {{ report.reportType | titlecase }}
+                                  </p>
+                              </div>
+                          </td>
+                          <td class="px-4 py-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm">
+                              <p class="text-gray-900 dark:text-gray-100 whitespace-no-wrap">
+                                  {{ report.startDate | date:'mediumDate' }} - {{ report.endDate | date:'mediumDate' }}
+                              </p>
+                          </td>
+                          <td class="px-4 py-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm">
+                              <p class="text-gray-900 dark:text-gray-100 whitespace-no-wrap">
+                                  {{ report.department === 'all' ? 'All' : report.department }}
+                              </p>
+                          </td>
+                          <td class="px-4 py-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm">
+                              <button mat-icon-button color="primary" (click)="downloadGeneratedReport(report.id)" matTooltip="Download" class="transition duration-200 ease-in-out">
+                                  <mat-icon>download</mat-icon>
+                              </button>
+                              <button mat-icon-button color="warn" (click)="deleteGeneratedReport(report.id)" matTooltip="Delete" class="transition duration-200 ease-in-out ml-2">
+                                  <mat-icon>delete</mat-icon>
+                              </button>
+                          </td>
+                      </tr>
+                  </tbody>
+              </table>
+          </div>
+
+          <div *ngIf="generatedReports.length === 0 && !isLoading && !errorMessage" class="text-center py-10">
+              <mat-icon class="text-5xl text-gray-400">folder_open</mat-icon>
+              <p class="mt-3 text-gray-600 dark:text-gray-400">No reports have been generated yet.</p>
+          </div>
+      </section>
+  </main>
+</div>

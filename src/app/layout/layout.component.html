@@ -151,11 +151,10 @@
     
  
   </aside>
-
-  <!-- Main Content -->
-  <div class="flex-1 flex flex-col ">
-<!-- Header -->
-<header class="sticky top-0 z-[999] flex items-center justify-between px-6 bg-white shadow-md border-b border-gray-300">
+<!-- Wrapper -->
+<div class="flex flex-col min-h-screen w-full ">
+  <!-- Header -->
+  <header class="sticky top-0 z-[999] flex items-center justify-between px-6 bg-white shadow-md border-b border-gray-300 h-16">
   <!-- Left Section: Sidebar Toggle Button + Search Bar -->
   <div class="flex items-center space-x-4">
     <!-- Sidebar Toggle Button -->
@@ -255,7 +254,7 @@
         <a routerLink="/account/change-password" (click)="common.closeDropdown()" class="flex items-center px-5 py-3 hover:bg-gray-200 hover:text-gray-900 text-sm">
           <span class="material-icons text-gray-600 mr-3">password</span> Change Password
         </a>
-        <a (click)="common.closeDropdown()" class="flex items-center px-5 py-3 hover:bg-gray-200 hover:text-gray-900 text-sm">
+        <a (click)="common.closeDropdown()" routerLink="/home/settings" class="flex items-center px-5 py-3 hover:bg-gray-200 hover:text-gray-900 text-sm">
           <span class="material-icons text-gray-600 mr-3">settings</span> Settings
         </a>
         <a (click)="signOut(); common.closeDropdown()" class="flex items-center px-5 py-3 text-red-600 hover:bg-red-500 hover:text-white text-sm">
@@ -264,13 +263,14 @@
       </div>
     </div>
   </div>
-</header>
+  </header>
 
-
-
-
-    <div [ngClass]="{'content-collapsed': isCollapsed}" class="main-content ">
-      <router-outlet ></router-outlet>
+  <!-- Main Content -->
+  <div class="flex-1 flex flex-col bg-gray-50 w-full ">
+    <div [ngClass]="{'content-collapsed': isCollapsed}" class="main-content w-full">
+      <router-outlet></router-outlet>
     </div>
   </div>
+</div>
+
 </body>

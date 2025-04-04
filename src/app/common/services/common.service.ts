@@ -4,7 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import { AuthService } from '../../account/auth.service';
+import { AuthService } from '../../account/services/auth.service';
 import moment from 'moment';
 import * as XLSX from 'xlsx';
 @Injectable({

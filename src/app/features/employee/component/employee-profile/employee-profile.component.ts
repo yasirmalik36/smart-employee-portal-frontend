@@ -10,8 +10,8 @@ import { map } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
-import { AuthService } from '../../../../account/auth.service';
 import { decryptText } from '../../../../common/export functions/customfunctions';
+import { AuthService } from '../../../../account/services/auth.service';
 
 @Component({
   selector: 'app-employee-profile',

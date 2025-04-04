@@ -1,0 +1,25 @@
+<h2 mat-dialog-title>{{ data ? 'Edit Leave' : 'Apply for Leave' }}</h2>
+<div mat-dialog-content>
+  <mat-form-field appearance="outline">
+    <mat-label>Leave Type</mat-label>
+    <mat-select [(ngModel)]="data.leaveType">
+      <mat-option *ngFor="let type of leaveTypes" [value]="type">{{ type }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field appearance="outline">
+    <mat-label>Start Date</mat-label>
+    <input matInput type="date" [(ngModel)]="data.startDate" />
+  </mat-form-field>
+  <mat-form-field appearance="outline">
+    <mat-label>End Date</mat-label>
+    <input matInput type="date" [(ngModel)]="data.endDate" />
+  </mat-form-field>
+  <mat-form-field appearance="outline">
+    <mat-label>Reason</mat-label>
+    <textarea matInput [(ngModel)]="data.reason"></textarea>
+  </mat-form-field>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onNoClick()">Cancel</button>
+  <button mat-button [mat-dialog-close]="data" cdkFocusInitial>Save</button>
+</div>

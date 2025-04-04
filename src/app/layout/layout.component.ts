@@ -2,11 +2,11 @@ import { CommonModule } from '@angular/common';
 import { Component, ElementRef, Renderer2, OnInit, OnDestroy, inject } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink, RouterModule, RouterOutlet } from '@angular/router';
-import { AuthService } from '../account/auth.service';
 import { Activity } from '../models/Activity';
 import { MaterialModule } from '../shared/material module/material.module';
 import { CommonService } from '../common/services/common.service';
 import { encryptText } from '../common/export functions/customfunctions';
+import { AuthService } from '../account/services/auth.service';
 
 @Component({
   selector: 'app-layout',

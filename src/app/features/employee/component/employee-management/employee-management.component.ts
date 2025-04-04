@@ -11,9 +11,9 @@ import { Column } from '../../../../models/coulmn';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { AuthService } from '../../../../account/auth.service';
 import { Router } from '@angular/router';
 import { encryptText } from '../../../../common/export functions/customfunctions';
+import { AuthService } from '../../../../account/services/auth.service';
 
 @Component({
   selector: 'app-employee-management',

@@ -1,0 +1,161 @@
+<div class="container mx-auto p-4 bg-gray-100">
+    <mat-card class="mb-4 shadow-xl rounded-lg">
+        <div class="bg-white rounded-lg shadow p-8">
+            <div class="flex items-center">
+                <div>
+                    <h2 class="text-3xl font-semibold text-gray-800 mb-1 flex items-center">
+                        <mat-icon class="mr-4 text-indigo-500 text-4xl">library_books</mat-icon>
+                        Document Repository
+                    </h2>
+                    <h3 class="text-gray-500 mb-2 text-lg">Manage and access your important documents with ease.</h3>
+        
+                </div>
+            </div>
+
+            <div class="mb-2 flex items-center space-x-4">
+                <div class="flex-grow">
+                    <div class="relative">
+                        <label for="search" class="block text-gray-700 text-sm font-bold mb-2 sr-only">Search Documents</label>
+                        <input
+                            type="text"
+                            id="search"
+                            [(ngModel)]="searchQuery"
+                            (input)="applyFilter()"
+                            class="shadow-sm appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:border-blue-500"
+                            placeholder="Search your documents..."
+                        />
+                        <mat-icon class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">search</mat-icon>
+                    </div>
+                </div>
+                <div>
+                    <label for="fileInput" class="inline-flex items-center bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-5 rounded-md focus:outline-none focus:shadow-outline cursor-pointer transition duration-200 ease-in-out">
+                        <mat-icon class="mr-2 text-white">upload_file</mat-icon>
+                        <span>Upload New</span>
+                    </label>
+                    <input type="file" id="fileInput" (change)="onFileSelected($event)" class="hidden">
+                    <span *ngIf="selectedFile" class="ml-3 text-sm text-gray-600">{{ selectedFile.name }}</span>
+                </div>
+                <button
+                    (click)="uploadFile()"
+                    [disabled]="!selectedFile || isUploading"
+                    class="relative inline-flex items-center bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-5 rounded-md focus:outline-none focus:shadow-outline disabled:bg-gray-300 cursor-pointer transition duration-200 ease-in-out"
+                >
+                    <mat-icon *ngIf="!isUploading" class="mr-2 text-white">cloud_upload</mat-icon>
+                    <span *ngIf="!isUploading">Upload</span>
+                    <div *ngIf="isUploading" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-3/4 bg-gray-200 rounded-full h-2 overflow-hidden">
+                        <div class="bg-green-500 h-full absolute left-0 transition-all duration-300 ease-linear" [style.width.%]="uploadProgress"></div>
+                    </div>
+                    <mat-icon *ngIf="isUploading" class="animate-spin ml-2 text-white">hourglass_empty</mat-icon>
+                </button>
+            </div>
+
+            <div class="mt-6 flex items-center space-x-4">
+                <div class="relative rounded-md shadow-sm ">
+                    <label for="filterType" class="absolute -top-2 left-2 inline-block bg-white text-gray-700 text-xs font-bold px-2">
+                        <span class="bg-white pr-1">Filter by Type</span>
+                    </label>
+                    <select
+                        id="filterType"
+                        [(ngModel)]="filterType"
+                        (ngModelChange)="applyFilter()"
+                        class="block w-full pl-3 pr-10 py-2 border border-gray-300 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                    >
+                        <option value="">All Types</option>
+                        <option value="PDF">PDF</option>
+                        <option value="DOCX">DOCX</option>
+                    </select>
+                    <div class="absolute inset-y-0 right-0 flex items-center pointer-events-none">
+                        <mat-icon class="text-gray-400 mr-2">filter_list</mat-icon>
+                    </div>
+                </div>
+
+                <div class="relative rounded-md shadow-sm">
+                    <label for="sortBy" class="absolute -top-2 left-2 inline-block bg-white text-gray-700 text-xs font-bold px-2">
+                        <span class="bg-white pr-1">Sort By</span>
+                    </label>
+                    <select
+                        id="sortBy"
+                        [(ngModel)]="sortBy"
+                        (ngModelChange)="applySort()"
+                        class="block w-full pl-3 pr-10 py-2 border border-gray-300 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                    >
+                        <option value="name">Name</option>
+                        <option value="uploadDate">Upload Date</option>
+                        <option value="size">Size</option>
+                    </select>
+                    <div class="absolute inset-y-0 right-0 flex items-center pointer-events-none">
+                        <mat-icon class="text-gray-400 mr-2">sort</mat-icon>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </mat-card>
+
+    <mat-card class="shadow-xl rounded-lg">
+
+        <div class="overflow-auto p-4">
+            <table mat-table [dataSource]="filteredAndSortedDocuments" class="w-full border-collapse">
+
+                <ng-container matColumnDef="name">
+                    <th mat-header-cell *matHeaderCellDef class="text-left font-semibold text-gray-700 py-3 bg-gray-50 border-b">
+                        <mat-icon class="mr-1 align-middle text-white">file_present</mat-icon> Name
+                    </th>
+                    <td mat-cell *matCellDef="let element" class="text-left py-3 border-b">
+                        <div class="flex items-center">
+                            <mat-icon class="mr-2 text-blue-400" *ngIf="element.type === 'PDF'">picture_as_pdf</mat-icon>
+                            <mat-icon class="mr-2 text-indigo-400" *ngIf="element.type === 'DOCX'">description</mat-icon>
+                            {{ element.name }}
+                        </div>
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="type">
+                    <th mat-header-cell *matHeaderCellDef class="text-left font-semibold text-gray-700 py-3 bg-gray-50 border-b">
+                        <mat-icon class="mr-1 align-middle text-white">extension</mat-icon> Type
+                    </th>
+                    <td mat-cell *matCellDef="let element" class="text-left py-3 border-b">{{ element.type }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="size">
+                    <th mat-header-cell *matHeaderCellDef class="text-left font-semibold text-gray-700 py-3 bg-gray-50 border-b">
+                        <mat-icon class="mr-1 align-middle text-white">sd_card</mat-icon> Size
+                    </th>
+                    <td mat-cell *matCellDef="let element" class="text-left py-3 border-b">{{ element.size }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="uploadDate">
+                    <th mat-header-cell *matHeaderCellDef class="text-left font-semibold text-gray-700 py-3 bg-gray-50 border-b">
+                        <mat-icon class="mr-1 align-middle text-white">calendar_today</mat-icon> Uploaded On
+                    </th>
+                    <td mat-cell *matCellDef="let element" class="text-left py-3 border-b">{{ element.uploadDate | date:'mediumDate' }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="actions">
+                    <th mat-header-cell *matHeaderCellDef class="text-left font-semibold text-gray-700 py-3 bg-gray-50 border-b"> Actions </th>
+                    <td mat-cell *matCellDef="let element" class="text-left py-3 border-b">
+                        <button mat-icon-button color="primary" (click)="downloadDocument(element.id)" matTooltip="Download" class="transition duration-200 ease-in-out">
+                            <mat-icon class="text-blue-500 hover:text-blue-700">download</mat-icon>
+                        </button>
+                        <button mat-icon-button color="warn" (click)="deleteDocument(element.id)" matTooltip="Delete" class="transition duration-200 ease-in-out ml-2">
+                            <mat-icon class="hover:text-red-500">delete</mat-icon>
+                        </button>
+                    </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+                <tr class="mat-row" *matNoDataRow>
+                    <td class="mat-cell py-10 text-center" colspan="5">
+                        <div class="flex flex-col items-center">
+                            <mat-icon class="text-gray-400 text-6xl mb-4">folder_open</mat-icon>
+                            <p class="text-gray-600">No documents found.</p>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </mat-card>
+</div>
+
+

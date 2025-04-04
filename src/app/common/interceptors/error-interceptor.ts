@@ -9,9 +9,9 @@ import {
 import { Observable, throwError } from 'rxjs';
 import { catchError, timeout } from 'rxjs/operators';
 import { HttpErrorResponse } from '@angular/common/http';
-import { AuthService } from '../../account/auth.service';
 import { LocalStorageClear } from '../export functions/customfunctions';
 import { ToastrService } from 'ngx-toastr'; // Assuming you're using Toastr for notifications
+import { AuthService } from '../../account/services/auth.service';
 
 @Injectable()
 export class ErrorInterceptor implements HttpInterceptor {

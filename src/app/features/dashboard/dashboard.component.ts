@@ -5,7 +5,7 @@ import { StatsCardComponent } from '../../shared/components/stats-card/stats-car
 import { LineChartComponent } from '../../shared/components/line-chart/line-chart.component';
 import { DonutChartComponent } from '../../shared/components/donut-chart/donut-chart.component';
 import { MaterialModule } from '../../shared/material module/material.module';
-import { AuthService } from '../../account/auth.service';
+import { AuthService } from '../../account/services/auth.service';
 
 @Component({
   selector: 'app-dashboard',
