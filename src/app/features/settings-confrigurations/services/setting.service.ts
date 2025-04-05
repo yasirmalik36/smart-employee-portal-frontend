@@ -9,11 +9,18 @@ interface SaveFaceResponse {
     message: string;
     description: string;
 }
-
+interface EmployeeFaceStatusResponse {
+  resp: {
+      message: string;
+      code: string;
+      description: string;
+  };
+  employeeFaces: Array<any>;
+}
 @Injectable({
     providedIn: 'root',
 })
-export class FaceRecognitionService {
+export class SettingsService {
     private apiUrl = environment.apiUrl + 'FaceRecognition';
 
     constructor(private http: HttpClient) {}
@@ -27,4 +34,9 @@ export class FaceRecognitionService {
             formData
         );
     }
+    getEmployeeFaceDetails(employeeIdOrName: string): Observable<EmployeeFaceStatusResponse> {
+      return this.http.get<EmployeeFaceStatusResponse>(
+          `${this.apiUrl}/GetEmployeeFaceDetails?employeeIdOrName=${employeeIdOrName}`
+      );
+  }
 }

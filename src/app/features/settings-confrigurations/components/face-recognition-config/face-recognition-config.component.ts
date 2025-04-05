@@ -1,273 +1,215 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
-import { WebcamImage, WebcamModule } from 'ngx-webcam';
-import { Subject, Observable } from 'rxjs';
-import * as faceapi from 'face-api.js';
+import { Component, inject, OnInit, signal, ViewChild } from '@angular/core';
+import { MaterialModule } from '../../../../shared/material module/material.module';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MaterialModule } from '../../../../shared/material module/material.module';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { ToastService } from '../../../../shared/components/services/toaster.service';
+import { CommonService } from '../../../../common/services/common.service';
+import { SettingsService } from '../../services/setting.service';
 import { MatTableDataSource } from '@angular/material/table';
-import { FaceRecognitionService } from '../../services/setting.service';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { animate, state, style, transition, trigger } from '@angular/animations';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatDialog } from '@angular/material/dialog';
+import { AddFaceConfigComponent } from '../add-face-config/add-face-config.component';
 
-interface Employee {
-    id: number;
-    name: string;
-}
-
-interface FaceData {
-    employeeId: number;
-    imagePath: string;
-    file?: File; // Store the File object
-    embedding?: number[];
+interface EmployeeFace {
+  EmployeeID: number;
+  EmployeeName: string;
+  DateOfBirth: string;
+  Designation: string;
+  Department: string;
+  HasFaceSaved: number;
+  ImagePath: string;
+  CreatedBy: string;
+  CreatedDate: string;
+  ModifiedBy: string;
+  ModifiedDate: string;
+  Gender: string;
+  ProfilePic: string;
+  [key: string]: any; // Allow dynamic access to properties
 }
 
 @Component({
-    selector: 'app-face-recognition-config',
-    standalone: true,
-    imports: [WebcamModule, MaterialModule, CommonModule, FormsModule],
-    templateUrl: './face-recognition-config.component.html',
-    styleUrl: './face-recognition-config.component.css'
+  selector: 'app-face-recognition-config',
+  standalone: true,
+  imports: [MaterialModule, CommonModule, FormsModule],
+  templateUrl: './face-recognition-config.component.html',
+  styleUrl: './face-recognition-config.component.css',
+  animations: [
+    trigger('detailExpand', [
+      state('collapsed', style({ height: '0px', minHeight: '0' })),
+      state('expanded', style({ height: '*' })),
+      transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
+    ]),
+    trigger('rowAnimation', [
+      transition(':enter', [
+        style({ transform: 'translateY(-20px)', opacity: 0 }),
+        animate('300ms ease-out', style({ transform: 'translateY(0)', opacity: 1 })),
+      ]),
+      transition(':leave', [
+        animate('200ms ease-in', style({ transform: 'translateY(-20px)', opacity: 0 })),
+      ]),
+    ]),
+  ],
 })
-export class FaceRecognitionConfigComponent implements OnInit, OnDestroy {
-    @ViewChild('fileInput') fileInput: ElementRef | undefined;
+export class FaceRecognitionConfigComponent implements OnInit {
+  private toastService = inject(ToastService);
+  private settingService = inject(SettingsService);
+  public common = inject(CommonService);
+   private dialog=inject(MatDialog)
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
+  dataSource: MatTableDataSource<EmployeeFace> = new MatTableDataSource<EmployeeFace>([]);
+  columns: any[] = [];
+  displayedColumns: string[] = [];
+  totalRecords = 0;
+  pageSize = 10;
+  pageNumber = 1;
+  pageSizeOptions: number[] = [5, 10, 25, 50, 100];
+  loading = false;
+  employeeFaces: EmployeeFace[] = [];
+  tableWidth = this.common.Tablewidth;
+    TableHeight = signal<string>("100px");
+  
+  constructor(
+  ) {
+    window.addEventListener('resize', () => this.updateHeight());
+    this.updateHeight(); // Initial call
+  }
 
-    trigger: Subject<void> = new Subject<void>();
-    searchTerm: string = '';
-    selectedEmployee: Employee | null = null;
-    uploadedImage: string | ArrayBuffer | null = null;
-    filteredEmployees: Employee[] = [];
-    allEmployees: Employee[] = [
-        { id: 1, name: 'Alice Johnson' },
-        { id: 2, name: 'Bob Smith' },
-        { id: 3, name: 'Charlie Davis' },
-        { id: 4, name: 'David Lee' },
-        { id: 5, name: 'Eve Williams' }
-    ];
-    savedFaces: FaceData[] = [];
-    displayedColumns: string[] = ['image', 'actions'];
-    faceDetectionError: string | null = null;
-    saveStatusMessage: string = '';
-    saveStatus: 'success' | 'error' | 'pending' | null = null;
-    savedFacesDataSource: MatTableDataSource<FaceData> = new MatTableDataSource<FaceData>(this.savedFaces);
 
-    private readonly MODEL_URI = '/assets/models';
-    private faceMatcher: faceapi.FaceMatcher | null = null;
+  ngOnInit(): void {
+    this.getEmployeeFaces();
+  }
 
-    constructor(
-        private snackBar: MatSnackBar,
-        private faceRecognitionService: FaceRecognitionService // Inject the new service
-    ) {
-        this.loadModels();
-        this.filteredEmployees = [...this.allEmployees];
-    }
+  updateHeight() {
 
-    ngOnInit(): void {
-        // Simulate loading existing saved faces (replace with actual API call)
-        setTimeout(() => {
-            this.savedFaces = [
-                { employeeId: 1, imagePath: 'assets/images/face1.jpg' },
-                { employeeId: 2, imagePath: 'assets/images/face2.jpg' }
-            ];
-            this.updateSavedFacesDataSource();
-        }, 500);
-    }
-
-    ngOnDestroy(): void {
-        // Clean up resources if needed
-    }
-
-    get triggerObservable(): Observable<void> {
-        return this.trigger.asObservable();
-    }
-
-    get savedFacesForSelectedEmployee(): FaceData[] {
-        return this.savedFaces.filter(face => face.employeeId === this.selectedEmployee?.id);
-    }
-
-    updateSavedFacesDataSource(): void {
-        this.savedFacesDataSource.data = this.savedFacesForSelectedEmployee;
-    }
-
-    async loadModels(): Promise<void> {
-        try {
-            await Promise.all([
-                faceapi.nets.tinyFaceDetector.loadFromUri(this.MODEL_URI),
-                 faceapi.nets.faceLandmark68Net.loadFromUri(this.MODEL_URI),
-                 faceapi.nets.faceRecognitionNet.loadFromUri(this.MODEL_URI),
-                 faceapi.nets.ssdMobilenetv1.loadFromUri(this.MODEL_URI) // Optional, but good for other detection scenarios
-            ]);
-            console.log('FaceAPI models loaded');
-            // Optionally load existing embeddings to create a FaceMatcher
-            // this.loadExistingEmbeddings();
-        } catch (error) {
-            console.error('Error loading FaceAPI models:', error);
-            this.snackBar.open('Error loading face recognition models.', 'Dismiss', { duration: 5000 });
+    this.TableHeight.set(this.computeHeight());
+  }
+  
+  computeHeight(): string {
+    const screenHeight = window.innerHeight;
+  
+    if (screenHeight <= 768) return 'calc(100vh - 284px)';     // Small Laptop
+    else if (screenHeight <= 900) return 'calc(100vh - 165px)'; // MacBook / HD Laptop
+    else if (screenHeight <= 1080) return 'calc(100vh - 200px)'; // Full HD
+    else return 'calc(100vh - 230px)';                          // 2K and above
+  }
+  getEmployeeFaces() {
+    this.loading = true;
+    console.log('Fetching employee faces...');
+    this.settingService.getEmployeeFaceDetails('0').subscribe(
+      (response: any) => {
+        console.log('API Response:', response);
+        if (response?.resp?.code === '00' && response.employeeFaces) {
+          this.employeeFaces = response.employeeFaces;
+          this.totalRecords = parseInt(response.resp.totalRecords, 10) || 0;
+          console.log('Employee Faces:', this.employeeFaces);
+          this.prepareTableData([...this.employeeFaces]);
+        } else {
+          this.toastService.showError('Failed to fetch employee face details', response?.resp?.message || 'Something went wrong');
+          this.dataSource.data = [];
         }
-    }
-
-    captureImage(): void {
-        this.trigger.next();
-    }
-
-    filterEmployees(): void {
-        const term = this.searchTerm.toLowerCase();
-        this.filteredEmployees = this.allEmployees.filter(emp =>
-            emp.name.toLowerCase().includes(term) || emp.id.toString().includes(term)
-        );
-    }
-
-    async handleImage(webcamImage: WebcamImage): Promise<void> {
-        this.faceDetectionError = null;
-        if (!this.selectedEmployee) {
-            this.faceDetectionError = 'Please select an employee first.';
-            return;
-        }
-
-        try {
-            const image = await faceapi.fetchImage(webcamImage.imageAsDataUrl);
-            const detections = await faceapi.detectAllFaces(image, new faceapi.TinyFaceDetectorOptions())
-                .withFaceLandmarks()
-                .withFaceDescriptors();
-
-            if (detections.length === 1 && detections[0].descriptor && this.selectedEmployee) {
-                console.log('Face detected and features extracted.');
-
-                // Convert Data URL to a File object
-                const base64Response = await fetch(webcamImage.imageAsDataUrl);
-                const blob = await base64Response.blob();
-                const file = new File([blob], `captured_face_${Date.now()}.png`, { type: 'image/png' });
-
-                this.savedFaces.push({
-                    employeeId: this.selectedEmployee.id,
-                    imagePath: webcamImage.imageAsDataUrl,
-                    file: file, // Store the File
-                    embedding: Array.from(detections[0].descriptor)
-                });
-                this.updateSavedFacesDataSource();
-                this.snackBar.open('Face captured successfully!', 'Dismiss', { duration: 2000 });
-                this.uploadedImage = null;
-            } else if (detections.length > 1) {
-                this.faceDetectionError = 'Multiple faces detected. Please ensure only one face is in the frame.';
-            } else {
-                this.faceDetectionError = 'No face detected. Please try again.';
-            }
-        } catch (error) {
-            console.error('Error handling webcam image:', error);
-            this.faceDetectionError = 'Error processing image.';
-        }
-    }
-
-    async onFileSelected(event: Event): Promise<void> {
-        this.faceDetectionError = null;
-        if (!this.selectedEmployee) {
-            this.faceDetectionError = 'Please select an employee first.';
-            return;
-        }
-
-        const input = event.target as HTMLInputElement;
-        if (input.files && input.files[0]) {
-            const file = input.files[0];
-            const reader = new FileReader();
-            reader.onload = async () => {
-                this.uploadedImage = reader.result;
-                try {
-                    const image = await faceapi.fetchImage(this.uploadedImage as string);
-                    const detections = await faceapi.detectAllFaces(image, new faceapi.TinyFaceDetectorOptions())
-                        .withFaceLandmarks()
-                        .withFaceDescriptors();
-
-                    if (detections.length === 1 && detections[0].descriptor && this.selectedEmployee) {
-                        console.log('Face detected in uploaded image.');
-                        this.savedFaces.push({
-                            employeeId: this.selectedEmployee.id,
-                            imagePath: this.uploadedImage as string,
-                            file: file, // Store the File
-                            embedding: Array.from(detections[0].descriptor)
-                        });
-                        this.updateSavedFacesDataSource();
-                        this.snackBar.open('Face from image uploaded successfully!', 'Dismiss', { duration: 2000 });
-                    } else if (detections.length > 1) {
-                        this.faceDetectionError = 'Multiple faces detected in the uploaded image. Please upload an image with only one face.';
-                        this.uploadedImage = null;
-                    } else {
-                        this.faceDetectionError = 'No face detected in the uploaded image. Please try another image.';
-                        this.uploadedImage = null;
-                    }
-                } catch (error) {
-                    console.error('Error handling uploaded image:', error);
-                    this.faceDetectionError = 'Error processing uploaded image.';
-                    this.uploadedImage = null;
-                }
-            };
-            reader.readAsDataURL(file);
-        }
-    }
-
-    deleteFace(face: FaceData): void {
-        this.savedFaces = this.savedFaces.filter(f => f !== face);
-        this.updateSavedFacesDataSource();
-        this.snackBar.open('Face removed locally. You might need to implement API deletion if required.', 'Dismiss', { duration: 3000 });
-    }
-
-    deleteAllFacesForEmployee(): void {
-        if (this.selectedEmployee) {
-            this.savedFaces = this.savedFaces.filter(f => f.employeeId !== this.selectedEmployee?.id);
-            this.updateSavedFacesDataSource();
-            this.snackBar.open('All saved faces removed locally. You might need to implement API deletion if required.', 'Dismiss', { duration: 3000 });
-        }
-    }
-
-    async saveFacesToDatabase(): Promise<void> {
-      if (!this.selectedEmployee || this.savedFacesForSelectedEmployee.length === 0) {
-          this.snackBar.open('Please select an employee and capture/upload at least one face.', 'Dismiss', { duration: 3000 });
-          return;
+        this.loading = false;
+        console.log('Loading set to false');
+      },
+      (error: any) => {
+        console.error('Error fetching employee face details:', error);
+        this.toastService.showError('Error fetching employee face details', error?.message || 'Please try again later.');
+        this.loading = false;
+        this.dataSource.data = [];
+        console.log('Loading set to false (error)');
       }
+    );
+  }
 
-      this.saveStatusMessage = 'Saving faces...';
-      this.saveStatus = 'pending';
-
-      try {
-          const savePromises = this.savedFacesForSelectedEmployee.map(async (faceData) => {
-              if (faceData.file && this.selectedEmployee) {
-                  return this.faceRecognitionService.saveFace(this.selectedEmployee.id, faceData.file).toPromise(); // Convert Observable to Promise for easier handling in Promise.all
-              }
-              return Promise.resolve(null); // Handle cases without a file (shouldn't happen here)
-          });
-
-          const responses = await Promise.all(savePromises);
-          let successCount = 0;
-          responses.forEach(response => {
-              if (response && response.code === '00') {
-                  successCount++;
-              } else if (response) {
-                  this.snackBar.open(`Error saving face: ${response.message || response.description}`, 'Dismiss', { duration: 5000 });
-              } else {
-                  this.snackBar.open('Error saving face.', 'Dismiss', { duration: 5000 });
-              }
-          });
-
-          if (successCount === this.savedFacesForSelectedEmployee.length) {
-              this.saveStatusMessage = `Successfully saved ${successCount} face(s) for ${this.selectedEmployee.name}!`;
-              this.saveStatus = 'success';
-              this.snackBar.open(this.saveStatusMessage, 'Dismiss', { duration: 3000 });
-              this.savedFaces = this.savedFaces.filter(face => face.employeeId !== this.selectedEmployee?.id);
-              this.updateSavedFacesDataSource();
-          } else {
-              this.saveStatusMessage = `Saved ${successCount} out of ${this.savedFacesForSelectedEmployee.length} faces. Check details for errors.`;
-              this.saveStatus = 'error';
-              this.snackBar.open(this.saveStatusMessage, 'Dismiss', { duration: 5000 });
+  prepareTableData(data: EmployeeFace[]) {
+    console.log('Data received in prepareTableData:', data);
+    if (data?.length > 0) {
+      const firstRecord = data[0];
+      const excludedColumns = [ 'Gender', 'ProfilePic', , 'DateOfBirth', ];
+      this.columns = Object.keys(firstRecord)
+        .filter(key => !excludedColumns.includes(key))
+        .map(key => {
+          let columnDef = key;
+          let width = '203px'; // Default width
+          const parts = key.split('_');
+          if (parts.length > 1 && !isNaN(parseInt(parts[parts.length - 1], 10))) {
+            width = `${parts.pop()}px`;
+            columnDef = parts.join('_');
           }
+          const header = this.common.convertToTitleCase(columnDef);
+          return {
+            columnDef: columnDef,
+            header: columnDef,
+            width: width,
+            cell: (row: EmployeeFace) => this.common.checkForNull(row[key]),
+          };
+        });
 
-      } catch (error) {
-          console.error('Error saving faces:', error);
-          this.saveStatusMessage = 'Error saving faces. Please try again.';
-          this.saveStatus = 'error';
-          this.snackBar.open(this.saveStatusMessage, 'Dismiss', { duration: 5000 });
-      } finally {
-          setTimeout(() => {
-              this.saveStatusMessage = '';
-              this.saveStatus = null;
-          }, 3000);
+      // Add the 'actions' column at the beginning
+      this.columns.unshift({ columnDef: 'actions', header: 'Actions', width: '120px' });
+
+      this.displayedColumns = this.columns.map(col => col.columnDef);
+      data.forEach((row: any) => {
+        row.CreatedDate = this.common.DateandTimeMatFormatter(row.CreatedDate);
+        row.ModifiedDate = this.common.DateandTimeMatFormatter(row.ModifiedDate);
+
+      });
+      this.dataSource = new MatTableDataSource(data);
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+      console.log('dataSource.data after assignment:', this.dataSource.data);
+    } else {
+      this.dataSource.data = [];
+      this.columns = [];
+      this.displayedColumns = [];
+      console.log('No data to populate dataSource.');
+    }
+  }
+    getEmployeeDetails(row: any) {
+      return {
+        name: row.EmployeeName,
+        gender: row.Gender,
+        dob: this.common.dateMatFormatter(row.DateOfBirth),
+        designation:row.Designation,
+        department:row.Department,
+        image: this.common.getProfilePic(row.ProfilePic,row.Gender)
+      };
+    }
+  onPageChange(event: PageEvent) {
+    this.pageNumber = event.pageIndex + 1;
+    this.pageSize = event.pageSize;
+    this.getEmployeeFaces(); // Re-fetch data on page change
+  }
+
+  addFace() {
+    const dialogRef = this.dialog.open(AddFaceConfigComponent, {
+      width: '670px', 
+      height: '670px', 
+      maxWidth: '90vw', 
+      maxHeight: '90vh',
+      disableClose: true,
+      autoFocus: false,
+      panelClass: 'custom-dialog' // Custom class for styling
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.getEmployeeFaces();
       }
+    });  }
+
+  otherAction() {
+    this.toastService.showInfo('Other action functionality will be implemented here.');
+  }
+
+  deleteFace(employeeId: number) {
+    this.toastService.showWarning(`Delete functionality for Employee ID: ${employeeId} will be implemented.`);
+  }
+
+  editFace(employeeId: number) {
+    this.toastService.showInfo(`Edit functionality for Employee ID: ${employeeId} will be implemented.`);
   }
 }

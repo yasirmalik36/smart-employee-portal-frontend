@@ -1,0 +1,121 @@
+/* AddFaceConfigComponent specific styles */
+
+/* Ensure the dialog content takes up available space while respecting max dimensions */
+:host {
+    display: block; /* Make the component a block-level element */
+    width: 100%;
+    height: 100%;
+  }
+  
+  .mat-dialog-container.custom-dialog {
+    border-radius: 15px !important; /* Slightly less rounded for a modern feel */
+    padding: 24px; /* More standard padding */
+    background: white;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.15); /* Slightly more pronounced shadow */
+    overflow: hidden; /* Prevent content overflow from breaking rounded corners */
+  }
+  
+  /* Adjust the height of the scrollable content area if needed */
+  .overflow-y-auto {
+    /* You might need to adjust this based on the total content */
+    /* max-height: calc(90vh - 100px);  Adjust based on header and footer */
+  }
+  
+  /* Style for the webcam and uploaded image containers to ensure they fit nicely */
+  .small-webcam-container {
+    max-width: 280px;
+  }
+  
+  .small-webcam {
+    max-height: 210px; /* Maintain aspect ratio as needed */
+    width: auto; /* Adjust if necessary */
+    border-radius: 0.25rem; /* Match Tailwind's rounded-md */
+  }
+  
+  .small-uploaded-image-container {
+    max-width: 280px;
+    max-height: 210px;
+    border-radius: 0.25rem;
+  }
+  
+  /* === ANIMATION KEYFRAMES === */
+  @keyframes slideInLeft {
+    from { transform: translateX(-100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+  
+  @keyframes slideInUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  
+  @keyframes slideInDown {
+    from { transform: translateY(-30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+  }
+  
+  /* === APPLY ANIMATIONS TO CLASSES === */
+  .animate-slide-in-left { animation: slideInLeft 0.5s ease-out; }
+  .animate-slide-in-up { animation: slideInUp 0.5s ease-out; }
+  .animate-slide-in-down { animation: slideInDown 0.5s ease-out; }
+  .animate-fade-in { animation: fadeIn 0.3s ease-out; }
+  .animate-shake { animation: shake 0.3s ease-in-out; }
+  
+  /* === OPTIONAL ENHANCEMENTS === */
+  
+  /* Slightly improve the focus state of input */
+  input:focus {
+    outline: none;
+    border-color: #64b5f6; /* A softer blue */
+    box-shadow: 0 0 0 0.2rem rgba(100, 181, 246, 0.25);
+  }
+  
+  /* Improve hover effect on list items */
+  ul li:hover {
+    background-color: #f5f5f5; /* Lighter gray for hover */
+  }
+  
+  .dark ul li:hover {
+    background-color: #374151; /* Darker gray for dark mode hover */
+  }
+  
+  /* Style for the "Select" button in the list */
+  ul li button {
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  ul li button:hover {
+    transform: scale(1.05);
+  }
+  
+  /* Style for the "Delete All" and "Save Faces" buttons */
+  section button.mat-flat-button,
+  section button.mat-raised-button {
+    font-weight: 500;
+    letter-spacing: 0.5px;
+  }
+  
+  /* Improve the appearance of the saved faces table images */
+  table img {
+    border: 1px solid #ddd;
+  }
+  
+  .dark table img {
+    border-color: #4b5563;
+  }
+  
+  /* Ensure the no data row in the table is centered */
+  .mat-cell.text-center {
+    text-align: center;
+  }

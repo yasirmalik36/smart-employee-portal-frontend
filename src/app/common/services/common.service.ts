@@ -133,7 +133,7 @@ TableHeight = computed(() => {
 });
   
   // Helper function to convert a string to title case
-  private convertToTitleCase(str: string): string {
+  public convertToTitleCase(str: string): string {
     return str
       .toLowerCase()
       .split(' ')

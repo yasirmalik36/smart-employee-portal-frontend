@@ -1,130 +1,97 @@
-<div class="relative p-3 flex flex-col min-h-[auto] bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
-    <div class="flex-shrink-0 flex items-center justify-between bg-blue-100 dark:bg-gray-700 p-2 rounded-md shadow-md mb-1 animate-slide-in-down">
-        <div class="flex items-center space-x-2">
-            <mat-icon class="text-blue-600 dark:text-blue-300 text-2xl">face</mat-icon>
-            <h2 class="m-0 text-xl font-bold text-gray-800 dark:text-gray-100">Employee Face Configuration</h2>
-        </div>
+<div class="container mx-auto p-2 mt-0">
+    <div class="flex justify-between items-center mb-2">
+      <h2 class="text-xl font-semibold text-gray-800" >Face Recognition Configuration</h2>
+      <div class="space-x-2 mr-2">
+        <button mat-raised-button color="primary" class="shadow-md hover:shadow-lg transition duration-300 ease-in-out" (click)="addFace()">
+          <mat-icon>add_photo_alternate</mat-icon>
+          Add Faces
+        </button>
+        <button mat-raised-button color="accent" class="shadow-md hover:shadow-lg transition duration-300 ease-in-out" (click)="otherAction()">
+          <mat-icon>settings</mat-icon>
+          Other Action
+        </button>
+      </div>
     </div>
+  
+    <div class="bg-white shadow-md rounded-lg overflow-hidden mr-2 pl-0">
+      <div *ngIf="loading" class="flex justify-center items-center h-32 text-blue-500">
+        <mat-spinner diameter="40"></mat-spinner>
+        <span class="ml-2">Loading data...</span>
+      </div>
+  
+      <div *ngIf="!loading && dataSource.data.length > 0" class="overflow-x-auto "  [style.height]="TableHeight()" [ngClass]="tableWidth()">
+        <table mat-table [dataSource]="dataSource" matSort id="excel-table" class="mat-elevation w-full min-w-max">
 
-    <div class="overflow-y-auto flex-grow h-[66vh]">
-        <div class="mb-4 animate-fade-in">
-            <label for="employee-search" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Search by Employee Name or ID
-            </label>
-            <div class="relative rounded-md shadow-sm">
-                <input
-                    type="text"
-                    id="employee-search"
-                    [(ngModel)]="searchTerm"
-                    (input)="filterEmployees()"
-                    placeholder="Enter Employee Name or ID"
-                    class="block w-full pr-10 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-                />
-                <div class="absolute inset-y-0 right-0 flex items-center pr-3">
-                    <mat-icon class="text-gray-400 dark:text-gray-500 text-sm">search</mat-icon>
+            <ng-container *ngFor="let column of columns" [matColumnDef]="column.columnDef">
+          
+              <mat-header-cell *matHeaderCellDef mat-sort-header [style.min-width]="column.width" [style.max-width]="column.width">
+                {{ column.header }}
+              </mat-header-cell>
+          
+              <mat-cell *matCellDef="let row" [style.min-width]="column.width" [style.max-width]="column.width">
+          
+                <!-- Employee Name Column with Image (Only Custom Row) -->
+                <div *ngIf="column.columnDef === 'EmployeeName'" class="flex items-center space-x-3">
+                  <img 
+                    [src]="getEmployeeDetails(row).image" 
+                    alt="Employee Image" 
+                    class="w-8 h-8 rounded-full border border-gray-300 shadow-md transition-all duration-200 hover:scale-125 hover:shadow-lg hover:ring-2 hover:ring-blue-300 hover:bg-gray-100"
+                  />
+                  <div class="text-xs">
+                    <div class="font-semibold text-gray-800">{{ getEmployeeDetails(row).name }}</div>
+                    <div class="text-gray-600">{{ getEmployeeDetails(row).gender }} | {{ getEmployeeDetails(row).dob }}</div>
+                  </div>
                 </div>
-            </div>
-
-            <div *ngIf="filteredEmployees.length > 0" class="absolute z-10 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-lg max-h-40 overflow-y-auto animate-slide-in-up">
-                <ul class="py-1">
-                    <li *ngFor="let employee of filteredEmployees"
-                        (click)="selectedEmployee = employee; filteredEmployees = []; searchTerm = employee.name;"
-                        class="px-3 py-1 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer flex items-center space-x-2">
-                        <mat-icon class="text-blue-500 text-sm">person</mat-icon>
-                        <span>{{ employee.name }} (ID: {{ employee.id }})</span>
-                    </li>
-                    <li *ngIf="searchTerm && filteredEmployees.length === 0" class="px-3 py-1 text-sm text-gray-500 dark:text-gray-400 text-center">
-                        <mat-icon class="inline-flex mr-1 text-sm">info</mat-icon> No matching employees
-                    </li>
-                </ul>
-            </div>
-        </div>
-
-        <section *ngIf="selectedEmployee" class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md mb-4 transition-shadow duration-300 hover:shadow-lg animate-fade-in">
-            <h3 class="text-lg font-semibold mb-3 text-gray-800 dark:text-gray-200 flex items-center">
-                <mat-icon class="mr-2 text-lg">camera_alt</mat-icon>
-                Capture or Upload Face for {{ selectedEmployee.name }} (ID: {{ selectedEmployee.id }})
-            </h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div class="border rounded-md shadow-sm overflow-hidden animate-slide-in-left" style="max-width: 280px;">
-                    <webcam [trigger]="triggerObservable" (imageCapture)="handleImage($event)"
-                            class="w-full aspect-video block small-webcam"></webcam>
-                    <button mat-raised-button color="primary" (click)="captureImage()" class="mt-2 w-full py-2 text-sm">
-                        <mat-icon class="mr-1 text-sm">camera</mat-icon> Capture Image
-                    </button>
+          
+                <!-- Original Employee Name Column (This will not show when custom row is used) -->
+                <div *ngIf="column.columnDef === 'EmployeeName' && !getEmployeeDetails(row).image" class="text-xs">
+                  <div class="font-semibold text-gray-800">{{ getEmployeeDetails(row).name }}</div>
                 </div>
-
-                <div class="border rounded-md shadow-sm p-3 flex flex-col items-center justify-center animate-slide-in-right">
-                    <input type="file" (change)="onFileSelected($event)" accept="image/*" class="hidden" #fileInput>
-                    <button mat-raised-button color="accent" (click)="fileInput.click()" class="w-full py-2 mb-3 text-sm">
-                        <mat-icon class="mr-1 text-sm">upload_file</mat-icon> Upload Image
-                    </button>
-                    <div *ngIf="uploadedImage" class="mt-1 w-full rounded shadow overflow-hidden animate-fade-in small-uploaded-image-container">
-                        <img [src]="uploadedImage" class="w-full aspect-video block object-cover">
-                    </div>
+               <!-- Is hasface Checkbox -->
+               <div *ngIf="column.columnDef === 'HasFaceSaved'">
+                <mat-checkbox disabled [checked]="row.HasFaceSaved"></mat-checkbox>
+              </div>
+                <!-- Actions Column -->
+                <div *ngIf="column.columnDef === 'actions'" style="display: flex; align-items: center;">
+                  <button mat-icon-button color="warn" matTooltip="Delete" (click)="deleteFace(row.EmployeeID)">
+                    <mat-icon>delete</mat-icon>
+                  </button>
                 </div>
-            </div>
-            <div class="mt-2" *ngIf="faceDetectionError" class="animate-shake">
-                <p class="text-red-500 font-semibold text-sm"><mat-icon class="align-middle mr-1 text-sm">error</mat-icon> {{ faceDetectionError }}</p>
-            </div>
-        </section>
-
-        <section *ngIf="savedFacesForSelectedEmployee.length > 0 && selectedEmployee" class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md animate-fade-in">
-            <div class="flex justify-between items-center mb-3">
-                <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center">
-                    <mat-icon class="mr-2 text-lg">collections</mat-icon>
-                    Saved Faces for {{ selectedEmployee.name }} (ID: {{ selectedEmployee.id }})
-                </h3>
-                <button mat-flat-button color="warn" (click)="deleteAllFacesForEmployee()"
-                        class="transition-colors duration-300 hover:bg-red-700 hover:text-white text-sm">
-                    <mat-icon class="mr-1 text-sm">delete_sweep</mat-icon> Delete All
-                </button>
-            </div>
-            <div class="overflow-x-auto">
-                <table mat-table [dataSource]="savedFacesDataSource" class="w-full mat-elevation-z1">
-                    <ng-container matColumnDef="image">
-                        <th mat-header-cell *matHeaderCellDef> Image </th>
-                        <td mat-cell *matCellDef="let element">
-                            <div class="h-16 w-16 rounded-full overflow-hidden shadow-md transition-transform duration-300 hover:scale-105">
-                                <img [src]="element.imagePath" class="object-cover w-full h-full">
-                            </div>
-                        </td>
-                    </ng-container>
-
-                    <ng-container matColumnDef="actions">
-                        <th mat-header-cell *matHeaderCellDef class="text-right"> Actions </th>
-                        <td mat-cell *matCellDef="let element" class="text-right">
-                            <button mat-icon-button color="warn" (click)="deleteFace(element)"
-                                    class="transition-colors duration-300 hover:bg-red-500 hover:text-white">
-                                <mat-icon class="text-sm">delete</mat-icon>
-                            </button>
-                        </td>
-                    </ng-container>
-
-                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-
-                    <tr class="mat-row" *matNoDataRow>
-                        <td class="mat-cell text-center p-2" colspan="2">No faces saved for this employee yet.</td>
-                    </tr>
-                </table>
-            </div>
-            <button mat-raised-button color="primary" (click)="saveFacesToDatabase()" class="mt-4 py-2 w-full transition-colors duration-300 hover:bg-blue-700 text-sm">
-                <mat-icon class="mr-1 text-sm">save</mat-icon> Save Faces
-            </button>
-        </section>
-
-        <div *ngIf="saveStatusMessage" class="mt-4 p-3 rounded-md shadow-sm animate-fade-in text-sm"
-             [ngClass]="{'bg-green-100 dark:bg-green-900 border-green-500 text-green-700 dark:text-green-300': saveStatus === 'success',
-                          'bg-red-100 dark:bg-red-900 border-red-500 text-red-700 dark:text-red-300': saveStatus === 'error',
-                          'bg-yellow-100 dark:bg-yellow-900 border-yellow-500 text-yellow-700 dark:text-yellow-300': saveStatus === 'pending'}">
-            <p class="flex items-center font-semibold">
-                <mat-icon class="align-middle mr-2 text-sm"
-                          [color]="saveStatus === 'success' ? 'primary' : (saveStatus === 'error' ? 'warn' : 'accent')">
-                    {{ saveStatus === 'success' ? 'check_circle_outline' : (saveStatus === 'error' ? 'error_outline' : 'info_outline') }}
-                </mat-icon>
-                {{ saveStatusMessage }}
-            </p>
-        </div>
+          
+                <!-- Default Cells for Other Columns -->
+                <div *ngIf="column.columnDef !== 'actions' && column.columnDef !== 'EmployeeName' && column.columnDef !== 'HasFaceSaved'">
+                  {{ column.cell ? column.cell(row) : common.checkForNull(row[column.columnDef]) }}
+                </div>
+          
+              </mat-cell>
+            </ng-container>
+          
+            <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+          
+            <mat-row *matRowDef="let row; columns: displayedColumns;" class="element-row" matRipple>
+            </mat-row>
+          
+            <tr *matNoDataRow class="text-center">
+              <td [attr.colspan]="displayedColumns.length" class="py-4">
+                No employee face data available.
+              </td>
+            </tr>
+          </table>
+          
+      </div>
+  
+      <div *ngIf="!loading && dataSource.data.length === 0" class="py-10 text-center text-gray-600">
+        <mat-icon class="text-5xl mb-2">sentiment_dissatisfied</mat-icon>
+        <p>No employee face data found.</p>
+      </div>
+  
+      <div class="sticky bottom-0 left-0 bg-white shadow-md w-full flex justify-end pr-4 border border-gray-300">
+        <mat-paginator class="mr-2"
+        [pageSizeOptions]="pageSizeOptions"
+        [pageSize]="pageSize"
+        [length]="totalRecords"
+        [showFirstLastButtons]="true"
+        (page)="onPageChange($event)"
+              ></mat-paginator>
     </div>
-</div>
+  </div>
