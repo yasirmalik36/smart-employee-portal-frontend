@@ -1,12 +1,12 @@
 import { Injectable, Renderer2, Inject, inject, WritableSignal, signal, Signal, computed } from '@angular/core';
 import { MatDialogConfig } from '@angular/material/dialog';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../environments/environment';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { AuthService } from '../../account/services/auth.service';
 import moment from 'moment';
 import * as XLSX from 'xlsx';
+import { environment } from '../../../environments/environment.development';
 @Injectable({
   providedIn: 'root',
 })
@@ -20,6 +20,8 @@ export class CommonService {
   router=inject(Router)
   gridHeight: string;
   styleValue!: string;
+  private apiUrl = environment.apiUrl + 'Common';
+  
   constructor
   (
     private http: HttpClient,
@@ -42,7 +44,10 @@ export class CommonService {
       : 'assets/images/woman.png';
   }
   
-
+  getDropdownData(param: string): Observable<any> {
+    const body = { param };
+    return this.http.post<any>(`${this.apiUrl}/GetDropdownData`, body);
+  }
  
    
   showCustomAlert(showAlert: boolean, type: 'success' | 'error' | 'warning' | 'info', message: string) {
@@ -341,6 +346,7 @@ TableHeight = computed(() => {
     dialogCongig.width = !!width === false ? '40%' : width;
     return dialogCongig;
   }
+  
 }
 
 

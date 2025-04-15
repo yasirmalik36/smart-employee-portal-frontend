@@ -49,19 +49,19 @@
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Designation:</label>
-                    <p class="">{{ designationName || 'N/A' }}</p>
+                    <p class="">{{ SelectedDesignation || 'N/A' }}</p>
                   </div>
           
                 <div>
                   <label class="block text-sm font-medium text-gray-700">Department:</label>
-                  <p class="">{{ departmentName || 'N/A' }}</p>
+                  <p class="">{{ SelectedDepartment || 'N/A' }}</p>
                 </div>
           
              
           
                 <div>
-                  <label class="block text-sm font-medium text-gray-700">Line Manager:</label>
-                  <p class="">{{ reportingManagerName || 'N/A' }}</p>
+                  <label class="block text-sm font-medium text-gray-700">Reporting Manager:</label>
+                  <p class="">{{  reportingManagerSearch || 'N/A' }}</p>
                 </div>
           
                 <div>
@@ -380,24 +380,37 @@
               <div  >
                 <div class="grid grid-cols-2 gap-4 border border-gray-300 p-4 rounded">
                   <div class="block">
-                    <label>Designation ID</label>
-                    <input type="number" class="w-full p-2 border rounded" formControlName="designationID">
+                    <label>Designation</label>
+                    <select class="w-full p-2 border rounded"
+                            formControlName="designationID"
+                            (click)="GetDesignation()">
+                      <option value="">-- Select Designation --</option>
+                      <option *ngFor="let item of designations" [value]="item.ID">{{ item.Value }}</option>
+                    </select>
                     <div *ngIf="employeeForm.get('designationID')?.touched && employeeForm.get('designationID')?.invalid"
                       class="text-red-500 text-sm">
-                      <span *ngIf="employeeForm.get('designationID')?.errors?.['required']">Designation ID is required.</span>
+                      <span *ngIf="employeeForm.get('designationID')?.errors?.['required']">Designation is required.</span>
                     </div>
                   </div>
+                  
+                  
                   <div class="block">
-                    <label>Department ID</label>
-                    <input type="number" class="w-full p-2 border rounded" formControlName="departmentID">
+                    <label>Department </label>
+                    <select class="w-full p-2 border rounded" formControlName="departmentID" (click)="GetDepartment()">
+                      <option value="">-- Select Department--</option>
+                      <option *ngFor="let department of departments" [value]="department.ID">
+                        {{ department.Value }}
+                      </option>
+                    </select>
                     <div *ngIf="employeeForm.get('departmentID')?.touched && employeeForm.get('departmentID')?.invalid"
                       class="text-red-500 text-sm">
-                      <span *ngIf="employeeForm.get('departmentID')?.errors?.['required']">Department ID is required.</span>
+                      <span *ngIf="employeeForm.get('departmentID')?.errors?.['required']">Department is required.</span>
                     </div>
                   </div>
+                  
                   <div class="block">
                     <label>Joining Date</label>
-                    <input type="date" class="w-full p-2 border rounded" formControlName="joiningDate">
+                    <input type="date" class="w-full p-2 border rounded" formControlName="joiningDate" >
                     <div *ngIf="employeeForm.get('joiningDate')?.touched && employeeForm.get('joiningDate')?.invalid"
                       class="text-red-500 text-sm">
                       <span *ngIf="employeeForm.get('joiningDate')?.errors?.['required']">Joining Date is required.</span>
@@ -405,12 +418,18 @@
                   </div>
                   <div class="block">
                     <label>Shift ID</label>
-                    <input type="number" class="w-full p-2 border rounded" formControlName="shiftID">
+                    <select class="w-full p-2 border rounded" formControlName="shiftID" (click)="GetShift()">
+                      <option value="">-- Select shift--</option>
+                      <option *ngFor="let shift of shifts" [value]="shift.ID">
+                        {{ shift.Value }}
+                      </option>
+                    </select>
                     <div *ngIf="employeeForm.get('shiftID')?.touched && employeeForm.get('shiftID')?.invalid"
                       class="text-red-500 text-sm">
                       <span *ngIf="employeeForm.get('shiftID')?.errors?.['required']">Shift ID is required.</span>
                     </div>
                   </div>
+                  
                   <div class="block">
                     <label>Employment Type</label>
                     <select class="w-full p-2 border rounded" formControlName="employmentType">
@@ -429,14 +448,30 @@
                       <span *ngIf="employeeForm.get('workLocation')?.errors?.['required']">Work Location is required.</span>
                     </div>
                   </div>
-                  <div class="block">
+                  <div class="block relative">
                     <label>Reporting Manager</label>
-                    <input type="text" class="w-full p-2 border rounded" formControlName="reportingManagerID">
-                    <div *ngIf="employeeForm.get('reportingManagerID')?.touched && employeeForm.get('reportingManager')?.invalid"
-                      class="text-red-500 text-sm">
-                      <span *ngIf="employeeForm.get('reportingManagerID')?.errors?.['required']">Reporting Manager is required.</span>
-                    </div>
+                    <input
+                    type="text"
+                    class="w-full p-2 border rounded"
+                    [(ngModel)]="reportingManagerSearch"
+                    [ngModelOptions]="{ standalone: true }"
+                    (keydown)="handleEnterKey($event)"
+                    (keydown.enter)="searchReportingManager()"
+                    (blur)="hideSuggestions()"
+                    (focus)="showSuggestions = true"
+                    placeholder="Type ID or name and press Enter"
+                  />
+                  <ul *ngIf="showSuggestions && filteredManagers.length" class="absolute z-10 w-full bg-white border rounded mt-1 max-h-40 overflow-y-auto">
+                    <li *ngFor="let emp of filteredManagers" (click)="selectReportingManager(emp)" class="px-2 py-1 hover:bg-blue-100 cursor-pointer">
+                      {{ emp.EmployeeName }} ({{ emp.EmployeeID }})
+                    </li>
+                  </ul>
+                
+                  <div *ngIf="employeeForm.get('reportingManagerID')?.touched && employeeForm.get('reportingManagerID')?.invalid" class="text-red-500 text-sm">
+                    <span *ngIf="employeeForm.get('reportingManagerID')?.errors?.['required']">Reporting Manager is required.</span>
                   </div>
+                  </div>
+                  
                   <div class="block">
                     <label class="block">Is On Probation
                         <select class="w-full p-2 border rounded" formControlName="IsOnProbation">

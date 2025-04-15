@@ -12,6 +12,11 @@ import { ConfirmDialogComponent } from '../../../../shared/components/confirm-di
 import { MatDialog } from '@angular/material/dialog';
 import { decryptText } from '../../../../common/export functions/customfunctions';
 import { AuthService } from '../../../../account/services/auth.service';
+import { AttendanceService } from '../../../attendance/services/attendance.service';
+interface DropdownItem {
+  ID: number;
+  Value: string;
+}
 
 @Component({
   selector: 'app-employee-profile',
@@ -26,6 +31,7 @@ export class EmployeeProfileComponent {
   private toastService = inject(ToastService);
   private service = inject(EmployeeService);
   public common = inject(CommonService);
+  private attendanceService = inject(AttendanceService);
   public router = inject(Router);
   private dialog = inject(MatDialog);
   mode = signal<string | null>(null);
@@ -42,12 +48,21 @@ export class EmployeeProfileComponent {
   ];
   maritalStatuses = ['Single', 'Married', 'Divorced', 'Widowed'];
   employmentTypes = ['Full-Time', 'Part-Time', 'Contract', 'Internship'];
-  departmentName: string = 'IT'; // Replace with actual department name
-  designationName: string = 'Software Engineer'; // Replace with actual designation name
-  reportingManagerName: string = 'John Doe'; // Repl
-
+  SelectedDepartment: string = ''; 
+  SelectedDesignation: string = ''; 
+  reportingManagerName: string = ''; 
+  SelectedShift:string='';
   screenHeight = signal(window.innerHeight);
-
+  designations: DropdownItem[] = [];
+  departments: DropdownItem[] = [];
+  shifts: DropdownItem[] = [];
+  designationLoaded = false;
+  departmentLoaded=false;
+  shiftLoaded=false;
+  reportingManagerSearch = '';
+  filteredManagers: any[] = [];
+  showSuggestions = false;
+  
   constructor(private fb: FormBuilder) {   const encryptedParams$ = this.route.queryParamMap.pipe(map(params => params.get('params')));
     const encryptedParamsSignal = toSignal(encryptedParams$);
 
@@ -127,6 +142,7 @@ export class EmployeeProfileComponent {
       const empId = Number(this.employeeId());
       if (!isNaN(empId) && empId > 0 && (this.mode() === "view" || this.mode() === "edit")) {
         this.getEmployeeInfoByID(empId);
+
       }
     }
     window.addEventListener('resize', this.updateScreenHeight);
@@ -139,6 +155,101 @@ export class EmployeeProfileComponent {
   setActiveTab(tabIndex: number): void {
     this.activeTab = tabIndex;
   }
+
+  GetDesignation() {
+    if (this.designationLoaded) return;
+    this.common.getDropdownData('designation').subscribe({
+      next: ({ resp, data }) => {
+        if (resp?.code !== '00') return;
+        this.designations = data;
+        this.designationLoaded = true;
+        const id = this.employeeForm.get('designationID')?.value;
+        const matched = data.find((d: any) => d.ID === id);
+        this.employeeForm.patchValue({ designationID: matched ? id : '' });
+        this.SelectedDesignation = matched?.Value || '';
+      },
+      error: (err) => console.error('Failed to load designations:', err)
+    });
+  }
+  GetDepartment() {
+    if (this.departmentLoaded) return;
+    this.common.getDropdownData('department').subscribe({
+      next: ({ resp, data }) => {
+        if (resp?.code !== '00') return;
+        this.departments = data;
+        this.departmentLoaded = true;
+        const id = this.employeeForm.get('departmentID')?.value;
+        const matched = data.find((d: any) => d.ID === id);
+        this.employeeForm.patchValue({ departmentID: matched ? id : '' });
+        this.SelectedDepartment = matched?.Value || '';
+      },
+      error: (err) => console.error('Failed to load departments:', err)
+    });
+  }
+  GetShift() {
+    if (this.shiftLoaded) return;
+    this.common.getDropdownData('shifts').subscribe({
+      next: ({ resp, data }) => {
+        if (resp?.code !== '00') return;
+        this.shifts = data;
+        this.shiftLoaded = true;
+        const id = this.employeeForm.get('shiftID')?.value;
+        const matched = data.find((s: any) => s.ID === id);
+        this.employeeForm.patchValue({ shiftID: matched ? id : '' });
+        this.SelectedShift = matched?.Value || '';
+      },
+      error: (err) => console.error('Failed to load shifts:', err)
+    });
+  }
+  searchReportingManager() {
+    if (!this.reportingManagerSearch?.trim()) return;
+  
+    this.attendanceService
+      .getEmployeeDetails(this.reportingManagerSearch.trim())
+      .subscribe({
+        next: (res) => {
+          if (res?.resp?.code === '00') {
+            this.filteredManagers = res.employeeData;
+            this.showSuggestions = true;
+            if(this.mode() === "view" || this.mode() === "edit"){
+              this.selectReportingManager(this.filteredManagers[0]);   
+            }
+          } else {
+            this.filteredManagers = [];
+            this.showSuggestions = false;
+            this.toastService.showError(res?.resp?.description);
+          }
+        },
+        error: (err) => {
+          console.error('Failed to fetch managers:', err);
+          this.filteredManagers = [];
+          this.showSuggestions = false;
+        }
+      });
+  }
+  
+  
+  selectReportingManager(emp: any) {
+    debugger
+    if (emp) {
+      this.reportingManagerSearch = emp.EmployeeName || emp.FirstName + ' ' + emp.LastName;
+      this.employeeForm.patchValue({ reportingManagerID: emp.EmployeeID });
+      this.showSuggestions = false;
+    }
+  }
+  
+  hideSuggestions() {
+    setTimeout(() => {
+      this.showSuggestions = false;
+    }, 200); // allow click to register
+  }
+  handleEnterKey(event: KeyboardEvent) {
+    if (event.key === 'Enter') {
+      event.preventDefault(); // ⛔ prevents form submit
+      this.searchReportingManager(); // ✅ triggers the search manually
+    }
+  }
+  
   getEmployeeInfoByID(employeeID: number) {
     this.service.getEmployeeInfoByID({ employeeID }).subscribe(
       (response) => {
@@ -146,7 +257,13 @@ export class EmployeeProfileComponent {
           const employee = response.employeeData[0]; // Assuming single employee data is returned
           this.populateEmployeeForm(employee);
           this.profileImage = employee.ProfilePic ? `data:image/png;base64,${employee.ProfilePic}` : null;
-        } else {
+          this.GetDesignation();
+          this.GetDepartment();
+          this.GetShift();
+          debugger
+          this.reportingManagerSearch=String(employee.ReportingManagerID);
+          this.searchReportingManager(); 
+             } else {
           console.warn("No employee data found.");
         }
       },
@@ -161,15 +278,16 @@ export class EmployeeProfileComponent {
       let employeeData = {
         ...this.employeeForm.value,
         IsOnProbation: this.employeeForm.get('IsOnProbation')?.value === 'Yes' ? true : false,
-      };
+            };
       if(this.mode() === "view" || this.mode() === "edit"){
         employeeData.employeeId=this.employeeId();
       }
       employeeData.ProfilePic=this.profileImage;
       if(this.mode() !== "add"){
-        employeeData.profileID=3;
+        employeeData.profileID=1;
       }
-      
+      debugger
+      employeeData.numberOfDependents=String(this.employeeForm.get('numberOfDependents')?.value)
       this.service.addUpdateEmployee(employeeData).subscribe({
         next: (response) => {
           if (response.code === '00') {
@@ -197,6 +315,11 @@ export class EmployeeProfileComponent {
       this.markFormGroupTouched(this.employeeForm);
     }
   }
+  private formatDatetoISOString(dateString: string): string {
+    const date = new Date(dateString);
+    return date.toISOString().split('T')[0]; // returns 'yyyy-MM-dd'
+  }
+  
   private populateEmployeeForm(employee: any) {
     this.employeeForm.patchValue({
       firstName: employee.FirstName || '',
@@ -206,7 +329,7 @@ export class EmployeeProfileComponent {
       phone: employee.Phone || '',
       cnic: employee.CNIC || '',
       gender: employee.Gender || '',
-      dateOfBirth: employee.DateOfBirth ? new Date(employee.DateOfBirth) : '',
+      dateOfBirth: employee.DateOfBirth ? this.formatDatetoISOString(employee.DateOfBirth) : '',
       address: employee.Address || '',
       city: employee.City || '',
       state: employee.State || '',
@@ -220,15 +343,15 @@ export class EmployeeProfileComponent {
       major: employee.Major || '',
       designationID: employee.DesignationID || '',
       departmentID: employee.DepartmentID || '',
-      joiningDate: employee.JoiningDate ? new Date(employee.JoiningDate) : '',
+      joiningDate: employee.JoiningDate ? this.formatDatetoISOString(employee.JoiningDate) : '',
       IsOnProbation: employee.IsOnProbation || false,
-      ProbationEndDate: employee.ProbationEndDate ? new Date(employee.ProbationEndDate) : '',
+      ProbationEndDate: employee.ProbationEndDate ? this.formatDatetoISOString(employee.ProbationEndDate) : '',
       shiftID: employee.ShiftID || '',
       employmentType: employee.EmploymentType || '',
       workLocation: employee.WorkLocation || '',
       reportingManagerID: employee.ReportingManagerID || '',
       zipCode: employee.ZipCode || '',
-      isActive: employee.IsActive || true,
+      isActive: employee.IsActive ?? true,
       medications: employee.Medications || '',
       healthCondition: employee.Health_condition || '',
       disabilityStatus: employee.Disability_status || '',
@@ -237,6 +360,7 @@ export class EmployeeProfileComponent {
       emergencyContactRelationship: employee.Emergency_contact_relationship || ''
     });
   }
+  
   
   handleValidationErrors(errors: any): void {
     for (const field in errors) {

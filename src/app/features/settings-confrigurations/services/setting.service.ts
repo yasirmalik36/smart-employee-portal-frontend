@@ -39,4 +39,8 @@ export class SettingsService {
           `${this.apiUrl}/GetEmployeeFaceDetails?employeeIdOrName=${employeeIdOrName}`
       );
   }
+  deleteFaceById(id: number): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/DeleteFace/${id}`);
+}
+
 }

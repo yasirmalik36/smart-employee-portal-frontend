@@ -16,11 +16,7 @@
   }
   
   /* Adjust the height of the scrollable content area if needed */
-  .overflow-y-auto {
-    /* You might need to adjust this based on the total content */
-    /* max-height: calc(90vh - 100px);  Adjust based on header and footer */
-  }
-  
+
   /* Style for the webcam and uploaded image containers to ensure they fit nicely */
   .small-webcam-container {
     max-width: 280px;

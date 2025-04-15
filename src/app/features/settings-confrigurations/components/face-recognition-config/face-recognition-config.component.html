@@ -6,10 +6,10 @@
           <mat-icon>add_photo_alternate</mat-icon>
           Add Faces
         </button>
-        <button mat-raised-button color="accent" class="shadow-md hover:shadow-lg transition duration-300 ease-in-out" (click)="otherAction()">
+        <!-- <button mat-raised-button color="accent" class="shadow-md hover:shadow-lg transition duration-300 ease-in-out" (click)="otherAction()">
           <mat-icon>settings</mat-icon>
           Other Action
-        </button>
+        </button> -->
       </div>
     </div>
   
@@ -24,7 +24,7 @@
 
             <ng-container *ngFor="let column of columns" [matColumnDef]="column.columnDef">
           
-              <mat-header-cell *matHeaderCellDef mat-sort-header [style.min-width]="column.width" [style.max-width]="column.width">
+              <mat-header-cell *matHeaderCellDef mat-sort-header [style.min-width]="column.width" [style.max-width]="column.width"  [ngClass]="{ 'pl-[38px]': column.columnDef === 'actions' }">
                 {{ column.header }}
               </mat-header-cell>
           
@@ -51,13 +51,12 @@
                <div *ngIf="column.columnDef === 'HasFaceSaved'">
                 <mat-checkbox disabled [checked]="row.HasFaceSaved"></mat-checkbox>
               </div>
-                <!-- Actions Column -->
-                <div *ngIf="column.columnDef === 'actions'" style="display: flex; align-items: center;">
-                  <button mat-icon-button color="warn" matTooltip="Delete" (click)="deleteFace(row.EmployeeID)">
-                    <mat-icon>delete</mat-icon>
-                  </button>
-                </div>
-          
+        <!-- Actions Column -->
+        <div *ngIf="column.columnDef === 'actions'" style="display: flex; align-items: center;">
+          <button mat-icon-button color="warn" matTooltip="Delete" (click)="deleteFace(row.EmployeeID_120)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
                 <!-- Default Cells for Other Columns -->
                 <div *ngIf="column.columnDef !== 'actions' && column.columnDef !== 'EmployeeName' && column.columnDef !== 'HasFaceSaved'">
                   {{ column.cell ? column.cell(row) : common.checkForNull(row[column.columnDef]) }}

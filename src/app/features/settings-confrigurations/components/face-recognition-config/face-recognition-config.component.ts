@@ -12,6 +12,7 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatDialog } from '@angular/material/dialog';
 import { AddFaceConfigComponent } from '../add-face-config/add-face-config.component';
+import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
 
 interface EmployeeFace {
   EmployeeID: number;
@@ -200,16 +201,73 @@ export class FaceRecognitionConfigComponent implements OnInit {
         this.getEmployeeFaces();
       }
     });  }
+    editFace(employeeId: number, ) {
 
+      const dialogData = {
+        employeeId: employeeId,
+        isEdit: true, 
+  
+      };
+      this.openAddEditFaceDialog(dialogData);
+      // this.toastService.showInfo(`Edit functionality for Employee ID: ${employeeId}, Face ID: ${faceId} will be implemented.`);
+    }
+  
+    private openAddEditFaceDialog(data?: any) {
+      const dialogRef = this.dialog.open(AddFaceConfigComponent, {
+        width: '670px',
+        height: '670px',
+        maxWidth: '90vw',
+        maxHeight: '90vh',
+        disableClose: true,
+        autoFocus: false,
+        panelClass: 'custom-dialog', // Custom class for styling
+        data: data // Pass data to the dialog component
+      });
+  
+      dialogRef.afterClosed().subscribe(result => {
+        if (result) {
+          this.getEmployeeFaces(); // Assuming this method refreshes the face list
+        }
+      });
+    }
   otherAction() {
     this.toastService.showInfo('Other action functionality will be implemented here.');
   }
 
-  deleteFace(employeeId: number) {
-    this.toastService.showWarning(`Delete functionality for Employee ID: ${employeeId} will be implemented.`);
-  }
 
-  editFace(employeeId: number) {
-    this.toastService.showInfo(`Edit functionality for Employee ID: ${employeeId} will be implemented.`);
-  }
+
+  deleteFace(id: number) {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+        data: {
+            title: 'Delete Confirmation',
+            message: 'Are you sure you want to delete the Face?',
+            dialogType: 'delete',
+            showCancelButton: true
+        }
+    });
+
+    dialogRef.afterClosed().subscribe((result: any) => {
+        if (result) {
+            this.toastService.showSuccess(`Deleting employee with Employee Id: ${id}`);
+            this.settingService.deleteFaceById(id).subscribe({
+                next: (res) => {
+                    if (res.code === '00') {
+                        this.toastService.showSuccess(res.description || 'Face deleted successfully');
+                        this.getEmployeeFaces();
+
+                    } else {
+                        this.toastService.showError(res.description || 'Failed to delete face');
+                    }
+                },
+                error: (err) => {
+                    this.toastService.showError('Error occurred while deleting face');
+                    console.error(err);
+                }
+            });
+        }
+    });
+}
+
+
+
 }
