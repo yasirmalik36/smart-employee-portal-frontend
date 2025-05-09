@@ -286,6 +286,9 @@ export class EmployeeProfileComponent {
       if(this.mode() !== "add"){
         employeeData.profileID=1;
       }
+      if(employeeData.profileID !=4){
+        employeeData.profileID=3;
+      }
       debugger
       employeeData.numberOfDependents=String(this.employeeForm.get('numberOfDependents')?.value)
       this.service.addUpdateEmployee(employeeData).subscribe({

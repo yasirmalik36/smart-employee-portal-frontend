@@ -13,6 +13,7 @@ import { leavesRoutes } from './features/leaves/leavesRouting';
 import { employeeRoutes } from './features/employee/employeeRouting';
 import { reportRoutes } from './features/bi-reports/reportsRouting';
 import { docRoutes } from './features/document/docRouting';
+import { TaskRoutes } from './features/task/taskRoutint';
 
 export const routes: Routes = [
   { path: 'account/login', component: LoginComponent },
@@ -29,7 +30,8 @@ export const routes: Routes = [
       ...employeeRoutes,
       ...reportRoutes,
       ...settingsRoutes,
-      ...docRoutes
+      ...docRoutes,
+      ...TaskRoutes
     ]
   },
   { path: '**', component: NotFoundComponent }

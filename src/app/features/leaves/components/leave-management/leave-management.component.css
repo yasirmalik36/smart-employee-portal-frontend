@@ -1,126 +1,35 @@
-/* Container and Header Styles */
-.page-header-breadcrumb {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 20px;
-    padding: 20px;
-    background-color: #f8f9fa;
-    border-radius: 8px;
-}
+@keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
 
-.page-title {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 10px;
-}
+  .animate-fade-in {
+    animation: fade-in 0.3s ease-out;
+  }
 
-.breadcrumb {
-    margin-bottom: 0;
-    font-size: 0.875rem;
-    color: #6c757d;
-}
+  @keyframes slide-in-left {
+    from { transform: translateX(-20px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
 
-.breadcrumb-item a {
-    text-decoration: none;
-    color: #007bff;
-}
+  .animate-slide-in-left {
+    animation: slide-in-left 0.3s ease-out;
+  }
 
-.breadcrumb-item.active {
-    color: #28a745;
-}
+  @keyframes slide-in-right {
+    from { transform: translateX(20px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
 
-/* Button Styles */
-.btn-list {
-    display: flex;
-    gap: 10px;
-}
+  .animate-slide-in-right {
+    animation: slide-in-right 0.3s ease-out;
+  }
 
-.btn {
-    font-size: 0.875rem;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 8px 16px;
-    border-radius: 4px;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    cursor: pointer;
-}
+  @keyframes slide-in-bottom {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
 
-.btn-primary-light {
-    background-color: #007bff;
-    color: #fff;
-    border: 1px solid #007bff;
-}
-
-.btn-primary-light:hover {
-    background-color: #0056b3;
-    border-color: #0056b3;
-}
-
-.btn-secondary-light {
-    background-color: #6c757d;
-    color: #fff;
-    border: 1px solid #6c757d;
-}
-
-.btn-secondary-light:hover {
-    background-color: #5a6268;
-    border-color: #5a6268;
-}
-
-.btn i {
-    margin-right: 5px;
-}
-
-/* Waves effect */
-.waves-effect {
-    position: relative;
-    overflow: hidden;
-}
-
-.waves-effect::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    background: rgba(0, 0, 0, 0.2);
-    animation: ripple-animation 0.6s linear;
-}
-
-@keyframes ripple-animation {
-    0% {
-        transform: scale(0);
-    }
-    100% {
-        transform: scale(4);
-        opacity: 0;
-    }
-}
-.profile-banner-img {
-    position: relative;
-    width: 100%;
-    height: auto;
-}
-
-.profile-banner-img img {
-    width: 100%;
-    border-radius: 0.3rem;
-}
-
-.profile-banner-img .overlay {
-    content: "";
-    position: absolute;
-    inset-inline-start: 0;
-    inset-block-start: 0;
-    width: 100%;
-    height: 100%;
-    background-color: var(--primary05); /* Ensure you define this variable in your CSS */
-    border-radius: 0.3rem;
-}
+  .animate-slide-in-bottom {
+    animation: slide-in-bottom 0.3s ease-out;
+  }

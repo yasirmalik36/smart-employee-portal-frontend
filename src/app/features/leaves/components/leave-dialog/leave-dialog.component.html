@@ -1,25 +1,32 @@
-<h2 mat-dialog-title>{{ data ? 'Edit Leave' : 'Apply for Leave' }}</h2>
-<div mat-dialog-content>
-  <mat-form-field appearance="outline">
-    <mat-label>Leave Type</mat-label>
-    <mat-select [(ngModel)]="data.leaveType">
-      <mat-option *ngFor="let type of leaveTypes" [value]="type">{{ type }}</mat-option>
-    </mat-select>
-  </mat-form-field>
-  <mat-form-field appearance="outline">
-    <mat-label>Start Date</mat-label>
-    <input matInput type="date" [(ngModel)]="data.startDate" />
-  </mat-form-field>
-  <mat-form-field appearance="outline">
-    <mat-label>End Date</mat-label>
-    <input matInput type="date" [(ngModel)]="data.endDate" />
-  </mat-form-field>
-  <mat-form-field appearance="outline">
-    <mat-label>Reason</mat-label>
-    <textarea matInput [(ngModel)]="data.reason"></textarea>
-  </mat-form-field>
+
+<div class="p-6">
+
+<h2 class="text-xl font-semibold text-gray-800 mb-4">{{ data ? 'Edit Leave' : 'Apply for Leave' }}</h2>
+<div class="space-y-4">
+  <div class="mb-2">
+    <label for="leaveType" class="block text-sm font-medium text-gray-700">Leave Type</label>
+    <select id="leaveType" [(ngModel)]="data.leaveType"
+      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+      <option *ngFor="let type of leaveTypes" [value]="type">{{ type }}</option>
+    </select>
+  </div>
+  <div class="mb-2">
+    <label for="startDate" class="block text-sm font-medium text-gray-700">Start Date</label>
+    <input type="date" id="startDate" [(ngModel)]="data.startDate"
+      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+  </div>
+  <div class="mb-2">
+    <label for="endDate" class="block text-sm font-medium text-gray-700">End Date</label>
+    <input type="date" id="endDate" [(ngModel)]="data.endDate"
+      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+  </div>
+  <div class="mb-2">
+    <label for="reason" class="block text-sm font-medium text-gray-700">Reason</label>
+    <textarea id="reason" [(ngModel)]="data.reason" rows="3"
+      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"></textarea>
+  </div>
 </div>
-<div mat-dialog-actions>
-  <button mat-button (click)="onNoClick()">Cancel</button>
-  <button mat-button [mat-dialog-close]="data" cdkFocusInitial>Save</button>
-</div>
+<div class="mt-6 flex justify-end space-x-2">
+  <button class="rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2" (click)="onNoClick()">Cancel</button>
+  <button class="inline-flex items-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2" [mat-dialog-close]="data" cdkFocusInitial>Save</button>
+</div></div>

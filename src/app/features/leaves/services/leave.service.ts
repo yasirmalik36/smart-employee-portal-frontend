@@ -1,23 +1,34 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
-interface LeaveRequest {
-  leaveType: string;
-  userID: number;
-  dateFrom: string;
-  dateTo: string;
+// leave-record.model.ts (or leave-record.ts)
+export interface LeaveRecord {
+  LeaveID: number;
+  EmployeeID: number;
+  Employee_Name?: string; // Optional, might be included in the fetched data
+  LeaveType: string;
+  StartDate: string; // ISO 8601 date string (YYYY-MM-DD)
+  EndDate: string;   // ISO 8601 date string (YYYY-MM-DD)
+  Reason?: string;    // Optional
+  Status: 'Pending' | 'Approved' | 'Rejected';
+  CreatedDate?: string; // Optional
+  UpdatedDate?: string; // Optional
+  ProfilePic?: string; // Optional
+  Gender?: 'Male' | 'Female'; // Optional
+  // Add any other properties that your Leave Record object might have
+}// leave-request.model.ts (or leave-request.ts)
+export interface LeaveRequest {
+  employeeId?: string;     // Optional
+  leaveType?: string;       // Optional
+  status?: '' | 'Pending' | 'Approved' | 'Rejected'; // Optional, '' for all
+  fromDate?: string;        // Optional, ISO 8601 date string (YYYY-MM-DD)
+  toDate?: string;          // Optional, ISO 8601 date string (YYYY-MM-DD)
+  dateRange?: 'currentMonth' | 'lastMonth' | 'last3Months' | 'yearToDate' | 'lastYear' | 'custom';
+  pageNumber: number;
+  pageSize: number;
+  // Add any other filtering criteria you might need
 }
 
-interface Leave {
-  leaveId: number;
-  userID: number;
-  leaveType: string;
-  startDate: string;
-  endDate: string;
-  status: string;
-  reason: string;
-}
 
 @Injectable({
   providedIn: 'root',
@@ -27,8 +38,11 @@ export class LeaveService {
 
   constructor(private http: HttpClient) {}
 
-  getLeaves(request: LeaveRequest): Observable<Leave[]> {
-    return this.http.post<Leave[]>(`${this.apiUrl}/GetAllLeaves`, request);
+  getLeaves(request: LeaveRequest): Observable<any[]> {
+    if (!request.employeeId) {
+      request.employeeId = "0";
+    }
+    return this.http.post<any[]>(`${this.apiUrl}/GetLeaves`, request);
   }
 
   applyLeave(leave: any): Observable<any> {
