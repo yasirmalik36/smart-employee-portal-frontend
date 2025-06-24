@@ -32,6 +32,7 @@ export class LayoutComponent implements OnInit, OnDestroy {
   isUserMenuOpen = this.common.isDropdownOpen; // Reactive Signal
   employeeId: any;
   ProfilePic: string='';
+  profiletype!: string;
 
   constructor() {}
 
@@ -47,6 +48,8 @@ export class LayoutComponent implements OnInit, OnDestroy {
     this.gender = this.authService.getGenderFromToken();
     this.employeeId = this.authService.getUserId();
     document.addEventListener('click', this.handleOutsideClick.bind(this));
+      this.profiletype = this.authService.getProfileType();
+
   }
 
   ngOnDestroy() {
