@@ -1,151 +1,186 @@
-<main class="p-4 bg-gray-100 flex-1 dashboard-container transition-all duration-300 ease-in-out">
-
-  <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-6">
-      <div class="animate-slide-in-left">
-          <app-stats-card icon="group" [count]="120" title="Total Employees" colorClass="bg-blue-500 hover:bg-blue-600 text-white shadow-md"></app-stats-card>
-      </div>
-      <div class="animate-slide-in-bottom delay-100">
-          <app-stats-card icon="check_circle" [count]="95" title="Attendance Rate" colorClass="bg-green-500 hover:bg-green-600 text-white shadow-md"></app-stats-card>
-      </div>
-      <div class="animate-slide-in-bottom delay-200">
-          <app-stats-card icon="task" [count]="45" title="Tasks in Progress" colorClass="bg-orange-500 hover:bg-orange-600 text-white shadow-md"></app-stats-card>
-      </div>
-      <div class="animate-slide-in-right delay-300">
-          <app-stats-card icon="assignment_turned_in" [count]="30" title="Completed Tasks" colorClass="bg-purple-500 hover:bg-purple-600 text-white shadow-md"></app-stats-card>
-      </div>
+<main class="p-4 bg-gradient-to-br from-gray-50 to-blue-50 flex-1 dashboard-container transition-all duration-300 ease-in-out">
+  <!-- Animated Stats Cards -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+    <div class="animate-fade-in [animation-delay:100ms]">
+      <app-stats-card 
+        icon="group" 
+        [count]="employeeCount" 
+        title="Total Employees" 
+        colorClass="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg">
+      </app-stats-card>
+    </div>
+    <div class="animate-fade-in [animation-delay:200ms]">
+      <app-stats-card 
+        icon="event_available" 
+        [count]="attendanceRate " 
+        title="Today's Attendance" 
+        colorClass="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg">
+      </app-stats-card>
+    </div>
+    <div class="animate-fade-in [animation-delay:300ms]">
+      <app-stats-card 
+        icon="beach_access" 
+        [count]="onLeaveCount" 
+        title="On Leave Today" 
+        colorClass="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white shadow-lg">
+      </app-stats-card>
+    </div>
+    <div class="animate-fade-in [animation-delay:400ms]">
+      <app-stats-card 
+        icon="pending_actions" 
+        [count]="pendingRequests" 
+        title="Pending Approvals" 
+        colorClass="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white shadow-lg">
+      </app-stats-card>
+    </div>
   </div>
 
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 ">
-
-      <div class="p-6 bg-white rounded-lg shadow-lg animate-fade-in ">
-          <h2 class="text-xl font-semibold mb-3 text-gray-800">Welcome, {{ fullName }} 👋</h2>
-          <p class="text-gray-600 text-sm mb-4">
-              Manage all the things from a single dashboard, including reports, recruitment, and more.
-          </p>
-          <img src="assets/images/welcome.png" alt="Dashboard Preview" class="mt-2 h-40 w-full object-contain rounded-md" />
+  <!-- Main Content Grid -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Welcome Card with Quick Actions -->
+    <div class="p-4 bg-white rounded-xl shadow-lg animate-slide-up [animation-delay:200ms] col-span-1 lg:col-span-1">
+      <div class="flex items-center mb-4">
+        <h2 class="text-2xl font-bold text-gray-800">Welcome, {{ fullName }} 👋</h2>
+        <span class="ml-auto bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full animate-pulse">
+        </span>
       </div>
-
-      <mat-card class="p-6 bg-white rounded-lg shadow-lg h-full animate-slide-up">
-          <h2 class="text-lg font-semibold mb-4 text-center text-gray-800">📈 Productivity Over the Week</h2>
-          <mat-card-content class="w-full h-[250px] flex justify-center items-center">
-              <app-line-chart></app-line-chart>
-          </mat-card-content>
-      </mat-card>
-
-      <mat-card class="p-6 bg-white rounded-lg shadow-lg h-full animate-slide-down">
-          <h2 class="text-lg font-semibold mb-4 text-center text-gray-800">📊 Attendance Rate</h2>
-          <mat-card-content class="w-full h-[270px] flex justify-center items-center">
-              <app-donut-chart class="w-full h-full"></app-donut-chart>
-          </mat-card-content>
-      </mat-card>
-
-
-      <div class="p-6 bg-white rounded-lg shadow-lg col-span-1 lg:col-span-1 animate-fade-in delay-100">
-          <h2 class="text-md font-semibold text-gray-800 mb-3">🗓️ February 2024</h2>
-
-          <div class="mt-2 grid grid-cols-7 text-center text-xs font-medium text-gray-600">
-              <span class="text-red-500">Sun</span><span>Mon</span><span>Tue</span><span>Wed</span>
-              <span>Thu</span><span>Fri</span><span class="text-blue-500">Sat</span>
-          </div>
-
-          <div class="grid grid-cols-7 text-center text-gray-800 text-sm mt-2 gap-1">
-              <div></div><div></div><div></div><div></div><div></div><div></div> <div class="py-2 rounded-md hover:bg-gray-100 cursor-pointer">1</div><div class="py-2 rounded-md hover:bg-gray-100 cursor-pointer">2</div><div class="py-2 rounded-md hover:bg-gray-100 cursor-pointer">3</div>
-              <div class="py-2 rounded-md hover:bg-gray-100 cursor-pointer">4</div><div class="py-2 rounded-md hover:bg-gray-100 cursor-pointer">5</div><div class="py-2 rounded-md hover:bg-gray-100 cursor-pointer">6</div><div class="py-2 rounded-md hover:bg-gray-100 cursor-pointer">7</div>
-              <div class="py-2 rounded-md hover:bg-gray-100 cursor-pointer">8</div><div class="py-2 rounded-md hover:bg-gray-100 cursor-pointer">9</div><div class="py-2 rounded-md hover:bg-gray-100 cursor-pointer">10</div>
-              <div class="py-2 rounded-md hover:bg-gray-100 cursor-pointer">11</div><div class="py-2 rounded-md hover:bg-gray-100 cursor-pointer">12</div><div class="py-2 rounded-md hover:bg-gray-100 cursor-pointer">13</div><div class="py-2 rounded-md hover:bg-gray-100 cursor-pointer">14</div>
-              <div class="py-2 rounded-md hover:bg-gray-100 cursor-pointer">15</div><div class="py-2 rounded-md hover:bg-gray-100 cursor-pointer">16</div><div class="py-2 rounded-md hover:bg-gray-100 cursor-pointer">17</div>
-              <div class="py-2 rounded-md hover:bg-gray-100 cursor-pointer">18</div><div class="py-2 rounded-md hover:bg-gray-100 cursor-pointer">19</div><div class="py-2 rounded-md hover:bg-gray-100 cursor-pointer">20</div><div class="py-2 rounded-md hover:bg-gray-100 cursor-pointer">21</div>
-              <div class="py-2 rounded-md hover:bg-gray-100 cursor-pointer">22</div><div class="py-2 rounded-md hover:bg-gray-100 cursor-pointer">23</div><div class="py-2 rounded-md hover:bg-gray-100 cursor-pointer">24</div>
-              <div class="py-2 rounded-md hover:bg-gray-100 cursor-pointer">25</div><div class="py-2 rounded-md hover:bg-gray-100 cursor-pointer">26</div><div class="py-2 rounded-md hover:bg-gray-100 cursor-pointer">27</div>
-              <div class="py-2 rounded-md hover:bg-gray-100 cursor-pointer">28</div><div class="py-2 bg-green-200 rounded-md font-semibold cursor-pointer">29</div>
-          </div>
-
+      <p class="text-gray-600 mb-6">
+        Here's your HR dashboard overview. Manage leaves, track attendance, and view employee data.
+      </p>
+      
+      <div class="grid grid-cols-2 gap-3 mb-6">
+        <button class="quick-action-btn bg-blue-100 hover:bg-blue-200 text-blue-800">
+          <span class="material-icons">add</span>
+          New Leave
+        </button>
+        <button class="quick-action-btn bg-green-100 hover:bg-green-200 text-green-800">
+          <span class="material-icons">how_to_reg</span>
+          Approvals
+        </button>
+        <button class="quick-action-btn bg-purple-100 hover:bg-purple-200 text-purple-800">
+          <span class="material-icons">bar_chart</span>
+          Reports
+        </button>
+        <button class="quick-action-btn bg-amber-100 hover:bg-amber-200 text-amber-800">
+          <span class="material-icons">groups</span>
+          Employees
+        </button>
       </div>
-
-      <div class="p-6 bg-white rounded-lg shadow-lg animate-slide-in-left delay-200">
-          <div class="flex justify-between items-center mb-3">
-              <h2 class="text-md font-semibold text-gray-800">📝 Task Report</h2>
-              <button class="text-blue-500 text-sm hover:underline transition-colors duration-200">View All</button>
-          </div>
-
-          <p class="text-gray-600 text-sm mb-2">Tasks Completed: <span class="font-bold text-gray-800">23/50</span></p>
-          <div class="relative w-full bg-gray-200 rounded-full h-3">
-              <div class="bg-yellow-500 h-3 rounded-full transition-all duration-300" style="width: 46%;">
-                  <div class="absolute right-0 -top-6 text-xs font-medium text-gray-700 animate-pulse">46%</div>
-              </div>
-          </div>
-
-          <div class="mt-4">
-              <p class="text-sm font-semibold text-gray-800 mb-2">📌 Priority Tasks</p>
-              <ul class="text-sm text-gray-600 list-disc ml-5 space-y-2">
-                  <li>Complete quarterly report <span class="text-red-500 font-semibold animate-ping-slow inline-block w-2 h-2 rounded-full ml-1"></span></li>
-                  <li>Fix login issue on admin panel</li>
-                  <li>Prepare presentation for Monday</li>
-              </ul>
-          </div>
-
-          <div class="flex justify-end mt-4">
-              <button class="bg-blue-500 hover:bg-blue-600 text-white text-sm px-3 py-2 rounded transition-colors duration-200 mr-2">➕ Add Task</button>
-              <button class="bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm px-3 py-2 rounded transition-colors duration-200">📊 View Report</button>
-          </div>
+      
+      <div class="relative h-40 overflow-hidden rounded-lg">
+        <img src="assets/images/hr-dashboard.svg" alt="HR Dashboard" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 hover:scale-105">
       </div>
+    </div>
 
 
-      <div class="p-6 bg-white rounded-lg shadow-lg animate-slide-in-right delay-200">
-          <h2 class="text-md font-semibold mb-3 text-gray-800">🎂 Upcoming Birthdays</h2>
-
-          <div class="space-y-4">
-              <div class="flex items-center transition-all duration-200 hover:bg-gray-50 p-2 rounded-md">
-                  <img src="assets/images/woman.png" alt="user" class="w-10 h-10 rounded-full shadow-sm">
-                  <div class="ml-3 text-sm">
-                      <p class="font-medium text-gray-800">Haily wales</p>
-                      <p class="text-gray-600">🗓️ 10 Feb 2024</p>
-                  </div>
-              </div>
-
-              <div class="flex items-center transition-all duration-200 hover:bg-gray-50 p-2 rounded-md">
-                  <img src="assets/images/woman.png" alt="Aqsa Arshad" class="w-10 h-10 rounded-full shadow-sm">
-                  <div class="ml-3 text-sm">
-                      <p class="font-medium text-gray-800">Aqsa Arshad</p>
-                      <p class="text-gray-600">🗓️ 12 Feb 2024</p>
-                  </div>
-              </div>
-
-              <div class="flex items-center transition-all duration-200 hover:bg-gray-50 p-2 rounded-md">
-                  <img src="assets/images/woman.png" alt="Zainab Bibi" class="w-10 h-10 rounded-full shadow-sm">
-                  <div class="ml-3 text-sm">
-                      <p class="font-medium text-gray-800">Zainab Bibi</p>
-                      <p class="text-gray-600">🗓️ 13 Feb 2024</p>
-                  </div>
-              </div>
-              <div class="flex items-center transition-all duration-200 hover:bg-gray-50 p-2 rounded-md">
-                  <img src="assets/images/man.png" alt="John Doe" class="w-10 h-10 rounded-full shadow-sm">
-                  <div class="ml-3 text-sm">
-                      <p class="font-medium text-gray-800">John Doe</p>
-                      <p class="text-gray-600">🗓️ 15 Feb 2024</p>
-                  </div>
-              </div>
-          </div>
-
-          <div class="mt-4 text-right">
-              <button class="text-blue-500 text-sm hover:underline transition-colors duration-200">See More 🎉</button>
-          </div>
+    <!-- Recent Leave Requests -->
+    <div class="p-4 bg-white rounded-xl shadow-lg animate-fade-in [animation-delay:500ms] col-span-1 lg:col-span-2">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-bold text-gray-800">⏳ Recent Leave Requests</h2>
+        <button mat-button class="text-blue-500 text-sm">View All</button>
       </div>
+      
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Employee</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Leave Type</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Dates</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Status</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <tr *ngFor="let request of recentLeaveRequests" class="hover:bg-gray-50 transition-colors">
+              <td class="px-4 py-3 whitespace-nowrap">
+                <div class="flex items-center">
+                  <img [src]="request.employee.avatar" class="w-8 h-8 rounded-full mr-2">
+                  <span>{{ request.employee.name }}</span>
+                </div>
+              </td>
+              <td class="px-4 py-3 whitespace-nowrap">
+                <span [class]="'px-2 py-1 rounded-full text-xs ' + getLeaveTypeClass(request.type)">
+                  {{ request.type }}
+                </span>
+              </td>
+              <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
+                {{ request.startDate | date }} - {{ request.endDate | date }}
+              </td>
+              <td class="px-4 py-3 whitespace-nowrap">
+                <span [class]="'px-2 py-1 rounded-full text-xs ' + getStatusClass(request.status)">
+                  {{ request.status }}
+                </span>
+              </td>
+              <td class="px-4 py-3 whitespace-nowrap text-sm">
+                <button mat-icon-button class="text-green-500 hover:bg-green-50" *ngIf="request.status === 'Pending'">
+                  <mat-icon>check</mat-icon>
+                </button>
+                <button mat-icon-button class="text-red-500 hover:bg-red-50" *ngIf="request.status === 'Pending'">
+                  <mat-icon>close</mat-icon>
+                </button>
+                <button mat-icon-button class="text-blue-500 hover:bg-blue-50">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
 
+   
+
+      <!-- Attendance Chart -->
+    <mat-card class="p-6 bg-white rounded-xl shadow-lg h-full animate-slide-up [animation-delay:300ms]">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-bold text-gray-800">📊 Monthly Attendance</h2>
+        <button mat-button class="text-blue-500 text-sm">View Details</button>
+      </div>
+      <mat-card-content class="w-full h-[250px]">
+        <app-line-chart data="attendanceData"></app-line-chart>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Leave Balance Chart -->
+    <mat-card class="p-6 bg-white rounded-xl shadow-lg h-full animate-slide-up [animation-delay:400ms]">
+      <h2 class="text-xl font-bold text-gray-800 mb-4">🍃 Leave Balances</h2>
+      <mat-card-content class="w-full h-[270px]">
+        <app-donut-chart data="leaveBalanceData"></app-donut-chart>
+      </mat-card-content>
+    </mat-card>
+ <!-- Upcoming Holidays -->
+    <div class="p-6 bg-white rounded-xl shadow-lg animate-fade-in [animation-delay:600ms]">
+      <h2 class="text-xl font-bold text-gray-800 mb-4">🎉 Upcoming Holidays</h2>
+      <div class="space-y-4">
+        <div *ngFor="let holiday of upcomingHolidays" class="flex items-start p-3 rounded-lg hover:bg-gray-50 transition-colors">
+          <div class="bg-red-100 p-2 rounded-lg mr-3">
+            <mat-icon class="text-red-500">celebration</mat-icon>
+          </div>
+          <div>
+            <h3 class="font-medium text-gray-800">{{ holiday.name }}</h3>
+            <p class="text-sm text-gray-600">{{ holiday.date | date:'fullDate' }}</p>
+            <p class="text-xs text-gray-500 mt-1">{{ holiday.daysLeft }} days remaining</p>
+          </div>
+        </div>
+      </div>
+      <button mat-button class="w-full mt-4 text-blue-500">View All Holidays</button>
+    </div>
+
+    <!-- Employee Birthdays -->
+    <div class="p-6 bg-white rounded-xl shadow-lg animate-fade-in [animation-delay:700ms]">
+      <h2 class="text-xl font-bold text-gray-800 mb-4">🎂 This Month's Birthdays</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div *ngFor="let birthday of employeeBirthdays" class="flex items-center p-3 rounded-lg hover:bg-gray-50 transition-colors">
+          <img [src]="birthday.avatar" class="w-10 h-10 rounded-full mr-3 border-2 border-pink-300">
+          <div>
+            <h3 class="font-medium text-gray-800">{{ birthday.name }}</h3>
+            <p class="text-sm text-gray-600">{{ birthday.date | date:'MMM d' }}</p>
+            <p class="text-xs text-pink-500 mt-1" *ngIf="birthday.isToday">🎉 Today!</p>
+          </div>
+        </div>
+      </div>
+      <button mat-button class="w-full mt-4 text-blue-500">View All Birthdays</button>
+    </div>
   </div>
-
-</main><script>
-  // Basic JavaScript for potential interactivity (can be extended)
-  document.addEventListener('DOMContentLoaded', () => {
-      // Example: Adding a subtle hover effect to calendar days
-      const calendarDays = document.querySelectorAll('.calendar-section .grid > div');
-      calendarDays.forEach(day => {
-          day.addEventListener('mouseenter', () => {
-              day.classList.add('scale-105', 'transition-transform', 'duration-150');
-          });
-          day.addEventListener('mouseleave', () => {
-              day.classList.remove('scale-105', 'transition-transform', 'duration-150');
-          });
-      });
-  });
-</script>
+</main>

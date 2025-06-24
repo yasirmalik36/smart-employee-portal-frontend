@@ -171,9 +171,10 @@
       
             <mat-icon>camera</mat-icon> Face Recognition
           </button>
+            @if (profiletype=="1") {
           <button mat-menu-item  (click)="openManualAttendance()">
             <mat-icon>person_search</mat-icon> Manual Attendance
-          </button>
+          </button>}
         </mat-menu>
 
       <!-- <button mat-raised-button color="primary" class="w-40">

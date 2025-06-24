@@ -33,3 +33,15 @@
   .animate-slide-in-bottom {
     animation: slide-in-bottom 0.3s ease-out;
   }
+  .leave-table-cell-padding mat-cell,
+.leave-table-cell-padding mat-header-cell,
+.leave-table-cell-padding mat-footer-cell {
+  text-align: center; /* Center align all table columns */
+  vertical-align: middle; /* Optional: vertically center text */
+}
+
+.leave-table-cell-padding mat-cell:first-of-type,
+.leave-table-cell-padding mat-header-cell:first-of-type,
+.leave-table-cell-padding mat-footer-cell:first-of-type {
+  padding-left: 10px;
+}

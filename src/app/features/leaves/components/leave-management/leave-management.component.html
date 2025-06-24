@@ -1,47 +1,45 @@
-<div class="p-5 pb-2 bg-white h-full relative shadow-md rounded-lg overflow-x-scroll overflow-y-scroll mb-8">
-  <div class="absolute top-0 left-1/2 transform -translate-x-1/2 mt-2">
+<div class="p-5 pb-2 bg-white dark:bg-gray-800 h-full relative shadow-md rounded-lg overflow-hidden mb-8">
+  <div class="absolute top-0 left-1/2 transform -translate-x-1/2 mt-2 z-10">
     <button (click)="toggleFilters()"
-      class="flex items-center text-blue-600 bg-white px-4 py-2 rounded-lg border border-gray-300">
-      <svg xmlns="http://www.w3.org/2000/svg"
-        class="h-5 w-5 mr-2 text-gray-900 transition-transform duration-300"
-        [class.rotate-180]="common.filtersExpanded()">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-      </svg>
-      <span class="ml-2">
+      class="flex items-center text-blue-600 dark:text-blue-300 bg-white dark:bg-gray-700 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 shadow-sm hover:shadow-md transition-all">
+      <mat-icon class="mr-2 text-gray-900 dark:text-gray-100 transition-transform duration-300"
+        [class.rotate-180]="common.filtersExpanded()">expand_more</mat-icon>
+      <span class="ml-2 font-medium">
         {{ common.filtersExpanded() ? 'Hide Filters' : 'Show Filters' }}
       </span>
     </button>
   </div>
 
-  <h2 class="text-xl font-semibold mb-2 flex items-center gap-2">
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary" viewBox="0 0 20 20" fill="currentColor">
-      <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 000-2H6z" clip-rule="evenodd" />
-    </svg>
-    Leave Records
+  <h2 class="text-xl font-semibold mb-4 flex items-center gap-2 text-gray-800 dark:text-white">
+    <mat-icon class="text-blue-500">date_range</mat-icon>
+    Leave Management
   </h2>
 
-  <div *ngIf="common.filtersExpanded()" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-
+  @if (common.filtersExpanded()) {
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+@if (profiletype == '1' || profiletype == '2') {
     <div class="flex flex-col">
-      <label class="text-sm font-medium text-gray-700">Employee ID</label>
-      <input type="text" [(ngModel)]="leaveRequest.employeeId"
-        class="mt-1 p-2 border border-gray-300 rounded w-full bg-white focus:ring-2 focus:ring-blue-500 transition-all duration-300 shadow-sm"
+      <label class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Employee ID</label>
+      <input type="number" [(ngModel)]="leaveRequest.employeeId"
+        class="mt-1 p-2 border border-gray-300 dark:border-gray-600 rounded w-full bg-white dark:bg-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 shadow-sm text-gray-900 dark:text-white"
         placeholder="Enter Employee ID" />
-    </div>
+    </div>}
 
     <div class="flex flex-col">
-      <label class="text-sm font-medium text-gray-700">Leave Type</label>
+      <label class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Leave Type</label>
       <select [(ngModel)]="leaveRequest.leaveType"
-        class="mt-1 p-2 border border-gray-300 rounded w-full bg-white focus:ring-2 focus:ring-blue-500 transition-all duration-300 shadow-sm">
+        class="mt-1 p-2 border border-gray-300 dark:border-gray-600 rounded w-full bg-white dark:bg-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 shadow-sm text-gray-900 dark:text-white">
         <option value="">All</option>
-        <option *ngFor="let type of leaveTypes" [value]="type.value">{{ type.label }}</option>
+        @for (type of leaveTypes; track type.value) {
+        <option [value]="type.value">{{ type.label }}</option>
+        }
       </select>
     </div>
 
     <div class="flex flex-col">
-      <label class="text-sm font-medium text-gray-700">Status</label>
+      <label class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
       <select [(ngModel)]="leaveRequest.status"
-        class="mt-1 p-2 border border-gray-300 rounded w-full bg-white focus:ring-2 focus:ring-blue-500 transition-all duration-300 shadow-sm">
+        class="mt-1 p-2 border border-gray-300 dark:border-gray-600 rounded w-full bg-white dark:bg-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 shadow-sm text-gray-900 dark:text-white">
         <option value="">All</option>
         <option value="Pending">Pending</option>
         <option value="Approved">Approved</option>
@@ -50,158 +48,184 @@
     </div>
 
     <div class="flex flex-col">
-      <label class="text-sm font-medium text-gray-700">Date Range</label>
+      <label class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date Range</label>
       <select [(ngModel)]="leaveRequest.dateRange" (change)="setDateRange()"
-        class="mt-1 p-2 border border-gray-300 rounded w-full bg-white focus:ring-2 focus:ring-blue-500 transition-all duration-300 shadow-sm">
-        <option *ngFor="let range of dateRanges" [value]="range.value">{{ range.label }}</option>
+        class="mt-1 p-2 border border-gray-300 dark:border-gray-600 rounded w-full bg-white dark:bg-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 shadow-sm text-gray-900 dark:text-white">
+        @for (range of dateRanges; track range.value) {
+        <option [value]="range.value">{{ range.label }}</option>
+        }
       </select>
     </div>
 
-    <div class="flex flex-col" *ngIf="showCustomDates">
-      <label class="text-sm font-medium text-gray-700">From Date</label>
+    @if (showCustomDates) {
+    <div class="flex flex-col">
+      <label class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">From Date</label>
       <input type="date" [(ngModel)]="leaveRequest.fromDate"
-        class="mt-1 p-2 border border-gray-300 rounded w-full bg-white focus:ring-2 focus:ring-blue-500 transition-all duration-300 shadow-sm" />
+        class="mt-1 p-2 border border-gray-300 dark:border-gray-600 rounded w-full bg-white dark:bg-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 shadow-sm text-gray-900 dark:text-white" />
     </div>
+    }
 
-    <div class="flex flex-col" *ngIf="showCustomDates">
-      <label class="text-sm font-medium text-gray-700">To Date</label>
+    @if (showCustomDates) {
+    <div class="flex flex-col">
+      <label class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">To Date</label>
       <input type="date" [(ngModel)]="leaveRequest.toDate"
-        class="mt-1 p-2 border border-gray-300 rounded w-full bg-white focus:ring-2 focus:ring-blue-500 transition-all duration-300 shadow-sm" />
+        class="mt-1 p-2 border border-gray-300 dark:border-gray-600 rounded w-full bg-white dark:bg-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 shadow-sm text-gray-900 dark:text-white" />
     </div>
+    }
   </div>
+  }
 
   <div class="mt-4 flex justify-between items-center">
     <button class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md shadow-md transition duration-300 ease-in-out flex items-center w-56"
       (click)="searchLeaves()">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-6a7 7 0 10-14 0 7 7 0 0014 0z" />
-      </svg>
+      <mat-icon class="mr-2">search</mat-icon>
       Search Leaves
     </button>
 
     <div class="flex space-x-4">
       <button class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-md shadow-md transition duration-300 ease-in-out flex items-center w-48"
         (click)="openApplyLeaveDialog()">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-        </svg>
+        <mat-icon class="mr-2">add</mat-icon>
         Apply Leave
       </button>
 
       <div class="relative">
         <button (click)="toggleExportDropdown()"
-          class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md shadow-md transition duration-300 ease-in-out flex items-center justify-between w-40">
+          class="bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 px-4 rounded-md shadow-md transition duration-300 ease-in-out flex items-center justify-between w-40">
           <span class="flex items-center space-x-2">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h6a3 3 0 003-3v-1m3-9l-3-3m0 0v7m0-7h-7" />
-            </svg>
+            <mat-icon class="mr-1">file_download</mat-icon>
             <span>Export</span>
           </span>
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-          </svg>
+          <mat-icon class="ml-1">expand_more</mat-icon>
         </button>
-        <div *ngIf="isExportDropdownOpen"
-          class="absolute right-0 mt-2 w-40 bg-white border border-gray-300 rounded-md shadow-md z-10">
+        @if (isExportDropdownOpen) {
+        <div class="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-md z-10">
           <button (click)="exportLeaves('csv')"
-            class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition duration-200 ease-in-out">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-2 4l-2 2m0 0l2 2m-2-2h4" />
-            </svg>
+            class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 transition duration-200 ease-in-out text-gray-900 dark:text-white">
+            <mat-icon class="mr-2 text-sm">description</mat-icon>
             CSV
           </button>
           <button (click)="exportLeaves('excel')"
-            class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition duration-200 ease-in-out">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-            </svg>
+            class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 transition duration-200 ease-in-out text-gray-900 dark:text-white">
+            <mat-icon class="mr-2 text-sm">grid_on</mat-icon>
             Excel
           </button>
           <button (click)="exportLeaves('pdf')"
-            class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition duration-200 ease-in-out">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h6a3 3 0 003-3v-1m3-9l-3-3m0 0v7m0-7h-7m3 4h.01M9 13h.01M15 13h.01M19 13h.01M5 13h.01" />
-            </svg>
+            class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 transition duration-200 ease-in-out text-gray-900 dark:text-white">
+            <mat-icon class="mr-2 text-sm">picture_as_pdf</mat-icon>
             PDF
           </button>
         </div>
+        }
       </div>
     </div>
   </div>
 
-  <div class="mt-4 overflow-auto mb-4" [ngClass]="tableWidth()">
-    <div class="overflow-hidden mb-4">
-      <div *ngIf="loading" class="text-center text-blue-500">
-        <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V1a1 1 0 012 0v3a8 8 0 018 8h3a1 1 0 010 2h-3a8 8 0 01-8 8v3a1 1 0 01-2 0v-3a8 8 0 01-8-8H1a1 1 0 010-2h3z"></path>
-        </svg>
-        Loading leaves...
+  <div class="mt-4 overflow-auto mb-4"  [style.height]="TableHeight()" >
+    <div class="overflow-hidden mb-4" [ngClass]="tableWidth()"> 
+      @if (loading) {
+      <div class="text-center py-8">
+        <mat-spinner diameter="40" class="mx-auto"></mat-spinner>
+        <p class="mt-2 text-gray-600 dark:text-gray-300">Loading leave records...</p>
       </div>
+      }
 
-      <div class="overflow-auto relative" >
-        <table mat-table *ngIf="leaveData?.length !== 0" [dataSource]="dataSource" matSort
-          class="mat-elevation w-full min-w-max">
+    <div class="overflow-auto relative">
+  @if (loading) {
+    <div class="text-center py-8">
+      <mat-spinner diameter="40" class="mx-auto"></mat-spinner>
+      <p class="mt-2 text-gray-600 dark:text-gray-300">Loading leave records...</p>
+    </div>
+  }
+  @else {
+    @if (leaveData.length > 0) {
+      <table mat-table [dataSource]="dataSource" matSort
+        class="leave-table-cell-padding mat-elevation w-full min-w-max bg-white dark:bg-gray-700">
 
-          <ng-container *ngFor="let column of columns" [matColumnDef]="column.key">
+        @for (column of columns; track column.key) {
+          <ng-container [matColumnDef]="column.key">
             <mat-header-cell *matHeaderCellDef mat-sort-header [style.min-width]="column.width"
-              [style.max-width]="column.width">
+              [style.max-width]="column.width" class="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
               {{ column.title }}
             </mat-header-cell>
-            <mat-cell *matCellDef="let row" [style.min-width]="column.width" [style.max-width]="column.width">
-              <ng-container *ngIf="column.key === 'actions'">
-                <button class="inline-flex items-center p-2 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200 transition duration-200 ease-in-out"
-                  (click)="onEditLeave(row)">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15.828 9 18.656 8.343 18 5.686 15.343 6.414 14.614l2.828-2.828L15.414 6.414a2 2 0 112.828 2.828z" />
-                  </svg>
-                </button>
-              </ng-container>
+            <mat-cell *matCellDef="let row" [style.min-width]="column.width" [style.max-width]="column.width"
+              class="text-gray-900 dark:text-gray-100">
+              
+              @if (column.key === 'actions') {
+                <div class="flex space-x-1">
 
-                <!-- Employee Name Column with Image -->
-                <ng-container *ngIf="column.key === 'Employee_Name'">
-                  <div class="flex items-center space-x-3">
-                    <img 
+                  <button  [disabled]="userid && profiletype == '3' && row?.Leave_Status?.toLowerCase() === 'approved'"  
+                    class="inline-flex items-center p-2 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50"
+                    (click)="onEditLeave(row)">
+                    <mat-icon class="text-base">edit</mat-icon>
+                  </button>
+
+                  @if (row.Leave_Status === 'Pending' && profiletype=="1") {
+                    <button
+                      class="inline-flex items-center p-2 rounded-full bg-green-100 text-green-600 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-300 dark:hover:bg-green-900/50"
+                      (click)="approveLeave(row)">
+                      <mat-icon class="text-base">check_circle</mat-icon>
+                    </button>
+
+                    <button
+                      class="inline-flex items-center p-2 rounded-full bg-red-100 text-red-600 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-300 dark:hover:bg-red-900/50"
+                      (click)="rejectLeave(row)">
+                      <mat-icon class="text-base">cancel</mat-icon>
+                    </button>
+                  }
+                </div>
+              }
+
+              <!-- Employee Name Column with Image -->
+              @if (column.key === 'Employee_Name') {
+                <div class="flex items-center space-x-3">
+                  <img 
                     [src]="common.getProfilePic(row.ProfilePic,row.Gender)" 
                     alt="Employee Image" 
-                    class="w-8 h-8 rounded-full border border-gray-300 shadow-md transition-all duration-200 hover:scale-125 hover:shadow-lg hover:ring-2 hover:ring-blue-300 hover:bg-gray-100"
+                    class="w-8 h-8 rounded-full border border-gray-300 dark:border-gray-500 shadow-md transition-all duration-200 hover:scale-125 hover:shadow-lg hover:ring-2 hover:ring-blue-300 hover:bg-gray-100 dark:hover:bg-gray-600"
                   />
-                    <div class="text-xs">
-                      <div class="font-semibold text-gray-800">{{ row.Employee_Name }}</div>
-                      <div class="text-gray-600">{{ row.Gender }} | {{ row.DateOfBirth }}</div>
-                    </div>
+                  <div class="text-xs">
+                    <div class="font-semibold text-gray-800 dark:text-white">{{ row.Employee_Name }}</div>
+                    <div class="text-gray-600 dark:text-gray-400">{{ row.Designation }} | {{ row.Department }}</div>
                   </div>
-                </ng-container>
+                </div>
+              }
 
-              <ng-container *ngIf="column.key === 'Status'">
+              @if (column.key === 'Leave_Status') {
                 <div class="px-2 py-1 rounded-md text-center"
                   [ngClass]="{
-                    'bg-yellow-100 text-yellow-800': row?.Status?.toLowerCase() === 'pending',
-                    'bg-green-100 text-green-800': row?.Status?.toLowerCase() === 'approved',
-                    'bg-red-100 text-red-800': row?.Status?.toLowerCase() === 'rejected'
+                    'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300': row?.Leave_Status?.toLowerCase() === 'pending',
+                    'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300': row?.Leave_Status?.toLowerCase() === 'approved',
+                    'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300': row?.Leave_Status?.toLowerCase() === 'rejected'
                   }">
-                  {{ row.Status || 'N/A' }}
+                  {{ row.Leave_Status || 'N/A' }}
                 </div>
-              </ng-container>
+              }
 
-              <ng-container *ngIf="column.key !== 'Employee_Name' && column.key !== 'Status' && column.key !== 'actions'">
+              @if (column.key !== 'Employee_Name' && column.key !== 'Leave_Status' && column.key !== 'actions') {
                 {{ row[column.key] }}
-              </ng-container>
+              }
             </mat-cell>
           </ng-container>
+        }
 
-          <mat-header-row *matHeaderRowDef="displayedColumns;" class="sticky-header"></mat-header-row>
-          <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-        </table>
+        <mat-header-row *matHeaderRowDef="displayedColumns;" class="sticky-header"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+      </table>
+    }
+    @else {
+      <div class="flex flex-col items-center justify-center h-64 bg-gray-100 dark:bg-gray-700 rounded-lg shadow-md">
+        <mat-icon class="text-gray-400 dark:text-gray-500 text-6xl mb-4">inbox</mat-icon>
+        <p class="text-lg font-semibold text-gray-700 dark:text-gray-300">No Leave Records Found</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Try adjusting filters or check back later.</p>
       </div>
+    }
+  }
+</div>
 
-      <div *ngIf="leaveData?.length === 0 && !loading" class="flex flex-col items-center justify-center h-64 bg-gray-100 rounded-lg shadow-md">
-        <img src="assets/images/no-data.svg" alt="No Data" class="w-32 h-32 mb-4" />
-        <p class="text-lg font-semibold text-gray-700">No Leave Records Found</p>
-        <p class="text-sm text-gray-500">Try adjusting filters or check back later.</p>
-      </div>
 
-      <div class="sticky bottom-0 left-0 bg-white shadow-md w-full flex justify-end pr-4 border border-gray-300">
+    </div>
+          <div class=" sticky bottom-0 left-0 bg-white dark:bg-gray-800 shadow-md w-full flex justify-end pr-4 border border-gray-300 dark:border-gray-600">
         <mat-paginator class="mr-2"
           [length]="totalRecords"
           [pageSize]="pageSize"
@@ -209,7 +233,7 @@
           [pageSizeOptions]="[5, 10, 25,50,100]"
           (page)="onPageChange($event)">
         </mat-paginator>
-      </div>
-    </div>
+      </div>  
   </div>
+
 </div>

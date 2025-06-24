@@ -11,6 +11,8 @@ import { MatDialog } from '@angular/material/dialog';
 import FileSaver, { saveAs } from 'file-saver';
 import * as XLSX from 'xlsx';
 import { LeaveDialogComponent } from '../leave-dialog/leave-dialog.component';
+import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { AuthService } from '../../../../account/services/auth.service';
 
 @Component({
   selector: 'app-leave-management',
@@ -26,6 +28,7 @@ export class LeaveManagementComponent implements OnInit {
   private leaveService = inject(LeaveService);
   private dialog = inject(MatDialog);
   private cdr = inject(ChangeDetectorRef);
+  private authservice = inject(AuthService);
 
   displayedColumns: string[] = [];
   columns: any[] = [];
@@ -37,22 +40,24 @@ export class LeaveManagementComponent implements OnInit {
   loading = false;
   isExportDropdownOpen = false;
   leaveData: any[] = [];
-  leaveTypes = [
-    { value: 'Annual', label: 'Annual Leave' },
-    { value: 'Sick', label: 'Sick Leave' },
-    { value: 'Casual', label: 'Casual Leave' },
-    // Add more leave types as needed
-  ];
-  dateRanges = [
-    { value: 'currentMonth', label: 'Current Month' },
-    { value: 'lastMonth', label: 'Last Month' },
-    { value: 'last3Months', label: 'Last 3 Months' },
-    { value: 'yearToDate', label: 'Year to Date' },
-    { value: 'lastYear', label: 'Last Year' },
-    { value: 'custom', label: 'Custom Range' }
-  ];
+// In LeaveManagementComponent class
+leaveTypes = [
+  { value: 'Annual', label: 'Annual Leave', icon: 'beach_access' },
+  { value: 'Sick', label: 'Sick Leave', icon: 'medical_services' },
+  { value: 'Casual', label: 'Casual Leave', icon: 'event' },
+  { value: 'Unpaid', label: 'Unpaid Leave', icon: 'money_off' }
+];
+
+dateRanges = [
+  { value: 'currentMonth', label: 'Current Month', icon: 'calendar_today' },
+  { value: 'lastMonth', label: 'Last Month', icon: 'chevron_left' },
+  { value: 'last3Months', label: 'Last 3 Months', icon: 'view_agenda' },
+  { value: 'yearToDate', label: 'Year to Date', icon: 'calendar_view_month' },
+  { value: 'lastYear', label: 'Last Year', icon: 'history' },
+  { value: 'custom', label: 'Custom Range', icon: 'date_range' }
+];
   leaveRequest: LeaveRequest = {
-    employeeId: '',
+    employeeId: 0, // Changed from string to number
     leaveType: '',
     status: '',
     fromDate: '',
@@ -63,10 +68,20 @@ export class LeaveManagementComponent implements OnInit {
   };
   tableWidth = this.common.Tablewidth;
   TableHeight = this.common.TableHeight;
+    profiletype!: string;
+  userid!: any;
 
   ngOnInit(): void {
     this.setDateRange();
+    this.profiletype = this.authservice.getProfileType();
+    this.userid = this.authservice.getUserId();
+
+if(this.profiletype =="3" && this.userid)
+  {
+    this.leaveRequest.employeeId=this.userid;
+}
     this.getLeaves();
+
   }
 
   toggleFilters() {
@@ -131,6 +146,7 @@ export class LeaveManagementComponent implements OnInit {
     this.leaveService.getLeaves(this.leaveRequest).subscribe(
       (response: any) => {
         this.loading = false;
+        debugger
         if (response?.resp?.code === '00') {
           this.leaveData = response.leavesData || [];
           this.totalRecords = response.resp.totalRecords || 0;
@@ -139,7 +155,7 @@ export class LeaveManagementComponent implements OnInit {
             this.common.showCustomAlert(true, 'info', 'No leave records found for the selected filters.');
           }
 
-          const excludedColumns = ['LeaveID', 'EmployeeID', 'ProfilePic','Gender','DateOfBirth'];
+          const excludedColumns = ['Sr_10','LeaveID', 'EmployeeID', 'ProfilePic','Gender','DateOfBirth','Department',"Designation"];
           this.columns = Object.keys(this.leaveData[0] || {})
             .filter(column => !excludedColumns.includes(column))
             .map(column => ({
@@ -148,11 +164,9 @@ export class LeaveManagementComponent implements OnInit {
             }));
 
           if (!this.columns.some(col => col.key === 'actions')) {
-            this.columns.splice(1, 0, { key: 'actions', title: 'Action', width: '75px' });
+            this.columns.splice(0, 0, { key: 'actions', title: 'Action', width: '150px' });
           }
-          if (!this.columns.some(col => col.key === 'Employee_Name')) {
-            this.columns.unshift({ key: 'Employee_Name', title: 'Employee Name', width: '200px' });
-          }
+     
           this.displayedColumns = this.columns.map(col => col.key);
 
           const transformedData = this.leaveData.map((record: any) => {
@@ -192,7 +206,7 @@ export class LeaveManagementComponent implements OnInit {
 
   openApplyLeaveDialog(data?: LeaveRecord) {
     const dialogRef = this.dialog.open(LeaveDialogComponent, {
-      width: '600px',
+      width: '800px',
       data: data
     });
 
@@ -205,6 +219,71 @@ export class LeaveManagementComponent implements OnInit {
 
   onEditLeave(record: LeaveRecord) {
     this.openApplyLeaveDialog(record);
+  }
+  approveLeave(row: any): void {
+    const payload = {
+      LeaveID: Number(row.LeaveID),
+      Action: 1 ,
+      Remarks: 'Approved by admin',
+      ActionBy: 'admin@company.com'
+    };
+
+    this.leaveService.approveOrRejectLeave(payload).subscribe(
+      (res: any) => {
+        if (res.code === '00') {
+          this.common.showCustomAlert(true, 'success', 'Leave approved successfully.');
+          this.getLeaves();
+        } else {
+          this.common.showCustomAlert(true, 'error', res.message || 'Failed to approve leave.');
+        }
+      },
+      () => {
+        this.common.showCustomAlert(true, 'error', 'API error while approving leave.');
+      }
+    );
+  }
+
+
+    /** Delete Employee */
+    rejectLeave(row: any) {
+        const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+            data: {
+                title: 'Rejection Confirmation', 
+                message: 'Are you sure you want to reject the leave?', 
+                dialogType: 'alert', 
+                showCancelButton: true
+            }
+        });
+
+        dialogRef.afterClosed().subscribe((result: any) => {
+            if (result) {
+this.confirmedrejectLeave(row);                
+            }
+        });
+    }
+
+
+  confirmedrejectLeave(row: any): void {
+    const payload = {
+      LeaveID: Number(row.LeaveID),
+      Action: 0 as  number,
+      Remarks: 'Rejected due to policy',
+      ActionBy: 'admin@company.com'
+    };
+
+    this.leaveService.approveOrRejectLeave(payload).subscribe(
+      (res: any) => {
+        if (res.code === '00') {
+          this.common.showCustomAlert(true, 'success', 'Leave rejected successfully.');
+          this.getLeaves();
+        } else {
+          this.common.showCustomAlert(true, 'error', res.message || 'Failed to reject leave.');
+        }
+      },
+      () => {
+        this.common.showCustomAlert(true, 'error', 'API error while rejecting leave.');
+      }
+    );
   }
 
   toggleExportDropdown() {

@@ -15,6 +15,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { CommonService } from '../../../../common/services/common.service';
 import { AlertBoxComponent } from '../../../../shared/components/alert-box/alert-box.component';
 import { ManualAttendanceComponent } from '../manual-attendance/manual-attendance.component';
+import { AuthService } from '../../../../account/services/auth.service';
 
 @Component({
   selector: 'app-attendance',
@@ -27,6 +28,8 @@ export class AttendanceComponent implements OnInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   public common = inject(CommonService);
+  private authservice = inject(AuthService);
+  
   displayedColumns: string[] = [];
   columns: any[] = [];
   dataSource = new MatTableDataSource<any>([]);
@@ -87,6 +90,7 @@ export class AttendanceComponent implements OnInit {
     { value: 'lastYear', label: 'Last Year' }, // ✅ Added Last Year
     { value: 'custom', label: 'Custom Range' }
   ];
+  profiletype: string;
   
   getRecordValue(record: AttendanceRecord, column: string): any {
     return record[column as keyof AttendanceRecord];
@@ -116,6 +120,7 @@ export class AttendanceComponent implements OnInit {
   }
   private attendanceService = inject(AttendanceService);
   constructor(private dialog: MatDialog,private cdr: ChangeDetectorRef ) {
+  this.profiletype = this.authservice.getProfileType();
 
   }
 

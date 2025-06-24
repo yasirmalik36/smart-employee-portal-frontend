@@ -50,6 +50,7 @@ export class EmployeeProfileComponent {
   employmentTypes = ['Full-Time', 'Part-Time', 'Contract', 'Internship'];
   SelectedDepartment: string = ''; 
   SelectedDesignation: string = ''; 
+  SelectedProfiles: string = ''; 
   reportingManagerName: string = ''; 
   SelectedShift:string='';
   screenHeight = signal(window.innerHeight);
@@ -57,11 +58,13 @@ export class EmployeeProfileComponent {
   departments: DropdownItem[] = [];
   shifts: DropdownItem[] = [];
   designationLoaded = false;
+  profileLoaded = false;
   departmentLoaded=false;
   shiftLoaded=false;
   reportingManagerSearch = '';
   filteredManagers: any[] = [];
   showSuggestions = false;
+  profiles: any;
   
   constructor(private fb: FormBuilder) {   const encryptedParams$ = this.route.queryParamMap.pipe(map(params => params.get('params')));
     const encryptedParamsSignal = toSignal(encryptedParams$);
@@ -112,6 +115,7 @@ export class EmployeeProfileComponent {
       IsOnProbation: ['', [Validators.required]],
       ProbationEndDate: ['', [Validators.required]],
       shiftID: ['', [Validators.required]],
+      profileID: ['', [Validators.required]],
       employmentType: ['', [Validators.required]],
       workLocation: ['', [Validators.required]],
       reportingManagerID: ['', [Validators.required]],
@@ -156,6 +160,21 @@ export class EmployeeProfileComponent {
     this.activeTab = tabIndex;
   }
 
+    GetProfile() {
+    if (this.profileLoaded) return;
+    this.common.getDropdownData('Profile').subscribe({
+      next: ({ resp, data }) => {
+        if (resp?.code !== '00') return;
+        this.profiles = data;
+        this.profileLoaded = true;
+        const id = this.employeeForm.get('Profile')?.value;
+        const matched = data.find((d: any) => d.ID === id);
+        this.employeeForm.patchValue({ profileID: matched ? id : '' });
+        this.SelectedProfiles = matched?.Value || '';
+      },
+      error: (err) => console.error('Failed to load designations:', err)
+    });
+  }
   GetDesignation() {
     if (this.designationLoaded) return;
     this.common.getDropdownData('designation').subscribe({
@@ -260,6 +279,7 @@ export class EmployeeProfileComponent {
           this.GetDesignation();
           this.GetDepartment();
           this.GetShift();
+          this.GetProfile;
           debugger
           this.reportingManagerSearch=String(employee.ReportingManagerID);
           this.searchReportingManager(); 
@@ -283,12 +303,6 @@ export class EmployeeProfileComponent {
         employeeData.employeeId=this.employeeId();
       }
       employeeData.ProfilePic=this.profileImage;
-      if(this.mode() !== "add"){
-        employeeData.profileID=1;
-      }
-      if(employeeData.profileID !=4){
-        employeeData.profileID=3;
-      }
       debugger
       employeeData.numberOfDependents=String(this.employeeForm.get('numberOfDependents')?.value)
       this.service.addUpdateEmployee(employeeData).subscribe({

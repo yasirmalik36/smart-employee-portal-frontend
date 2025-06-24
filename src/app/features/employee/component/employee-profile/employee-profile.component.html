@@ -471,7 +471,19 @@
                     <span *ngIf="employeeForm.get('reportingManagerID')?.errors?.['required']">Reporting Manager is required.</span>
                   </div>
                   </div>
-                  
+                      <div class="block">
+                    <label>Designation</label>
+                    <select class="w-full p-2 border rounded"
+                            formControlName="profileID"
+                            (click)="GetProfile()">
+                      <option value="">-- Select profile --</option>
+                      <option *ngFor="let item of profiles" [value]="item.ID">{{ item.Value }}</option>
+                    </select>
+                    <div *ngIf="employeeForm.get('profileID')?.touched && employeeForm.get('profileID')?.invalid"
+                      class="text-red-500 text-sm">
+                      <span *ngIf="employeeForm.get('profileID')?.errors?.['required']">Designation is required.</span>
+                    </div>
+                  </div>
                   <div class="block">
                     <label class="block">Is On Probation
                         <select class="w-full p-2 border rounded" formControlName="IsOnProbation">
