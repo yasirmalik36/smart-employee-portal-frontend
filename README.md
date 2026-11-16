@@ -1,166 +1,78 @@
 # 🖥️ Smart Employee Portal — Frontend
 
-> Enterprise Angular 17 HR platform with AI-driven analytics, real-time notifications, face recognition attendance, and a fully modular architecture using **NgRx**, **Standalone Components**, and **OnPush change detection**.
+> Angular 17 UI for the **Smart Employee Portal**, an HR and attendance platform. Built with **standalone components**, **lazy-loaded feature routes**, **Angular Material** and **ECharts**, with webcam capture for face-recognition attendance.
 
-[![Angular](https://img.shields.io/badge/Angular_17-DD0031?style=for-the-badge&logo=angular&logoColor=white)](https://angular.io)
-[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
-[![RxJS](https://img.shields.io/badge/RxJS-B7178C?style=for-the-badge&logo=reactivex&logoColor=white)](https://rxjs.dev)
+[![Angular](https://img.shields.io/badge/Angular_17-DD0031?style=for-the-badge&logo=angular&logoColor=white)](https://angular.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![Angular Material](https://img.shields.io/badge/Angular_Material-757575?style=for-the-badge&logo=angular&logoColor=white)](https://material.angular.io)
+[![CI](https://github.com/yasirmalik36/smart-employee-portal-frontend/actions/workflows/ci.yml/badge.svg)](https://github.com/yasirmalik36/smart-employee-portal-frontend/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
 
----
-
-## ✨ Features
-
-- 🏠 **Dashboard** — Real-time KPIs, attendance overview, pending tasks, and AI-generated insights
-- 🕐 **Attendance Module** — Clock-in/out with webcam face recognition, monthly calendar view
-- 🏖️ **Leave Management** — Apply, track, and approve leaves with balance indicators
-- ✅ **Task Management** — Kanban board with priority, status, and due date tracking
-- 👥 **Employee Directory** — Search, filter, and manage employee profiles
-- 📊 **Analytics** — AI-powered attendance patterns, productivity trends, anomaly alerts
-- 🔔 **Real-time Notifications** — SignalR-powered live updates without page refresh
-- 🌓 **Dark / Light Mode** — System preference detection with manual toggle
-- 📱 **Responsive** — Mobile-first design, works on all screen sizes
+> **Status:** work in progress. The app shell, routing, account screens, dashboard widgets and webcam attendance capture are in place; several feature modules (AI analytics, reports, documents) are still placeholders.
 
 ---
 
-## 🏗️ Architecture
+## ✨ What's inside
+
+| Area | Details |
+|---|---|
+| 🔐 **Account** | Login, register, profile, forgot / reset password screens |
+| 🧭 **App shell** | Material sidenav layout with lazy-loaded feature routes under `/home` |
+| 📊 **Dashboard** | Reusable stats cards plus line and donut charts (ECharts via `ngx-echarts`) |
+| 📸 **Attendance** | Webcam capture with `ngx-webcam` for face-recognition check-in |
+| 🗂️ **Feature modules** | Leave management, compensation & benefits, user management, task management, reports, documents, notifications, settings |
+
+### Project structure
 
 ```
-src/
-├── app/
-│   ├── core/                   # Singleton services, guards, interceptors
-│   │   ├── auth/               # JWT auth service, route guards
-│   │   ├── interceptors/       # HTTP auth, error, loading interceptors
-│   │   └── services/           # API, SignalR, notification services
-│   ├── shared/                 # Reusable components, pipes, directives
-│   │   ├── components/         # Buttons, modals, data tables, charts
-│   │   └── pipes/              # Date formatting, status display
-│   ├── features/               # Lazy-loaded feature modules
-│   │   ├── dashboard/          # Main dashboard with AI analytics
-│   │   ├── attendance/         # Clock-in/out, calendar, reports
-│   │   ├── leaves/             # Leave request, approval workflow
-│   │   ├── tasks/              # Kanban task board
-│   │   └── employees/          # Employee directory & profiles
-│   └── store/                  # NgRx state management
-│       ├── auth/               # Auth state, actions, reducers, effects
-│       ├── employees/          # Employee state
-│       └── notifications/      # Real-time notification state
-├── assets/                     # Images, icons, fonts
-└── environments/               # Dev, staging, prod configs
+src/app/
+├── account/        # login, register, profile, password flows
+├── core/           # guards, interceptors, services (scaffolded)
+├── features/       # lazy-loaded feature pages
+├── layout/         # Material sidenav shell
+├── shared/         # stats-card, line-chart, donut-chart, Material module
+├── app.routes.ts   # route table (loadComponent per feature)
+└── app.config.ts   # providers: router, animations, ECharts
 ```
 
-**Key Angular Patterns:**
-- ✅ Standalone Components (Angular 17)
-- ✅ NgRx for global state — auth, notifications, employee data
-- ✅ OnPush Change Detection — optimised rendering performance
-- ✅ Lazy Loading — all feature modules loaded on demand
-- ✅ Reactive Forms with custom validators
-- ✅ HTTP Interceptors — auto JWT refresh, error handling, loading state
-
 ---
 
-## 🔧 Tech Stack
-
-| Category | Technology |
-|----------|-----------|
-| Framework | Angular 17 (Standalone) |
-| Language | TypeScript 5.x |
-| State Management | NgRx 17 |
-| Reactive | RxJS 7 |
-| UI Components | Angular Material + Custom |
-| Styling | SCSS + Tailwind CSS |
-| Charts | Chart.js / ng2-charts |
-| Real-time | @microsoft/signalr |
-| HTTP | Angular HttpClient + Interceptors |
-| Testing | Jest + Angular Testing Library |
-
----
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-- [Node.js 18+](https://nodejs.org/)
-- [Angular CLI 17](https://angular.io/cli): `npm install -g @angular/cli@17`
-- Backend API running (see [smart-employee-portal-backend](https://github.com/yasirmalik36/smart-employee-portal-backend))
-
-### 1. Clone the Repository
+## 🚀 Getting started
 
 ```bash
 git clone https://github.com/yasirmalik36/smart-employee-portal-frontend.git
 cd smart-employee-portal-frontend
+npm ci
+npm start            # ng serve → http://localhost:4200
 ```
 
-### 2. Install Dependencies
-
-```bash
-npm install
-```
-
-### 3. Configure Environment
-
-Update `src/environments/environment.ts`:
-
-```typescript
-export const environment = {
-  production: false,
-  apiUrl: 'https://localhost:7001/api',
-  signalRUrl: 'https://localhost:7001/hubs',
-  faceRecognitionUrl: 'http://localhost:5000'
-};
-```
-
-### 4. Run Development Server
-
-```bash
-ng serve
-```
-
-App will be available at `http://localhost:4200`
-
-### 5. Build for Production
-
-```bash
-ng build --configuration production
-```
+| Command | What it does |
+|---|---|
+| `npm start` | Dev server with live reload |
+| `npm run build` | Production build to `dist/` |
+| `npm test` | Karma + Jasmine (no specs written yet) |
 
 ---
 
-## 📁 Key Modules
+## 🔗 Related repositories
 
-### Dashboard
-Real-time metrics widget, attendance summary, pending approvals, AI analytics chart showing productivity trends and anomaly alerts.
+- [smart-employee-portal-backend](https://github.com/yasirmalik36/smart-employee-portal-backend) — .NET 8 Web API (JWT auth, attendance, employees)
+- [smart-employee-portal-face-recognition](https://github.com/yasirmalik36/smart-employee-portal-face-recognition) — FastAPI + DeepFace + FAISS face verification
 
-### Attendance Module
-Webcam integration for face recognition clock-in, monthly calendar with daily attendance status, late/early departure indicators, and CSV export.
+## 🗺️ Roadmap
 
-### Leave Management
-Multi-step leave application form, manager approval workflow with email notifications, leave balance progress bars, and team leave calendar.
-
-### Task Board
-Drag-and-drop Kanban board (To Do → In Progress → Done), task assignment, priority flags, due date countdown, and comment threads.
-
----
-
-## 🔗 Related Repositories
-
-| Repo | Description |
-|------|-------------|
-| [smart-employee-portal-backend](https://github.com/yasirmalik36/smart-employee-portal-backend) | .NET Core 8 REST API |
-| [smart-employee-portal-face-recognition](https://github.com/yasirmalik36/smart-employee-portal-face-recognition) | Python face recognition microservice |
-
----
-
-## 🤝 Author
-
-**Yasir Mehmood** — Senior Full-Stack & AI Engineer
-
-[![Portfolio](https://img.shields.io/badge/Portfolio-Visit-1B3A6B?style=flat-square)](https://yasir-portfolio-omega.vercel.app)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0077B5?style=flat-square&logo=linkedin)](https://linkedin.com/in/yasir-mehmood-53549a1b3)
-[![Email](https://img.shields.io/badge/Email-Contact-D14836?style=flat-square&logo=gmail)](mailto:yash36114@gmail.com)
-
----
+- Wire feature pages to the .NET API through a typed `HttpClient` service and auth interceptor
+- Re-enable the route guard once login is connected
+- Add unit tests for shared components
 
 ## 📄 License
 
-This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+MIT — see [LICENSE](LICENSE).
+
+---
+
+<div align="center">
+
+Built by **[Yasir Mehmood](https://yasir-portfolio-omega.vercel.app)** · [LinkedIn](https://linkedin.com/in/yasir-mehmood-53549a1b3) · [GitHub](https://github.com/yasirmalik36)
+
+</div>
