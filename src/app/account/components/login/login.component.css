@@ -1,0 +1,12 @@
+.auth-icon {
+  width: 3rem;
+  height: 3rem;
+  fill: var(--primary-color);
+}
+a:hover i {
+  color: #ffffff; /* Or any contrasting color */
+}
+.error-message {
+  color: red;
+  margin-top: 10px;
+}

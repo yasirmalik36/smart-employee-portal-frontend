@@ -1,0 +1,22 @@
+
+
+  <div class="alert-box flex items-center p-4 rounded-lg shadow-md transition-all duration-300"
+  [ngClass]="getAlertClass()">
+  
+  <!-- Alert Icon -->
+  <div class="icon text-lg">
+    <i *ngIf="type === 'success'" class="fas fa-check-circle text-green-600"></i>
+    <i *ngIf="type === 'error'" class="fas fa-times-circle text-red-600"></i>
+    <i *ngIf="type === 'warning'" class="fas fa-exclamation-triangle text-yellow-500"></i>
+    <i *ngIf="type === 'info'" class="fas fa-info-circle text-blue-600"></i>
+  </div>
+
+  <!-- Alert Message -->
+  <span class="message flex-1 ml-3 font-medium">{{ message }}</span>
+
+  <!-- Close Button -->
+  <button class="close-btn ml-4 text-gray-600 hover:text-gray-900 text-lg"
+    (click)="onClose()">
+    &times;
+  </button>
+</div>

@@ -1,0 +1,96 @@
+<div class="container mx-auto p-2 mt-0">
+    <div class="flex justify-between items-center mb-2">
+      <h2 class="text-xl font-semibold text-gray-800" >Face Recognition Configuration</h2>
+      <div class="space-x-2 mr-2">
+        <button mat-raised-button color="primary" class="shadow-md hover:shadow-lg transition duration-300 ease-in-out" (click)="addFace()">
+          <mat-icon>add_photo_alternate</mat-icon>
+          Add Faces
+        </button>
+        <!-- <button mat-raised-button color="accent" class="shadow-md hover:shadow-lg transition duration-300 ease-in-out" (click)="otherAction()">
+          <mat-icon>settings</mat-icon>
+          Other Action
+        </button> -->
+      </div>
+    </div>
+  
+    <div class="bg-white shadow-md rounded-lg overflow-hidden mr-2 pl-0">
+      <div *ngIf="loading" class="flex justify-center items-center h-32 text-blue-500">
+        <mat-spinner diameter="40"></mat-spinner>
+        <span class="ml-2">Loading data...</span>
+      </div>
+  
+      <div *ngIf="!loading && dataSource.data.length > 0" class="overflow-x-auto "  [style.height]="TableHeight()" [ngClass]="tableWidth()">
+        <table mat-table [dataSource]="dataSource" matSort id="excel-table" class="mat-elevation w-full min-w-max">
+
+            <ng-container *ngFor="let column of columns" [matColumnDef]="column.columnDef">
+          
+              <mat-header-cell *matHeaderCellDef mat-sort-header [style.min-width]="column.width" [style.max-width]="column.width"  [ngClass]="{ 'pl-[38px]': column.columnDef === 'actions' }">
+                {{ column.header }}
+              </mat-header-cell>
+          
+              <mat-cell *matCellDef="let row" [style.min-width]="column.width" [style.max-width]="column.width">
+          
+                <!-- Employee Name Column with Image (Only Custom Row) -->
+                <div *ngIf="column.columnDef === 'EmployeeName'" class="flex items-center space-x-3">
+                  <img 
+                    [src]="getEmployeeDetails(row).image" 
+                    alt="Employee Image" 
+                    class="w-8 h-8 rounded-full border border-gray-300 shadow-md transition-all duration-200 hover:scale-125 hover:shadow-lg hover:ring-2 hover:ring-blue-300 hover:bg-gray-100"
+                  />
+                  <div class="text-xs">
+                    <div class="font-semibold text-gray-800">{{ getEmployeeDetails(row).name }}</div>
+                    <div class="text-gray-600">{{ getEmployeeDetails(row).gender }} | {{ getEmployeeDetails(row).dob }}</div>
+                  </div>
+                </div>
+          
+                <!-- Original Employee Name Column (This will not show when custom row is used) -->
+                <div *ngIf="column.columnDef === 'EmployeeName' && !getEmployeeDetails(row).image" class="text-xs">
+                  <div class="font-semibold text-gray-800">{{ getEmployeeDetails(row).name }}</div>
+                </div>
+               <!-- Is hasface Checkbox -->
+               <div *ngIf="column.columnDef === 'HasFaceSaved'">
+                <mat-checkbox disabled [checked]="row.HasFaceSaved"></mat-checkbox>
+              </div>
+        <!-- Actions Column -->
+        <div *ngIf="column.columnDef === 'actions'" style="display: flex; align-items: center;">
+          <button mat-icon-button color="warn" matTooltip="Delete" (click)="deleteFace(row.EmployeeID_120)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+                <!-- Default Cells for Other Columns -->
+                <div *ngIf="column.columnDef !== 'actions' && column.columnDef !== 'EmployeeName' && column.columnDef !== 'HasFaceSaved'">
+                  {{ column.cell ? column.cell(row) : common.checkForNull(row[column.columnDef]) }}
+                </div>
+          
+              </mat-cell>
+            </ng-container>
+          
+            <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+          
+            <mat-row *matRowDef="let row; columns: displayedColumns;" class="element-row" matRipple>
+            </mat-row>
+          
+            <tr *matNoDataRow class="text-center">
+              <td [attr.colspan]="displayedColumns.length" class="py-4">
+                No employee face data available.
+              </td>
+            </tr>
+          </table>
+          
+      </div>
+  
+      <div *ngIf="!loading && dataSource.data.length === 0" class="py-10 text-center text-gray-600">
+        <mat-icon class="text-5xl mb-2">sentiment_dissatisfied</mat-icon>
+        <p>No employee face data found.</p>
+      </div>
+  
+      <div class="sticky bottom-0 left-0 bg-white shadow-md w-full flex justify-end pr-4 border border-gray-300">
+        <mat-paginator class="mr-2"
+        [pageSizeOptions]="pageSizeOptions"
+        [pageSize]="pageSize"
+        [length]="totalRecords"
+        [showFirstLastButtons]="true"
+        (page)="onPageChange($event)"
+              ></mat-paginator>
+    </div>
+  </div>

@@ -1,34 +1,186 @@
-<div class="dashboard-container">
-    <h2>Welcome, John Doe!</h2>
-  
-    <!-- Statistics Cards -->
-    <div class="stats-cards">
-        <app-stats-card icon="group" [count]="120" title="Total Employees" colorClass="blue"></app-stats-card>
-        <app-stats-card icon="check_circle" [count]="95" title="Attendance Rate" colorClass="green"></app-stats-card>
-        <app-stats-card icon="task" [count]="45" title="Tasks in Progress" colorClass="orange"></app-stats-card>
-        <app-stats-card icon="assignment_turned_in" [count]="30" title="Completed Tasks" colorClass="purple"></app-stats-card>
-      </div>
-      
-  
-    <!-- Charts Container -->
-    <div class="charts-container">
-      <mat-card class="chart-card">
-        <mat-card-header>
-          <mat-card-title>Productivity Over the Week</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <app-line-chart></app-line-chart>
-        </mat-card-content>
-      </mat-card>
-  
-      <mat-card class="chart-card">
-        <mat-card-header>
-          <mat-card-title>Attendance Rate</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <app-donut-chart></app-donut-chart>
-        </mat-card-content>
-      </mat-card>
+<main class="p-4 bg-gradient-to-br from-gray-50 to-blue-50 flex-1 dashboard-container transition-all duration-300 ease-in-out">
+  <!-- Animated Stats Cards -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+    <div class="animate-fade-in [animation-delay:100ms]">
+      <app-stats-card 
+        icon="group" 
+        [count]="employeeCount" 
+        title="Total Employees" 
+        colorClass="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg">
+      </app-stats-card>
+    </div>
+    <div class="animate-fade-in [animation-delay:200ms]">
+      <app-stats-card 
+        icon="event_available" 
+        [count]="attendanceRate " 
+        title="Today's Attendance" 
+        colorClass="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg">
+      </app-stats-card>
+    </div>
+    <div class="animate-fade-in [animation-delay:300ms]">
+      <app-stats-card 
+        icon="beach_access" 
+        [count]="onLeaveCount" 
+        title="On Leave Today" 
+        colorClass="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white shadow-lg">
+      </app-stats-card>
+    </div>
+    <div class="animate-fade-in [animation-delay:400ms]">
+      <app-stats-card 
+        icon="pending_actions" 
+        [count]="pendingRequests" 
+        title="Pending Approvals" 
+        colorClass="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white shadow-lg">
+      </app-stats-card>
     </div>
   </div>
-  
+
+  <!-- Main Content Grid -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Welcome Card with Quick Actions -->
+    <div class="p-4 bg-white rounded-xl shadow-lg animate-slide-up [animation-delay:200ms] col-span-1 lg:col-span-1">
+      <div class="flex items-center mb-4">
+        <h2 class="text-2xl font-bold text-gray-800">Welcome, {{ fullName }} 👋</h2>
+        <span class="ml-auto bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full animate-pulse">
+        </span>
+      </div>
+      <p class="text-gray-600 mb-6">
+        Here's your HR dashboard overview. Manage leaves, track attendance, and view employee data.
+      </p>
+      
+      <div class="grid grid-cols-2 gap-3 mb-6">
+        <button class="quick-action-btn bg-blue-100 hover:bg-blue-200 text-blue-800">
+          <span class="material-icons">add</span>
+          New Leave
+        </button>
+        <button class="quick-action-btn bg-green-100 hover:bg-green-200 text-green-800">
+          <span class="material-icons">how_to_reg</span>
+          Approvals
+        </button>
+        <button class="quick-action-btn bg-purple-100 hover:bg-purple-200 text-purple-800">
+          <span class="material-icons">bar_chart</span>
+          Reports
+        </button>
+        <button class="quick-action-btn bg-amber-100 hover:bg-amber-200 text-amber-800">
+          <span class="material-icons">groups</span>
+          Employees
+        </button>
+      </div>
+      
+      <div class="relative h-40 overflow-hidden rounded-lg">
+        <img src="assets/images/dashboard-image.svg" alt="HR Dashboard" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 hover:scale-105">
+      </div>
+    </div>
+
+
+    <!-- Recent Leave Requests -->
+    <div class="p-4 bg-white rounded-xl shadow-lg animate-fade-in [animation-delay:500ms] col-span-1 lg:col-span-2">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-bold text-gray-800">⏳ Recent Leave Requests</h2>
+        <button mat-button class="text-blue-500 text-sm">View All</button>
+      </div>
+      
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Employee</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Leave Type</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Dates</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Status</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <tr *ngFor="let request of recentLeaveRequests" class="hover:bg-gray-50 transition-colors">
+              <td class="px-4 py-3 whitespace-nowrap">
+                <div class="flex items-center">
+                  <img [src]="request.employee.avatar" class="w-8 h-8 rounded-full mr-2">
+                  <span>{{ request.employee.name }}</span>
+                </div>
+              </td>
+              <td class="px-4 py-3 whitespace-nowrap">
+                <span [class]="'px-2 py-1 rounded-full text-xs ' + getLeaveTypeClass(request.type)">
+                  {{ request.type }}
+                </span>
+              </td>
+              <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
+                {{ request.startDate | date }} - {{ request.endDate | date }}
+              </td>
+              <td class="px-4 py-3 whitespace-nowrap">
+                <span [class]="'px-2 py-1 rounded-full text-xs ' + getStatusClass(request.status)">
+                  {{ request.status }}
+                </span>
+              </td>
+              <td class="px-4 py-3 whitespace-nowrap text-sm">
+                <button mat-icon-button class="text-green-500 hover:bg-green-50" *ngIf="request.status === 'Pending'">
+                  <mat-icon>check</mat-icon>
+                </button>
+                <button mat-icon-button class="text-red-500 hover:bg-red-50" *ngIf="request.status === 'Pending'">
+                  <mat-icon>close</mat-icon>
+                </button>
+                <button mat-icon-button class="text-blue-500 hover:bg-blue-50">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+   
+
+      <!-- Attendance Chart -->
+    <mat-card class="p-6 bg-white rounded-xl shadow-lg h-full animate-slide-up [animation-delay:300ms]">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-bold text-gray-800">📊 Monthly Attendance</h2>
+        <button mat-button class="text-blue-500 text-sm">View Details</button>
+      </div>
+      <mat-card-content class="w-full h-[250px]">
+        <app-line-chart data="attendanceData"></app-line-chart>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Leave Balance Chart -->
+    <mat-card class="p-6 bg-white rounded-xl shadow-lg h-full animate-slide-up [animation-delay:400ms]">
+      <h2 class="text-xl font-bold text-gray-800 mb-4">🍃 Leave Balances</h2>
+      <mat-card-content class="w-full h-[270px]">
+        <app-donut-chart data="leaveBalanceData"></app-donut-chart>
+      </mat-card-content>
+    </mat-card>
+ <!-- Upcoming Holidays -->
+    <div class="p-6 bg-white rounded-xl shadow-lg animate-fade-in [animation-delay:600ms]">
+      <h2 class="text-xl font-bold text-gray-800 mb-4">🎉 Upcoming Holidays</h2>
+      <div class="space-y-4">
+        <div *ngFor="let holiday of upcomingHolidays" class="flex items-start p-3 rounded-lg hover:bg-gray-50 transition-colors">
+          <div class="bg-red-100 p-2 rounded-lg mr-3">
+            <mat-icon class="text-red-500">celebration</mat-icon>
+          </div>
+          <div>
+            <h3 class="font-medium text-gray-800">{{ holiday.name }}</h3>
+            <p class="text-sm text-gray-600">{{ holiday.date | date:'fullDate' }}</p>
+            <p class="text-xs text-gray-500 mt-1">{{ holiday.daysLeft }} days remaining</p>
+          </div>
+        </div>
+      </div>
+      <button mat-button class="w-full mt-4 text-blue-500">View All Holidays</button>
+    </div>
+
+    <!-- Employee Birthdays -->
+    <div class="p-6 bg-white rounded-xl shadow-lg animate-fade-in [animation-delay:700ms]">
+      <h2 class="text-xl font-bold text-gray-800 mb-4">🎂 This Month's Birthdays</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div *ngFor="let birthday of employeeBirthdays" class="flex items-center p-3 rounded-lg hover:bg-gray-50 transition-colors">
+          <img [src]="birthday.avatar" class="w-10 h-10 rounded-full mr-3 border-2 border-pink-300">
+          <div>
+            <h3 class="font-medium text-gray-800">{{ birthday.name }}</h3>
+            <p class="text-sm text-gray-600">{{ birthday.date | date:'MMM d' }}</p>
+            <p class="text-xs text-pink-500 mt-1" *ngIf="birthday.isToday">🎉 Today!</p>
+          </div>
+        </div>
+      </div>
+      <button mat-button class="w-full mt-4 text-blue-500">View All Birthdays</button>
+    </div>
+  </div>
+</main>

@@ -1,0 +1,71 @@
+<div class="modal-background flex justify-center items-center">
+  <div class="modal-content p-4 bg-white rounded-lg shadow-xl w-96 max-w-full">
+    
+    <!-- Modal Content -->
+    <div class="flex flex-col items-center gap-2">
+      <img 
+        *ngIf="dialogType === 'alert'" 
+        src="assets/images/alert-image.svg" 
+        alt="Alert Icon" 
+        class="w-32 h-32"
+      />
+
+      <img 
+        *ngIf="dialogType === 'delete'" 
+        src="assets/images/delete-image.svg" 
+        alt="Delete Icon" 
+        class="w-32 h-32"
+      />
+
+      <img 
+        *ngIf="dialogType === 'cancel'" 
+        src="assets/images/cancel-image.svg" 
+        alt="Cancel Icon" 
+        class="w-32 h-32"
+      />
+
+      <img 
+        *ngIf="dialogType === 'reset'" 
+        src="assets/images/reset-image.svg" 
+        alt="Reset Icon" 
+        class="w-32 h-32"
+      />
+    </div>
+
+    <div class="mt-2 text-center">
+      <h2 mat-dialog-title class="text-lg font-semibold text-gray-800">{{ data.title }}</h2>
+      <mat-dialog-content>
+        <p class="text-gray-600 text-sm" [innerHTML]="data.message"></p>
+      </mat-dialog-content>
+    </div>
+
+    <!-- Dialog Actions with Button Behavior -->
+    <mat-dialog-actions align="center" class="w-full mt-3">
+      <div *ngIf="showCancelButton; else singleButton" class="flex gap-3 w-full">
+
+        <!-- "No" Button -->
+        <button mat-raised-button color="warn" 
+                class="flex-1 py-2 text-white rounded-md shadow-md text-base font-medium hover:bg-red-600 transition duration-300" 
+                mat-dialog-close>
+          No
+        </button>
+            <!-- "Yes" Button -->
+            <button mat-raised-button color="primary" 
+            class="flex-1 py-2 text-white rounded-md shadow-md text-base font-medium hover:bg-blue-600 transition duration-300" 
+            [mat-dialog-close]="true">
+      Yes
+    </button>
+      </div>
+
+      <!-- Single Button (OK) When No Cancel Option -->
+      <ng-template #singleButton>
+        <button mat-raised-button color="primary" 
+                class="w-full py-2 text-white rounded-md shadow-md text-base font-medium hover:bg-blue-600 transition duration-300" 
+                [mat-dialog-close]="true">
+          OK
+        </button>
+      </ng-template>
+    </mat-dialog-actions>
+
+  </div>
+</div>

@@ -1,0 +1,8 @@
+/* line-chart.component.css */
+.line-chart-container {
+    width: 100%; /* Full width of the parent container */
+    height: 300px; /* Set height (adjust as needed) */
+    max-width: 600px; /* Optional: Limit maximum width */
+    margin: 0 auto; /* Center the chart horizontally */
+  }
+  

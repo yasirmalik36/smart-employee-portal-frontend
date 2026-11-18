@@ -15,8 +15,8 @@ export class DonutChartComponent implements AfterViewInit {
 // Donut Chart configuration
 donutChartOptions: EChartsOption = {
   title: {
-    text: 'Attendance Rate',
-    subtext: '95%',
+    text: '',
+    subtext: '90%',
     left: 'center',
     top: '5%',
     textStyle: {
@@ -27,7 +27,6 @@ donutChartOptions: EChartsOption = {
   },
   legend: {
     orient: 'horizontal',
-    bottom: '5%',
     itemGap: 20,
     textStyle: {
       fontSize: 14,

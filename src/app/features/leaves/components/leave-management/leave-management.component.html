@@ -1,0 +1,239 @@
+<div class="p-5 pb-2 bg-white dark:bg-gray-800 h-full relative shadow-md rounded-lg overflow-hidden mb-8">
+  <div class="absolute top-0 left-1/2 transform -translate-x-1/2 mt-2 z-10">
+    <button (click)="toggleFilters()"
+      class="flex items-center text-blue-600 dark:text-blue-300 bg-white dark:bg-gray-700 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 shadow-sm hover:shadow-md transition-all">
+      <mat-icon class="mr-2 text-gray-900 dark:text-gray-100 transition-transform duration-300"
+        [class.rotate-180]="common.filtersExpanded()">expand_more</mat-icon>
+      <span class="ml-2 font-medium">
+        {{ common.filtersExpanded() ? 'Hide Filters' : 'Show Filters' }}
+      </span>
+    </button>
+  </div>
+
+  <h2 class="text-xl font-semibold mb-4 flex items-center gap-2 text-gray-800 dark:text-white">
+    <mat-icon class="text-blue-500">date_range</mat-icon>
+    Leave Management
+  </h2>
+
+  @if (common.filtersExpanded()) {
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+@if (profiletype == '1' || profiletype == '2') {
+    <div class="flex flex-col">
+      <label class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Employee ID</label>
+      <input type="number" [(ngModel)]="leaveRequest.employeeId"
+        class="mt-1 p-2 border border-gray-300 dark:border-gray-600 rounded w-full bg-white dark:bg-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 shadow-sm text-gray-900 dark:text-white"
+        placeholder="Enter Employee ID" />
+    </div>}
+
+    <div class="flex flex-col">
+      <label class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Leave Type</label>
+      <select [(ngModel)]="leaveRequest.leaveType"
+        class="mt-1 p-2 border border-gray-300 dark:border-gray-600 rounded w-full bg-white dark:bg-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 shadow-sm text-gray-900 dark:text-white">
+        <option value="">All</option>
+        @for (type of leaveTypes; track type.value) {
+        <option [value]="type.value">{{ type.label }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="flex flex-col">
+      <label class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
+      <select [(ngModel)]="leaveRequest.status"
+        class="mt-1 p-2 border border-gray-300 dark:border-gray-600 rounded w-full bg-white dark:bg-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 shadow-sm text-gray-900 dark:text-white">
+        <option value="">All</option>
+        <option value="Pending">Pending</option>
+        <option value="Approved">Approved</option>
+        <option value="Rejected">Rejected</option>
+      </select>
+    </div>
+
+    <div class="flex flex-col">
+      <label class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date Range</label>
+      <select [(ngModel)]="leaveRequest.dateRange" (change)="setDateRange()"
+        class="mt-1 p-2 border border-gray-300 dark:border-gray-600 rounded w-full bg-white dark:bg-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 shadow-sm text-gray-900 dark:text-white">
+        @for (range of dateRanges; track range.value) {
+        <option [value]="range.value">{{ range.label }}</option>
+        }
+      </select>
+    </div>
+
+    @if (showCustomDates) {
+    <div class="flex flex-col">
+      <label class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">From Date</label>
+      <input type="date" [(ngModel)]="leaveRequest.fromDate"
+        class="mt-1 p-2 border border-gray-300 dark:border-gray-600 rounded w-full bg-white dark:bg-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 shadow-sm text-gray-900 dark:text-white" />
+    </div>
+    }
+
+    @if (showCustomDates) {
+    <div class="flex flex-col">
+      <label class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">To Date</label>
+      <input type="date" [(ngModel)]="leaveRequest.toDate"
+        class="mt-1 p-2 border border-gray-300 dark:border-gray-600 rounded w-full bg-white dark:bg-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 shadow-sm text-gray-900 dark:text-white" />
+    </div>
+    }
+  </div>
+  }
+
+  <div class="mt-4 flex justify-between items-center">
+    <button class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md shadow-md transition duration-300 ease-in-out flex items-center w-56"
+      (click)="searchLeaves()">
+      <mat-icon class="mr-2">search</mat-icon>
+      Search Leaves
+    </button>
+
+    <div class="flex space-x-4">
+      <button class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-md shadow-md transition duration-300 ease-in-out flex items-center w-48"
+        (click)="openApplyLeaveDialog()">
+        <mat-icon class="mr-2">add</mat-icon>
+        Apply Leave
+      </button>
+
+      <div class="relative">
+        <button (click)="toggleExportDropdown()"
+          class="bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 px-4 rounded-md shadow-md transition duration-300 ease-in-out flex items-center justify-between w-40">
+          <span class="flex items-center space-x-2">
+            <mat-icon class="mr-1">file_download</mat-icon>
+            <span>Export</span>
+          </span>
+          <mat-icon class="ml-1">expand_more</mat-icon>
+        </button>
+        @if (isExportDropdownOpen) {
+        <div class="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-md z-10">
+          <button (click)="exportLeaves('csv')"
+            class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 transition duration-200 ease-in-out text-gray-900 dark:text-white">
+            <mat-icon class="mr-2 text-sm">description</mat-icon>
+            CSV
+          </button>
+          <button (click)="exportLeaves('excel')"
+            class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 transition duration-200 ease-in-out text-gray-900 dark:text-white">
+            <mat-icon class="mr-2 text-sm">grid_on</mat-icon>
+            Excel
+          </button>
+          <button (click)="exportLeaves('pdf')"
+            class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 transition duration-200 ease-in-out text-gray-900 dark:text-white">
+            <mat-icon class="mr-2 text-sm">picture_as_pdf</mat-icon>
+            PDF
+          </button>
+        </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-4 overflow-auto mb-4"  [style.height]="TableHeight()" >
+    <div class="overflow-hidden mb-4" [ngClass]="tableWidth()"> 
+      @if (loading) {
+      <div class="text-center py-8">
+        <mat-spinner diameter="40" class="mx-auto"></mat-spinner>
+        <p class="mt-2 text-gray-600 dark:text-gray-300">Loading leave records...</p>
+      </div>
+      }
+
+    <div class="overflow-auto relative">
+  @if (loading) {
+    <div class="text-center py-8">
+      <mat-spinner diameter="40" class="mx-auto"></mat-spinner>
+      <p class="mt-2 text-gray-600 dark:text-gray-300">Loading leave records...</p>
+    </div>
+  }
+  @else {
+    @if (leaveData.length > 0) {
+      <table mat-table [dataSource]="dataSource" matSort
+        class="leave-table-cell-padding mat-elevation w-full min-w-max bg-white dark:bg-gray-700">
+
+        @for (column of columns; track column.key) {
+          <ng-container [matColumnDef]="column.key">
+            <mat-header-cell *matHeaderCellDef mat-sort-header [style.min-width]="column.width"
+              [style.max-width]="column.width" class="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
+              {{ column.title }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row" [style.min-width]="column.width" [style.max-width]="column.width"
+              class="text-gray-900 dark:text-gray-100">
+              
+              @if (column.key === 'actions') {
+                <div class="flex space-x-1">
+
+                  <button  [disabled]="userid && profiletype == '3' && row?.Leave_Status?.toLowerCase() === 'approved'"  
+                    class="inline-flex items-center p-2 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50"
+                    (click)="onEditLeave(row)">
+                    <mat-icon class="text-base">edit</mat-icon>
+                  </button>
+
+                  @if (row.Leave_Status === 'Pending' && profiletype=="1") {
+                    <button
+                      class="inline-flex items-center p-2 rounded-full bg-green-100 text-green-600 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-300 dark:hover:bg-green-900/50"
+                      (click)="approveLeave(row)">
+                      <mat-icon class="text-base">check_circle</mat-icon>
+                    </button>
+
+                    <button
+                      class="inline-flex items-center p-2 rounded-full bg-red-100 text-red-600 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-300 dark:hover:bg-red-900/50"
+                      (click)="rejectLeave(row)">
+                      <mat-icon class="text-base">cancel</mat-icon>
+                    </button>
+                  }
+                </div>
+              }
+
+              <!-- Employee Name Column with Image -->
+              @if (column.key === 'Employee_Name') {
+                <div class="flex items-center space-x-3">
+                  <img 
+                    [src]="common.getProfilePic(row.ProfilePic,row.Gender)" 
+                    alt="Employee Image" 
+                    class="w-8 h-8 rounded-full border border-gray-300 dark:border-gray-500 shadow-md transition-all duration-200 hover:scale-125 hover:shadow-lg hover:ring-2 hover:ring-blue-300 hover:bg-gray-100 dark:hover:bg-gray-600"
+                  />
+                  <div class="text-xs">
+                    <div class="font-semibold text-gray-800 dark:text-white">{{ row.Employee_Name }}</div>
+                    <div class="text-gray-600 dark:text-gray-400">{{ row.Designation }} | {{ row.Department }}</div>
+                  </div>
+                </div>
+              }
+
+              @if (column.key === 'Leave_Status') {
+                <div class="px-2 py-1 rounded-md text-center"
+                  [ngClass]="{
+                    'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300': row?.Leave_Status?.toLowerCase() === 'pending',
+                    'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300': row?.Leave_Status?.toLowerCase() === 'approved',
+                    'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300': row?.Leave_Status?.toLowerCase() === 'rejected'
+                  }">
+                  {{ row.Leave_Status || 'N/A' }}
+                </div>
+              }
+
+              @if (column.key !== 'Employee_Name' && column.key !== 'Leave_Status' && column.key !== 'actions') {
+                {{ row[column.key] }}
+              }
+            </mat-cell>
+          </ng-container>
+        }
+
+        <mat-header-row *matHeaderRowDef="displayedColumns;" class="sticky-header"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+      </table>
+    }
+    @else {
+      <div class="flex flex-col items-center justify-center h-64 bg-gray-100 dark:bg-gray-700 rounded-lg shadow-md">
+        <mat-icon class="text-gray-400 dark:text-gray-500 text-6xl mb-4">inbox</mat-icon>
+        <p class="text-lg font-semibold text-gray-700 dark:text-gray-300">No Leave Records Found</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Try adjusting filters or check back later.</p>
+      </div>
+    }
+  }
+</div>
+
+
+    </div>
+          <div class=" sticky bottom-0 left-0 bg-white dark:bg-gray-800 shadow-md w-full flex justify-end pr-4 border border-gray-300 dark:border-gray-600">
+        <mat-paginator class="mr-2"
+          [length]="totalRecords"
+          [pageSize]="pageSize"
+          showFirstLastButtons
+          [pageSizeOptions]="[5, 10, 25,50,100]"
+          (page)="onPageChange($event)">
+        </mat-paginator>
+      </div>  
+  </div>
+
+</div>

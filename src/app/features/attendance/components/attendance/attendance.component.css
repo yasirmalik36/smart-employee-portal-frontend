@@ -1,0 +1,80 @@
+.table-container {
+  max-height: 400px; /* Adjust height */
+  overflow: auto; /* Enables horizontal & vertical scrolling */
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+/* Sticky header */
+.sticky-header {
+  position: sticky;
+  top: 0;
+  background: rgb(31, 83, 167); /* User's global color */
+  color: white;
+  z-index: 2;
+}
+
+/* Sticky paginator */
+.sticky-paginator {
+  position: sticky;
+  bottom: 0;
+  background: white;
+  z-index: 2;
+}
+
+/* Custom scrollbar */
+.table-container::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+  background-color: rgba(31, 83, 167, 0.7);
+  border-radius: 10px;
+}
+
+.table-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.attendance-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.responsive-container {
+  width: 90vw;
+}
+
+@media (min-width: 640px) { /* Small screens */
+  .responsive-container {
+    width: 85vw;
+  }
+}
+
+@media (min-width: 768px) { /* Medium screens */
+  .responsive-container {
+    width: 81vw;
+  }
+}
+
+@media (min-width: 1024px) { /* Large screens */
+  .responsive-container {
+    width: 75vw;
+  }
+}
+
+@media (min-width: 1280px) { /* Extra-large screens */
+  .responsive-container {
+    width: 70vw;
+  }
+}
+/* Ensure the table scrolls horizontally without affecting pagination */
+.overflow-auto {
+  overflow-x: auto;
+}
+
+/* Make pagination sticky */
+.sticky {
+  position: sticky;
+}

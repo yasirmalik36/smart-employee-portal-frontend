@@ -1,0 +1,24 @@
+<!-- src/app/features/task/components/add-task/add-task.component.html -->
+
+<form (ngSubmit)="save()" class="grid gap-3 p-4 bg-gray-100 rounded">
+    <input class="border rounded p-2" [(ngModel)]="newTask.title" name="title" placeholder="Title" required>
+    
+    <input class="border rounded p-2" [(ngModel)]="newTask.assignedTo" name="assignedTo" placeholder="Assigned To">
+  
+    <input type="date" class="border rounded p-2" [(ngModel)]="newTask.dueDate" name="dueDate">
+  
+    <select class="border rounded p-2" [(ngModel)]="newTask.status" name="status">
+      <option value="">Select Status</option>
+      <option value="Pending">Pending</option>
+      <option value="In Progress">In Progress</option>
+      <option value="Completed">Completed</option>
+    </select>
+  
+    <textarea class="border rounded p-2" [(ngModel)]="newTask.description" name="description" placeholder="Description"></textarea>
+  
+    <div class="flex gap-2">
+      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Save</button>
+      <button type="button" class="bg-gray-400 text-white px-4 py-2 rounded" (click)="close.emit()">Cancel</button>
+    </div>
+  </form>
+  

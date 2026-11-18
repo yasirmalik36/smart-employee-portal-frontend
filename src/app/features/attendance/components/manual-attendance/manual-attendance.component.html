@@ -1,0 +1,122 @@
+<div class="relative p-5 flex flex-col min-h-[400px]">
+  <!-- Header -->
+  <div class="flex items-center justify-between bg-blue-100 dark:bg-gray-700 p-4 rounded-md">
+    <div class="flex items-center space-x-2">
+      <mat-icon class="text-blue-600 dark:text-blue-300 mr-2">assignment_ind</mat-icon>
+      <h2 class="m text-2xl font-bold text-gray-800 dark:text-gray-100" style="margin: 0 !important;">Manual Attendance</h2>
+    </div>
+    
+    <button (click)="closeDialog()" class="p-2 rounded-md bg-gray-200 dark:bg-gray-800 transition-all">
+      <mat-icon class="text-gray-600 dark:text-white">close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Search Field -->
+  <div class="mt-4">
+    <label class="block text-sm font-medium text-gray-700 mb-1">Search by Employee ID or Name</label>
+    <div class="relative rounded-md shadow-sm">
+      <input
+        matInput
+        type="text"
+        [(ngModel)]="searchText"
+        (keydown)="fetchEmployees($event)"
+        placeholder="Enter Employee ID or Name and press Enter"
+        class="block w-full pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+      />
+      <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+        <mat-icon class="text-gray-400">search</mat-icon>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search Results Container -->
+  <div class="mt-4 max-h-72 overflow-y-auto border rounded-md p-2">
+    <!-- No Employees Found -->
+    <div *ngIf="employeeData.length === 0 && searchText" class="text-gray-500 text-center py-2">
+      No employees found
+    </div>
+
+    <!-- Employee List -->
+    <ul *ngIf="employeeData.length > 0" class="divide-y divide-gray-200">
+      <li *ngFor="let emp of employeeData" class="py-3 flex justify-between items-center">
+        <div class="flex items-center space-x-3">
+          <!-- Employee Image -->
+          <img 
+            [src]="common.getProfilePic(emp.ProfilePic,emp.Gender)" 
+            alt="Employee Image" 
+            class="w-10 h-10 rounded-full border border-gray-300 shadow-md transition-all duration-200 hover:scale-125 hover:shadow-lg hover:ring-2 hover:ring-blue-300 hover:bg-gray-100"
+          />
+
+          <!-- Employee Details -->
+          <div class="text-sm">
+            <div class="font-semibold text-gray-800">{{ emp.EmployeeName }}</div>
+            <div class="text-gray-600">{{ emp.Gender }} | {{ emp.DateOfBirth }} | {{ emp.EmployeeID }} | {{ emp.DesignationName }} | {{ emp.DepartmentName }}</div>
+          </div>
+        </div>
+
+        <!-- Select Button -->
+        <button mat-button (click)="selectedEmployee = emp ;selectEmployee(emp);" class="flex items-center text-blue-600 hover:text-blue-800">
+          <mat-icon class="mr-1">check_circle</mat-icon>
+          Select
+        </button>
+      </li>
+    </ul>
+  </div>
+
+<!-- Selected Employee Details -->
+<div *ngIf="selectedEmployee" class="p-4 border rounded-md bg-gray-50 mt-4 mb-1">
+  <h3 class="text-lg font-semibold text-gray-800 flex items-center">
+    <mat-icon class="mr-1">info</mat-icon>
+    You selected: {{ selectedEmployee.EmployeeName }} (Employee ID: {{ selectedEmployee.EmployeeID }})
+  </h3>
+
+  <!-- Display Employee Status -->
+  <p class="mt-2 text-sm text-gray-600">
+    Status: 
+    <strong 
+      [ngClass]="{
+        'status-green': employeeStatus && (employeeStatus.toLowerCase() === 'present' || employeeStatus.toLowerCase() === 'half-day' || employeeStatus.toLowerCase() === 'leave' || employeeStatus.toLowerCase() === 'check-in'),
+        'status-red': !employeeStatus || employeeStatus.toLowerCase() === 'absent' || employeeStatus.toLowerCase() === 'late' || employeeStatus.toLowerCase() === 'not checked in',
+        'status-yellow': employeeStatus && employeeStatus.toLowerCase() === 'short-hours'
+      }">
+      {{ employeeStatus || 'Not Checked In' }}
+    </strong>
+  </p>
+  
+
+
+  <div class="flex space-x-4 mt-4">
+   <!-- Check-in Button -->
+<button mat-raised-button color="success" 
+(click)="markAttendance(selectedEmployee.EmployeeID, 'checkin')" 
+class="flex items-center"
+[disabled]="isCheckInDisabled">
+<mat-icon class="mr-1">login</mat-icon>
+Mark Check-in
+</button>
+
+<!-- Check-out Button -->
+<button mat-raised-button color="primary" 
+(click)="markAttendance(selectedEmployee.EmployeeID, 'checkout')" 
+class="flex items-center"
+[disabled]="isCheckOutDisabled">
+<mat-icon class="mr-1">logout</mat-icon>
+Mark Check-out
+</button>
+
+</div>
+
+</div>
+
+
+  <!-- Cancel Button -->
+  <mat-dialog-actions class="mt-auto justify-start">
+    <button mat-stroked-button (click)="closeDialog()" 
+      class="flex items-center px-4 py-2 border border-gray-900 text-gray-600 hover:text-gray-800 hover:border-gray-800 rounded-md transition-all">
+      <mat-icon class="mr-1">cancel</mat-icon>
+      Cancel
+    </button>
+  </mat-dialog-actions>
+  
+  
+</div>
