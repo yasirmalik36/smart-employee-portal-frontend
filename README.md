@@ -12,6 +12,16 @@
 
 ---
 
+## 📸 Screenshots
+
+**Dashboard**: headcount, attendance and task stats with weekly productivity and attendance charts.
+
+![Smart Employee Portal dashboard](docs/screenshots/dashboard.png)
+
+**Sign in**
+
+![Smart Employee Portal sign-in page](docs/screenshots/login.png)
+
 ## ✨ What's inside
 
 | Area | Details |
